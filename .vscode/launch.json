@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FaDel Delivery (Web Port 5000)",
+            "request": "launch",
+            "type": "dart",
+            "program": "mobile/lib/main.dart",
+            "args": [
+                "--web-port",
+                "5000"
+            ]
+        }
+    ]
+}

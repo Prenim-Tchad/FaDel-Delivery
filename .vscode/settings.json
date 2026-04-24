@@ -1,0 +1,44 @@
+{
+    "python.useEnvironmentsExtension": true,
+    "chat.tools.terminal.autoApprove": {
+        "git reset": true,
+        "docker exec": true,
+        "docker-compose": true,
+        "npx prisma": true,
+        "npm install": true,
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel:password_fadel@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ host: 'localhost', port: 5432, database: 'fadel_delivery', user: 'user_fadel', password: null \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://postgres:password_fadel@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel:password@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "docker restart": true,
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel:password@127\\.0\\.0\\.1:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel:test@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => \\{ console\\.log\\('Connected'\\); return client\\.query\\('SELECT 1'\\); \\}\\)\\.then\\(\\(\\) => console\\.log\\('Query successful'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const \\{ Client \\} = require\\('pg'\\); const client = new Client\\(\\{ connectionString: 'postgresql://user_fadel:test@localhost:5432/fadel_delivery' \\}\\); client\\.connect\\(\\)\\.then\\(\\(\\) => console\\.log\\('Connected'\\)\\)\\.catch\\(e => console\\.log\\('Error:', e\\.message\\)\\)\\.finally\\(\\(\\) => client\\.end\\(\\)\\);\" ; docker logs fadel_db --tail 10$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "Test-NetConnection": true
+    }
+}
