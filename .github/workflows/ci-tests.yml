@@ -1,11 +1,13 @@
-name: Node.js CI (Vérification Automatique)
+name: CI FaDel Delivery
 
 on:
   push:
-    branches: [ develop, main ]
+    branches:
+      - main
+      - '*' # Cela inclut toutes les nouvelles branches créées par ton équipe
   pull_request:
-    branches: [ develop ]
-
+    branches:
+      - main
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
