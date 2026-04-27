@@ -27,10 +27,22 @@ Le backend repose sur une architecture **Stateless & Modulaire** :
 ```text
 FaDel-Delivery/
 ├── src/                    # Cœur du Backend (NestJS)
-│   ├── modules/            # Domaines : Auth, Partners (Gaz/Resto), Orders...
-│   ├── common/             # Middlewares, Guards & DTOs
-│   └── main.ts             # Entrée de l'API
-├── mobile/                 # Application Mobile (Flutter)
-├── prisma/                 # Schémas de base de données
-├── nginx/                  # Configuration Proxy
-└── docker-compose.yml      # Orchestration des conteneurs
+│   ├── modules/            # Un dossier par métier
+│   │   ├── auth/           # JWT, Roles, Guard
+│   │   ├── users/          # Profils, Documents (KYC)
+│   │   ├── partners/       # Restaurants & Agences Gaz
+│   │   ├── products/       # Menus & Bouteilles de gaz
+│   │   ├── orders/         # Panier, Promo, Paiement
+│   │   └── delivery/       # Dispatch, GPS, OTP
+│   ├── common/             # Filtres, Intercepteurs, DTOs globaux
+│   ├── prisma/             # Service Prisma centralisé
+│   ├── main.ts             # Point d'entrée de l'API
+│   └── app.module.ts       # Orchestrateur des modules
+├── prisma/                 # Schéma de base de données
+│   └── schema.prisma
+├── mobile/                 # Ton code Flutter (Ernest)
+├── nginx/                  # Config de la Gateway
+│   └── conf.d/
+├── docker-compose.yml      # Orchestration totale
+├── Dockerfile              # Build de l'image NestJS
+└── .env                    # Variables confidentielles à creer en local
