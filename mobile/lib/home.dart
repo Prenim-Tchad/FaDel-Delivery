@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 
 class HomePage extends StatefulWidget {
@@ -385,13 +386,22 @@ class _HomePageState extends State<HomePage>
       ),
       bottomNavigationBar: _BottomNav(
         selectedIndex: _selectedIndex,
-        onTap: (i) {
+        onTap: (i) async {
           setState(() => _selectedIndex = i);
           if (i == 4) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => LoginPage()),
-            );
+            try {
+              await Supabase.instance.client.auth.signOut();
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Erreur lors de la déconnexion')),
+              );
+            }
           }
         },
       ),

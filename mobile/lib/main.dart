@@ -1,39 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/api_client.dart';
+import 'login.dart';
+import 'register.dart';
+import 'home.dart';
 
-void main() {
-  runApp(const MaterialApp(home: FaDelStatusPage()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Charger les variables d'environnement
+  await dotenv.load(fileName: ".env");
+
+  // Initialiser Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
+  runApp(const FaDelApp());
 }
 
-class FaDelStatusPage extends StatefulWidget {
-  const FaDelStatusPage({super.key});
+class FaDelApp extends StatelessWidget {
+  const FaDelApp({super.key});
 
   @override
-  State<FaDelStatusPage> createState() => _FaDelStatusPageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'FaDel Delivery',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: const AuthWrapper(),
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/home': (context) => const HomePage(),
+      },
+    );
+  }
 }
 
-class _FaDelStatusPageState extends State<FaDelStatusPage> {
-  String _message = "Vérification...";
-  Color _statusColor = Colors.grey;
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  User? _user;
 
   @override
   void initState() {
     super.initState();
-    _testLiaison();
+    _checkAuthState();
+    _listenAuthState();
   }
 
-  Future<void> _testLiaison() async {
-    final result = await ApiClient.checkHealth();
+  void _checkAuthState() {
+    final user = Supabase.instance.client.auth.currentUser;
     setState(() {
-      if (result['status'] == 'UP') {
-        _message = "✅ Liaison Établie (Backend : 3001)";
-        _statusColor = Colors.green;
-      } else {
-        _message = "❌ Échec de liaison";
-        _statusColor = Colors.red;
-      }
+      _user = user;
     });
   }
+
+  void _listenAuthState() {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      setState(() {
+        _user = data.session?.user;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_user != null) {
+      return const HomePage();
+    } else {
+      return const AuthSelectionPage();
+    }
+  }
+}
+
+class AuthSelectionPage extends StatelessWidget {
+  const AuthSelectionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +95,27 @@ class _FaDelStatusPageState extends State<FaDelStatusPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.swap_horizontal_circle, size: 80, color: _statusColor),
+            const Icon(Icons.delivery_dining, size: 80, color: Colors.blue),
             const SizedBox(height: 20),
-            Text(_message, style: TextStyle(fontSize: 18, color: _statusColor, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 30),
+            const Text(
+              'FaDel Delivery',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: _testLiaison,
-              child: const Text("Tester à nouveau"),
+              onPressed: () => Navigator.pushNamed(context, '/login'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(200, 50),
+              ),
+              child: const Text('Se connecter'),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, '/register'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(200, 50),
+              ),
+              child: const Text('S\'inscrire'),
             ),
           ],
         ),

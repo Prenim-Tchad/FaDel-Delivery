@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,25 +6,22 @@ datasource db {
   provider = "postgresql"
 }
 
-// 1. IDENTITÉ & PROFILS (Lien avec Firebase)
 model Profile {
-  id           String   @id @default(uuid())
-  firebaseUid  String   @unique // L'identifiant unique envoyé par Ernest (Flutter)
-  email        String   @unique
-  fullName     String?
-  phone        String?
-  avatarUrl    String?
+  // L'ID doit être de type UUID pour matcher celui de Supabase Auth
+  id          String   @id @db.Uuid
+  email       String   @unique
+  fullName    String?  @map("full_name")
+  phone       String?
+  avatarUrl   String?  @map("avatar_url")
   
-  role         Role     @default(CLIENT)
-  isActive     Boolean  @default(true)
+  // Roles pour la logique métier
+  isAdmin     Boolean  @default(false) @map("is_admin")
+  isRider     Boolean  @default(false) @map("is_rider")
+  isPartner   Boolean  @default(false) @map("is_partner")
   
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-enum Role {
-  ADMIN
-  CLIENT
-  RIDER
-  PARTNER
+  @@map("profiles")
 }
