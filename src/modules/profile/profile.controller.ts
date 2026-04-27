@@ -1,5 +1,18 @@
-import { Body, Controller, Delete, Get, Patch, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
@@ -12,7 +25,7 @@ export class ProfileController {
   @UseGuards(SupabaseAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Get()
-  @ApiOperation({ summary: 'Récupérer le profil complet de l\'utilisateur' })
+  @ApiOperation({ summary: "Récupérer le profil complet de l'utilisateur" })
   @ApiResponse({ status: 200, description: 'Profil récupéré avec succès' })
   @ApiResponse({ status: 401, description: 'Token invalide' })
   async getProfile(@Request() req) {

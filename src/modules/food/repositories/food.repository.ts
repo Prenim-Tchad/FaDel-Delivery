@@ -26,41 +26,58 @@ export class FoodRepository {
     return food;
   }
 
-  async findAll(filters: FoodFiltersDto = {}): Promise<{ items: Food[]; total: number; page: number; limit: number }> {
+  async findAll(
+    filters: FoodFiltersDto = {},
+  ): Promise<{ items: Food[]; total: number; page: number; limit: number }> {
     let filteredFoods = [...this.foods];
 
     // Apply filters
     if (filters.category) {
-      filteredFoods = filteredFoods.filter(food => food.category === filters.category);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.category === filters.category,
+      );
     }
 
     if (filters.type) {
-      filteredFoods = filteredFoods.filter(food => food.type === filters.type);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.type === filters.type,
+      );
     }
 
     if (filters.partnerId) {
-      filteredFoods = filteredFoods.filter(food => food.partnerId === filters.partnerId);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.partnerId === filters.partnerId,
+      );
     }
 
     if (filters.minPrice !== undefined) {
-      filteredFoods = filteredFoods.filter(food => food.price >= filters.minPrice!);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.price >= filters.minPrice!,
+      );
     }
 
     if (filters.maxPrice !== undefined) {
-      filteredFoods = filteredFoods.filter(food => food.price <= filters.maxPrice!);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.price <= filters.maxPrice!,
+      );
     }
 
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      filteredFoods = filteredFoods.filter(food =>
-        food.name.toLowerCase().includes(searchTerm) ||
-        food.description.toLowerCase().includes(searchTerm) ||
-        food.ingredients.some(ingredient => ingredient.toLowerCase().includes(searchTerm))
+      filteredFoods = filteredFoods.filter(
+        (food) =>
+          food.name.toLowerCase().includes(searchTerm) ||
+          food.description.toLowerCase().includes(searchTerm) ||
+          food.ingredients.some((ingredient) =>
+            ingredient.toLowerCase().includes(searchTerm),
+          ),
       );
     }
 
     if (filters.isFeatured !== undefined) {
-      filteredFoods = filteredFoods.filter(food => food.isFeatured === filters.isFeatured);
+      filteredFoods = filteredFoods.filter(
+        (food) => food.isFeatured === filters.isFeatured,
+      );
     }
 
     // Pagination
@@ -79,11 +96,11 @@ export class FoodRepository {
   }
 
   async findOne(id: string): Promise<Food | null> {
-    return this.foods.find(food => food.id === id) || null;
+    return this.foods.find((food) => food.id === id) || null;
   }
 
   async update(id: string, updateFoodDto: UpdateFoodDto): Promise<Food | null> {
-    const foodIndex = this.foods.findIndex(food => food.id === id);
+    const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return null;
     }
@@ -99,7 +116,7 @@ export class FoodRepository {
   }
 
   async remove(id: string): Promise<boolean> {
-    const foodIndex = this.foods.findIndex(food => food.id === id);
+    const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return false;
     }
@@ -109,11 +126,11 @@ export class FoodRepository {
   }
 
   async findByPartner(partnerId: string): Promise<Food[]> {
-    return this.foods.filter(food => food.partnerId === partnerId);
+    return this.foods.filter((food) => food.partnerId === partnerId);
   }
 
   async findFeatured(): Promise<Food[]> {
-    return this.foods.filter(food => food.isFeatured);
+    return this.foods.filter((food) => food.isFeatured);
   }
 
   private generateId(): string {

@@ -1,5 +1,18 @@
-import { Body, Controller, Get, Patch, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -12,7 +25,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Inscription d\'un nouvel utilisateur' })
+  @ApiOperation({ summary: "Inscription d'un nouvel utilisateur" })
   @ApiResponse({ status: 201, description: 'Utilisateur créé avec succès' })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   async register(@Body() dto: RegisterDto) {
@@ -21,15 +34,19 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: 'Connexion utilisateur' })
-  @ApiResponse({ status: 200, description: 'Connexion réussie', schema: {
-    type: 'object',
-    properties: {
-      accessToken: { type: 'string' },
-      refreshToken: { type: 'string' },
-      expiresAt: { type: 'number' },
-      user: { type: 'object' }
-    }
-  }})
+  @ApiResponse({
+    status: 200,
+    description: 'Connexion réussie',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' },
+        expiresAt: { type: 'number' },
+        user: { type: 'object' },
+      },
+    },
+  })
   @ApiResponse({ status: 401, description: 'Identifiants invalides' })
   async login(@Body() dto: LoginDto) {
     return this.authService.signIn(dto);
@@ -46,9 +63,12 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiOperation({ summary: 'Rafraîchir le token d\'accès' })
+  @ApiOperation({ summary: "Rafraîchir le token d'accès" })
   @ApiResponse({ status: 200, description: 'Token rafraîchi' })
-  @ApiResponse({ status: 401, description: 'Token de rafraîchissement invalide' })
+  @ApiResponse({
+    status: 401,
+    description: 'Token de rafraîchissement invalide',
+  })
   async refreshToken(@Body('refreshToken') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
   }
@@ -63,4 +83,3 @@ export class AuthController {
     return this.authService.signOut(token);
   }
 }
-
