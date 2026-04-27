@@ -25,6 +25,10 @@ model Profile {
 
   // Relations
   restaurants Restaurant[]
+  customerOrders FoodOrder[] @relation("CustomerOrders")
+  riderOrders FoodOrder[] @relation("RiderOrders")
+  customerReviews Review[] @relation("CustomerReviews")
+  customerReservations TableReservation[] @relation("CustomerReservations")
 
   @@map("profiles")
 }
@@ -92,6 +96,9 @@ model Restaurant {
   openingHours   OpeningHours[]
   deliveryZones  DeliveryZone[]
   menuCategories MenuCategory[]
+  orders         FoodOrder[]
+  reviews        Review[]
+  reservations   TableReservation[]
 
   @@index([isActive, city])
   @@index([latitude, longitude])
@@ -229,4 +236,270 @@ model MenuModifierOption {
 
   @@index([modifierGroupId, isAvailable, sortOrder])
   @@map("menu_modifier_options")
+}
+
+// Énumérations pour les commandes
+enum OrderStatus {
+  PENDING     // En attente de confirmation
+  CONFIRMED   // Confirmée par le restaurant
+  PREPARING   // En cours de préparation
+  READY       // Prête pour livraison/collecte
+  OUT_FOR_DELIVERY // En cours de livraison
+  DELIVERED   // Livrée
+  CANCELLED   // Annulée
+  REFUNDED    // Remboursée
+}
+
+enum OrderType {
+  DELIVERY    // Livraison à domicile
+  TAKEOUT     // À emporter
+  DINE_IN     // Sur place
+}
+
+enum PaymentStatus {
+  PENDING     // En attente
+  PAID        // Payé
+  FAILED      // Échec
+  REFUNDED    // Remboursé
+}
+
+enum PaymentMethod {
+  CASH        // Espèces
+  CARD        // Carte bancaire
+  MOBILE_MONEY // Mobile Money
+  BANK_TRANSFER // Virement bancaire
+}
+
+// Commande (FoodOrder)
+model FoodOrder {
+  id                String   @id @default(cuid())
+  orderNumber       String   @unique // Numéro de commande unique (ex: ORD-2026-001)
+  customerId        String   @map("customer_id") @db.Uuid
+  customer          Profile  @relation("CustomerOrders", fields: [customerId], references: [id])
+
+  restaurantId      String   @map("restaurant_id")
+  restaurant        Restaurant @relation(fields: [restaurantId], references: [id])
+
+  // Statut et type
+  status            OrderStatus @default(PENDING)
+  orderType         OrderType   @default(DELIVERY)
+
+  // Informations de livraison
+  deliveryAddress   String?  @map("delivery_address")
+  deliveryLatitude  Float?   @map("delivery_latitude")
+  deliveryLongitude Float?   @map("delivery_longitude")
+  deliveryNotes     String?  @map("delivery_notes")
+
+  // Informations de contact
+  customerPhone     String   @map("customer_phone")
+  customerName      String   @map("customer_name")
+
+  // Montants
+  subtotal          Float    // Sous-total (CFA)
+  deliveryFee       Float    @default(0) @map("delivery_fee") // Frais de livraison (CFA)
+  serviceFee        Float    @default(0) @map("service_fee") // Frais de service (CFA)
+  discountAmount    Float    @default(0) @map("discount_amount") // Montant de réduction (CFA)
+  totalAmount       Float    @map("total_amount") // Montant total (CFA)
+
+  // Paiement
+  paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")
+  paymentMethod     PaymentMethod? @map("payment_method")
+  paymentReference  String?  @map("payment_reference") // Référence de transaction
+
+  // Promo code
+  promoCodeId       String?  @map("promo_code_id")
+  promoCode         PromoCode? @relation(fields: [promoCodeId], references: [id])
+
+  // Timestamps
+  orderedAt         DateTime @default(now()) @map("ordered_at") @db.Timestamptz
+  confirmedAt       DateTime? @map("confirmed_at") @db.Timestamptz
+  readyAt           DateTime? @map("ready_at") @db.Timestamptz
+  deliveredAt       DateTime? @map("delivered_at") @db.Timestamptz
+  estimatedDelivery DateTime? @map("estimated_delivery") @db.Timestamptz
+
+  // Livreur assigné (optionnel)
+  riderId           String?  @map("rider_id") @db.Uuid
+  rider             Profile? @relation("RiderOrders", fields: [riderId], references: [id])
+
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  orderItems        OrderItem[]
+  reviews           Review[]
+
+  @@index([customerId, orderedAt])
+  @@index([restaurantId, status, orderedAt])
+  @@index([riderId, status])
+  @@index([status, orderedAt])
+  @@index([orderNumber])
+  @@map("food_orders")
+}
+
+// Article de commande (OrderItem)
+model OrderItem {
+  id                String   @id @default(cuid())
+  orderId           String   @map("order_id")
+  order             FoodOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  menuItemId        String   @map("menu_item_id")
+  menuItem          MenuItem @relation(fields: [menuItemId], references: [id])
+
+  // Informations de l'article
+  name              String   // Nom au moment de la commande (pour historique)
+  basePrice         Float    @map("base_price") // Prix de base au moment de la commande
+  quantity          Int      @default(1)
+
+  // Prix calculé
+  unitPrice         Float    @map("unit_price") // Prix unitaire final (avec modificateurs)
+  totalPrice        Float    @map("total_price") // Prix total pour cet article
+
+  // Spécial instructions
+  specialInstructions String? @map("special_instructions")
+
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  orderItemOptions  OrderItemOption[]
+
+  @@index([orderId])
+  @@index([menuItemId])
+  @@map("order_items")
+}
+
+// Option d'article de commande (OrderItemOption)
+model OrderItemOption {
+  id                String   @id @default(cuid())
+  orderItemId       String   @map("order_item_id")
+  orderItem         OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  modifierOptionId  String   @map("modifier_option_id")
+  modifierOption    MenuModifierOption @relation(fields: [modifierOptionId], references: [id])
+
+  // Informations au moment de la commande
+  name              String   // Nom de l'option
+  price             Float    @default(0) // Prix au moment de la commande
+
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([orderItemId])
+  @@index([modifierOptionId])
+  @@map("order_item_options")
+}
+
+// Code promo (PromoCode)
+model PromoCode {
+  id                String   @id @default(cuid())
+  code              String   @unique // Code promo (ex: WELCOME10)
+  name              String   // Nom du code promo
+  description       String?
+
+  // Configuration
+  discountType      String   // "percentage" ou "fixed"
+  discountValue     Float    @map("discount_value") // Valeur de réduction (pourcentage ou montant fixe)
+  minimumOrder      Float    @default(0) @map("minimum_order") // Commande minimum requise
+  maximumDiscount   Float?   @map("maximum_discount") // Réduction maximum (pour pourcentages)
+
+  // Conditions d'utilisation
+  isActive          Boolean  @default(true) @map("is_active")
+  usageLimit        Int?     @map("usage_limit") // Nombre d'utilisations maximum
+  usageCount        Int      @default(0) @map("usage_count") // Nombre d'utilisations actuelles
+  perUserLimit      Int      @default(1) @map("per_user_limit") // Utilisations par utilisateur
+
+  // Validité temporelle
+  validFrom         DateTime @map("valid_from") @db.Timestamptz
+  validUntil        DateTime @map("valid_until") @db.Timestamptz
+
+  // Restrictions
+  applicableRestaurants String[] @map("applicable_restaurants") // IDs des restaurants (vide = tous)
+  applicableCategories  String[] @map("applicable_categories")  // IDs des catégories (vide = toutes)
+
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  orders            FoodOrder[]
+
+  @@index([code])
+  @@index([isActive, validUntil])
+  @@index([usageCount, usageLimit])
+  @@map("promo_codes")
+}
+
+// Avis (Review)
+model Review {
+  id                String   @id @default(cuid())
+  orderId           String   @map("order_id")
+  order             FoodOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  customerId        String   @map("customer_id") @db.Uuid
+  customer          Profile  @relation("CustomerReviews", fields: [customerId], references: [id])
+
+  restaurantId      String   @map("restaurant_id")
+  restaurant        Restaurant @relation(fields: [restaurantId], references: [id])
+
+  // Contenu de l'avis
+  rating            Int      // Note de 1 à 5
+  comment           String?
+  response          String?  // Réponse du restaurant
+
+  // Métadonnées
+  isVerified        Boolean  @default(false) @map("is_verified") // Commande vérifiée
+  isPublic          Boolean  @default(true) @map("is_public")
+  helpfulCount      Int      @default(0) @map("helpful_count") // Nombre de votes utiles
+
+  // Timestamps
+  reviewedAt        DateTime @default(now()) @map("reviewed_at") @db.Timestamptz
+  respondedAt       DateTime? @map("responded_at") @db.Timestamptz
+
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([orderId])
+  @@index([customerId, reviewedAt])
+  @@index([restaurantId, rating, reviewedAt])
+  @@index([isVerified, isPublic])
+  @@map("reviews")
+}
+
+// Réservation de table (TableReservation)
+model TableReservation {
+  id                String   @id @default(cuid())
+  reservationNumber String   @unique @map("reservation_number") // Numéro de réservation unique
+
+  customerId        String   @map("customer_id") @db.Uuid
+  customer          Profile  @relation("CustomerReservations", fields: [customerId], references: [id])
+
+  restaurantId      String   @map("restaurant_id")
+  restaurant        Restaurant @relation(fields: [restaurantId], references: [id])
+
+  // Détails de la réservation
+  partySize         Int      @map("party_size") // Nombre de personnes
+  reservationDate   DateTime @map("reservation_date") @db.Timestamptz
+  duration          Int      @default(120) // Durée en minutes (défaut 2h)
+
+  // Statut
+  status            String   @default("pending") // pending, confirmed, cancelled, completed
+
+  // Informations supplémentaires
+  specialRequests   String?  @map("special_requests")
+  customerPhone     String   @map("customer_phone")
+  customerName      String   @map("customer_name")
+
+  // Table assignée (optionnel)
+  tableNumber       String?  @map("table_number")
+
+  // Timestamps
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  confirmedAt       DateTime? @map("confirmed_at") @db.Timestamptz
+  cancelledAt       DateTime? @map("cancelled_at") @db.Timestamptz
+
+  @@index([customerId, reservationDate])
+  @@index([restaurantId, reservationDate, status])
+  @@index([reservationNumber])
+  @@index([status, reservationDate])
+  @@map("table_reservations")
 }
