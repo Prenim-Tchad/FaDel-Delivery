@@ -17,6 +17,7 @@ datasource db {
 model Profile {
   id           String   @id @default(uuid())
   firebaseUid  String   @unique // L'identifiant unique envoyé par Ernest (Flutter)
+  email        String   @unique
   fullName     String?
   phone        String?
   avatarUrl    String?
