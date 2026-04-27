@@ -192,6 +192,7 @@ model MenuItem {
   // Relations
   menuCategory   MenuCategory        @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
   modifierGroups MenuModifierGroup[]
+  orderItems     OrderItem[]
 
   @@index([menuCategoryId, isAvailable, sortOrder])
   @@index([isVegetarian, isVegan, isHalal])
@@ -233,6 +234,7 @@ model MenuModifierOption {
 
   // Relations
   modifierGroup MenuModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+  orderItemOptions OrderItemOption[]
 
   @@index([modifierGroupId, isAvailable, sortOrder])
   @@map("menu_modifier_options")
