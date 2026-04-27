@@ -40,7 +40,7 @@ FaDel-Delivery/
 │   └── app.module.ts       # Orchestrateur des modules
 ├── prisma/                 # Schéma de base de données
 │   └── schema.prisma
-├── mobile/                 # Ton code Flutter (Ernest)
+├── mobile/                 # Ton code Flutter (Madjalo)
 ├── nginx/                  # Config de la Gateway
 │   └── conf.d/
 ├── docker-compose.yml      # Orchestration totale
