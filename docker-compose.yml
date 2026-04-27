@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # 1. La Base de Données (PostgreSQL)
+  database:
+    image: postgres:15-alpine
+    container_name: fadel_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: fadel_delivery
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fadel_network
+
+  # 2. Le Cache & Broker (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: fadel_redis
+    restart: always
+    networks:
+      - fadel_network
+
+  # 3. Le Backend (NestJS)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fadel_api
+    restart: always
+    depends_on:
+      - database
+      - redis
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/fadel_delivery?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - fadel_network
+
+  # 4. Le Point d'Entrée (Nginx)
+  gateway:
+    image: nginx:alpine
+    container_name: fadel_gateway
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - api
+    networks:
+      - fadel_network
+
+networks:
+  fadel_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

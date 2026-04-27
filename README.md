@@ -14,7 +14,7 @@ FaDel-Delivery est une Super-App modulaire conçue pour structurer et digitalise
 
 ## 🏗️ Architecture Technique
 Le backend repose sur une architecture **Stateless & Modulaire** :
-* **Gateway :** Nginx (Reverse Proxy & Gzip Compression).
+* **Gateway:** Nginx (Reverse Proxy & Gzip Compression).
 * **Core :** NestJS (TypeScript) - Organisation par domaines métier.
 * **ORM :** Prisma (Type-safe database access).
 * **Cache :** Redis (Broker pour le temps réel et tracking).
