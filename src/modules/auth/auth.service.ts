@@ -81,22 +81,31 @@ export class AuthService {
     };
   }
 
-  async updateProfile(userId: string, dto: UpdateProfileDto) {
-    const { nom, prenom, phone, quartier } = dto;
-    const { data, error } = await this.supabaseClient.auth.admin.updateUserById(userId, {
-      user_metadata: { nom, prenom, phone, quartier },
+  async refreshToken(refreshToken: string) {
+    const { data, error } = await this.supabaseClient.auth.refreshSession({
+      refresh_token: refreshToken,
     });
 
-    if (error || !data.user) {
-      throw new BadRequestException('Impossible de mettre à jour le profil.');
+    if (error || !data.session) {
+      throw new UnauthorizedException('Impossible de rafraîchir le token.');
     }
 
     return {
-      id: data.user.id,
-      email: data.user.email,
-      user_metadata: data.user.user_metadata,
-      updatedAt: data.user.updated_at,
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+      expiresAt: data.session.expires_at,
+      user: data.user,
     };
   }
-}
+
+  async signOut(accessToken: string) {
+    const { error } = await this.supabaseClient.auth.admin.signOut(accessToken);
+
+    if (error) {
+      throw new BadRequestException('Erreur lors de la déconnexion.');
+    }
+
+    return { message: 'Déconnexion réussie.' };
+  }
+
 

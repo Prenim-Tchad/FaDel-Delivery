@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/auth_service.dart';
 import 'login.dart';
 
 class HomePage extends StatefulWidget {
@@ -390,7 +391,10 @@ class _HomePageState extends State<HomePage>
           setState(() => _selectedIndex = i);
           if (i == 4) {
             try {
+              // Déconnexion via le service d'authentification
+              await AuthService.logout();
               await Supabase.instance.client.auth.signOut();
+
               if (!mounted) return;
               Navigator.pushReplacement(
                 context,

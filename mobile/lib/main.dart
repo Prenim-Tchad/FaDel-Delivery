@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/api_client.dart';
+import 'services/auth_service.dart';
 import 'login.dart';
 import 'register.dart';
 import 'home.dart';
@@ -50,33 +51,67 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  User? _user;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _checkAuthState();
-    _listenAuthState();
+    _listenSupabaseAuthState();
   }
 
-  void _checkAuthState() {
-    final user = Supabase.instance.client.auth.currentUser;
-    setState(() {
-      _user = user;
-    });
+  Future<void> _checkAuthState() async {
+    final isLoggedIn = await AuthService.isLoggedIn();
+    if (isLoggedIn) {
+      // Vérifier si le token est toujours valide
+      final profile = await AuthService.getProfile();
+      if (profile == null) {
+        // Token expiré, déconnecter
+        await AuthService.logout();
+        await Supabase.instance.client.auth.signOut();
+      }
+    }
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
-  void _listenAuthState() {
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      setState(() {
-        _user = data.session?.user;
-      });
+  void _listenSupabaseAuthState() {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+      final event = data.event;
+      final session = data.session;
+
+      if (event == AuthChangeEvent.signedIn && session != null) {
+        // Sauvegarder les tokens localement
+        await AuthService.saveTokens(
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken ?? '',
+          user: session.user.toJson(),
+        );
+      } else if (event == AuthChangeEvent.signedOut) {
+        // Nettoyer les tokens locaux
+        await AuthService.logout();
+      }
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_user != null) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
       return const HomePage();
     } else {
       return const AuthSelectionPage();

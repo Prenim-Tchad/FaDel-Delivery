@@ -25,9 +25,15 @@ export class AuthController {
     return this.authService.getProfile(req.user.id);
   }
 
-  @UseGuards(SupabaseAuthGuard)
-  @Patch('profile')
-  async updateProfile(@Request() req, @Body() dto: UpdateProfileDto) {
-    return this.authService.updateProfile(req.user.id, dto);
+  @Post('refresh')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
   }
-}
+
+  @UseGuards(SupabaseAuthGuard)
+  @Post('logout')
+  async logout(@Request() req) {
+    const token = req.headers.authorization.replace('Bearer ', '');
+    return this.authService.signOut(token);
+  }
+

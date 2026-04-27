@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/api_client.dart';
+import 'services/auth_service.dart';
 import 'widgets/app_logo.dart';
 import 'register.dart';
 import 'home.dart';
@@ -57,28 +59,37 @@ class _LoginPageState extends State<LoginPage>
     setState(() => _isLoading = true);
 
     try {
-      final response = await Supabase.instance.client.auth.signInWithPassword(
+      // Utiliser l'API backend au lieu de Supabase directement
+      final response = await ApiClient.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      if (!mounted) return;
+      if (response.containsKey('accessToken')) {
+        // Sauvegarder les tokens localement
+        await AuthService.saveTokens(
+          accessToken: response['accessToken'],
+          refreshToken: response['refreshToken'] ?? '',
+          user: response['user'] ?? {},
+        );
 
-      if (response.user != null) {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Connexion réussie!')),
+        );
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomePage()),
         );
+      } else {
+        throw Exception(response['message'] ?? 'Erreur de connexion');
       }
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: ${e.message}')),
-      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Une erreur inattendue s\'est produite')),
+        SnackBar(content: Text('Erreur: ${e.toString()}')),
       );
     } finally {
       if (mounted) {

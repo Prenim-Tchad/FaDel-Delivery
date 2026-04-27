@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/api_client.dart';
+import 'services/auth_service.dart';
 import 'widgets/app_logo.dart';
 import 'login.dart';
 import 'home.dart';
@@ -90,38 +92,34 @@ class _RegisterPageState extends State<RegisterPage>
     setState(() => _isLoading = true);
 
     try {
-      final response = await Supabase.instance.client.auth.signUp(
+      // Utiliser l'API backend pour l'inscription
+      final response = await ApiClient.register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        data: {
-          'nom': _nomController.text.trim(),
-          'prenom': _prenomController.text.trim(),
-          'phone': _phoneController.text.trim(),
-          'quartier': _selectedQuartier,
-        },
+        nom: _nomController.text.trim(),
+        prenom: _prenomController.text.trim(),
+        phone: _phoneController.text.trim(),
+        quartier: _selectedQuartier!,
       );
 
       if (!mounted) return;
 
-      if (response.user != null) {
+      if (response.containsKey('message')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Inscription réussie! Vérifiez votre email pour confirmer votre compte.')),
+          SnackBar(content: Text(response['message'])),
         );
-        // Rediriger vers la page de connexion
+        // Rediriger vers la page de connexion après inscription
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const LoginPage()),
         );
+      } else {
+        throw Exception(response['message'] ?? 'Erreur d\'inscription');
       }
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: ${e.message}')),
-      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Une erreur inattendue s\'est produite')),
+        SnackBar(content: Text('Erreur: ${e.toString()}')),
       );
     } finally {
       if (mounted) {
