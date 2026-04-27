@@ -107,5 +107,6 @@ export class AuthService {
 
     return { message: 'Déconnexion réussie.' };
   }
+}
 
 
