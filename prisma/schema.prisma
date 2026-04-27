@@ -8,20 +8,225 @@ datasource db {
 
 model Profile {
   // L'ID doit être de type UUID pour matcher celui de Supabase Auth
-  id          String   @id @db.Uuid
-  email       String   @unique
-  fullName    String?  @map("full_name")
-  phone       String?
-  avatarUrl   String?  @map("avatar_url")
-  
+  id        String  @id @db.Uuid
+  email     String  @unique
+  fullName  String? @map("full_name")
+  phone     String?
+  avatarUrl String? @map("avatar_url")
+
   // Roles pour la logique métier
-  isAdmin     Boolean  @default(false) @map("is_admin")
-  isRider     Boolean  @default(false) @map("is_rider")
-  isPartner   Boolean  @default(false) @map("is_partner")
-  
+  isAdmin   Boolean @default(false) @map("is_admin")
+  isRider   Boolean @default(false) @map("is_rider")
+  isPartner Boolean @default(false) @map("is_partner")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurants Restaurant[]
+
+  @@map("profiles")
+}
+
+// Catégorie de cuisine (RestaurantCategory/CuisineCategory)
+model CuisineCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique // Nom unique de la catégorie
+  description String?
+  imageUrl    String?  @map("image_url")
   isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order") // Ordre d'affichage
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  @@map("profiles")
+  // Relations
+  restaurants Restaurant[]
+
+  @@index([isActive, sortOrder])
+  @@map("cuisine_categories")
+}
+
+// Restaurant
+model Restaurant {
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  address       String
+  phone         String
+  email         String? @unique
+  website       String?
+  logoUrl       String? @map("logo_url")
+  coverImageUrl String? @map("cover_image_url")
+
+  // Localisation
+  latitude  Float?
+  longitude Float?
+  city      String
+  country   String @default("Chad")
+
+  // Statut et configuration
+  isActive     Boolean @default(true) @map("is_active")
+  isVerified   Boolean @default(false) @map("is_verified")
+  rating       Float   @default(0)
+  totalReviews Int     @default(0) @map("total_reviews")
+
+  // Configuration livraison
+  deliveryFee       Float @default(0) @map("delivery_fee") // Frais de livraison en CFA
+  minimumOrder      Float @default(0) @map("minimum_order") // Commande minimum en CFA
+  estimatedDelivery Int   @default(30) @map("estimated_delivery") // Temps en minutes
+
+  // Horaires
+  timezone String @default("Africa/Ndjamena")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  ownerId String  @map("owner_id") @db.Uuid
+  owner   Profile @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  cuisineCategoryId String          @map("cuisine_category_id")
+  cuisineCategory   CuisineCategory @relation(fields: [cuisineCategoryId], references: [id])
+
+  openingHours   OpeningHours[]
+  deliveryZones  DeliveryZone[]
+  menuCategories MenuCategory[]
+
+  @@index([isActive, city])
+  @@index([latitude, longitude])
+  @@index([rating])
+  @@index([ownerId])
+  @@index([cuisineCategoryId])
+  @@map("restaurants")
+}
+
+// Horaires d'ouverture
+model OpeningHours {
+  id           String   @id @default(cuid())
+  restaurantId String   @map("restaurant_id")
+  dayOfWeek    Int // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
+  openTime     String // Format HH:MM
+  closeTime    String // Format HH:MM
+  isOpen       Boolean  @default(true) @map("is_open")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, dayOfWeek]) // Un seul horaire par jour et restaurant
+  @@index([restaurantId, dayOfWeek])
+  @@map("opening_hours")
+}
+
+// Zones de livraison
+model DeliveryZone {
+  id           String   @id @default(cuid())
+  restaurantId String   @map("restaurant_id")
+  name         String // Nom de la zone (ex: "Centre-ville", "Quartier Nord")
+  description  String?
+  coordinates  Json? // GeoJSON pour les polygones de zone
+  deliveryFee  Float    @default(0) @map("delivery_fee") // Frais supplémentaires pour cette zone
+  minimumOrder Float    @default(0) @map("minimum_order") // Commande minimum pour cette zone
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, isActive])
+  @@map("delivery_zones")
+}
+
+// Catégorie de menu (ex: Entrées, Plats principaux, Desserts)
+model MenuCategory {
+  id           String   @id @default(cuid())
+  restaurantId String   @map("restaurant_id")
+  name         String
+  description  String?
+  imageUrl     String?  @map("image_url")
+  sortOrder    Int      @default(0) @map("sort_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems  MenuItem[]
+
+  @@index([restaurantId, isActive, sortOrder])
+  @@map("menu_categories")
+}
+
+// Article du menu
+model MenuItem {
+  id              String   @id @default(cuid())
+  menuCategoryId  String   @map("menu_category_id")
+  name            String
+  description     String?
+  price           Float // Prix en CFA
+  imageUrl        String?  @map("image_url")
+  isAvailable     Boolean  @default(true) @map("is_available")
+  isVegetarian    Boolean  @default(false) @map("is_vegetarian")
+  isVegan         Boolean  @default(false) @map("is_vegan")
+  isGlutenFree    Boolean  @default(false) @map("is_gluten_free")
+  isHalal         Boolean  @default(false) @map("is_halal")
+  isKosher        Boolean  @default(false) @map("is_kosher")
+  preparationTime Int?     @map("preparation_time") // Temps en minutes
+  calories        Int?
+  allergens       String[] // Liste des allergènes
+  ingredients     String[] // Liste des ingrédients
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  menuCategory   MenuCategory        @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
+  modifierGroups MenuModifierGroup[]
+
+  @@index([menuCategoryId, isAvailable, sortOrder])
+  @@index([isVegetarian, isVegan, isHalal])
+  @@map("menu_items")
+}
+
+// Groupe de modificateurs (ex: Taille, Sauce, Suppléments)
+model MenuModifierGroup {
+  id            String   @id @default(cuid())
+  menuItemId    String   @map("menu_item_id")
+  name          String // ex: "Taille", "Sauce", "Suppléments"
+  description   String?
+  isRequired    Boolean  @default(false) @map("is_required") // Obligatoire ou optionnel
+  minSelections Int      @default(0) @map("min_selections") // Nombre minimum de sélections
+  maxSelections Int?     @map("max_selections") // Nombre maximum de sélections (null = illimité)
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  menuItem MenuItem             @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  options  MenuModifierOption[]
+
+  @@index([menuItemId, sortOrder])
+  @@map("menu_modifier_groups")
+}
+
+// Option de modificateur (ex: Petit, Moyen, Grand / Sauce piquante, Sauce douce)
+model MenuModifierOption {
+  id              String   @id @default(cuid())
+  modifierGroupId String   @map("modifier_group_id")
+  name            String // ex: "Petit", "Moyen", "Grand"
+  description     String?
+  price           Float    @default(0) // Prix supplémentaire en CFA
+  isAvailable     Boolean  @default(true) @map("is_available")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  modifierGroup MenuModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@index([modifierGroupId, isAvailable, sortOrder])
+  @@map("menu_modifier_options")
 }
