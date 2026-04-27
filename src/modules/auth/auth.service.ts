@@ -1,15 +1,18 @@
 import { Inject, Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { SUPABASE_CLIENT } from './auth.constants';
+import { JwtAuthService } from './jwt-auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UserRole, UserPayload } from '../../shared/types';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(SUPABASE_CLIENT)
     private readonly supabaseClient: SupabaseClient,
+    private readonly jwtAuthService: JwtAuthService,
   ) {}
 
   async signUp(dto: RegisterDto) {
@@ -106,6 +109,77 @@ export class AuthService {
     }
 
     return { message: 'Déconnexion réussie.' };
+  }
+
+  // Méthodes JWT RS256
+  async signInWithJwt(dto: LoginDto) {
+    // D'abord authentifier avec Supabase
+    const supabaseResult = await this.signIn(dto);
+
+    // Générer les tokens JWT
+    const userRole = this.getUserRoleFromMetadata(supabaseResult.user.user_metadata);
+    const tokenPair = await this.jwtAuthService.generateTokenPair(
+      supabaseResult.user.id,
+      supabaseResult.user.email!,
+      userRole,
+      {
+        nom: supabaseResult.user.user_metadata?.nom,
+        prenom: supabaseResult.user.user_metadata?.prenom,
+        phone: supabaseResult.user.user_metadata?.phone,
+        quartier: supabaseResult.user.user_metadata?.quartier,
+      },
+    );
+
+    return {
+      ...tokenPair,
+      user: {
+        id: supabaseResult.user.id,
+        email: supabaseResult.user.email,
+        role: userRole,
+        nom: supabaseResult.user.user_metadata?.nom,
+        prenom: supabaseResult.user.user_metadata?.prenom,
+        phone: supabaseResult.user.user_metadata?.phone,
+        quartier: supabaseResult.user.user_metadata?.quartier,
+      },
+    };
+  }
+
+  async validateUser(userId: string): Promise<any> {
+    // Ici, vous devriez récupérer l'utilisateur depuis votre base de données Prisma
+    // Pour l'exemple, on simule avec Supabase
+    const { data, error } = await this.supabaseClient.auth.admin.getUserById(userId);
+
+    if (error || !data.user) {
+      return null;
+    }
+
+    return {
+      id: data.user.id,
+      email: data.user.email,
+      role: this.getUserRoleFromMetadata(data.user.user_metadata),
+      nom: data.user.user_metadata?.nom,
+      prenom: data.user.user_metadata?.prenom,
+      phone: data.user.user_metadata?.phone,
+      quartier: data.user.user_metadata?.quartier,
+    };
+  }
+
+  async validateJwtToken(token: string): Promise<UserPayload> {
+    return this.jwtAuthService.verifyAccessToken(token);
+  }
+
+  async refreshJwtToken(refreshToken: string) {
+    return this.jwtAuthService.refreshAccessToken(refreshToken);
+  }
+
+  private getUserRoleFromMetadata(metadata: any): UserRole {
+    // Logique pour déterminer le rôle depuis les métadonnées
+    // Par défaut, tous les utilisateurs sont des clients
+    // Vous pouvez étendre cette logique selon vos besoins
+    if (metadata?.role) {
+      return metadata.role as UserRole;
+    }
+    return UserRole.CUSTOMER;
   }
 }
 
