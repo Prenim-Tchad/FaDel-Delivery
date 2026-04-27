@@ -12,8 +12,6 @@ datasource db {
 }
 
 // 1. IDENTITÉ & PROFILS (Lien avec Firebase)
-// prisma/schema.prisma
-
 model Profile {
   id           String   @id @default(uuid())
   firebaseUid  String   @unique // L'identifiant unique envoyé par Ernest (Flutter)
