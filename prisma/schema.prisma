@@ -4,10 +4,33 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// 1. IDENTITÉ & PROFILS (Lien avec Firebase)
+// prisma/schema.prisma
+
+model Profile {
+  id           String   @id @default(uuid())
+  firebaseUid  String   @unique // L'identifiant unique envoyé par Ernest (Flutter)
+  fullName     String?
+  phone        String?
+  avatarUrl    String?
+  
+  role         Role     @default(CLIENT)
+  isActive     Boolean  @default(true)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+  RIDER
+  PARTNER
 }
