@@ -10,7 +10,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { supabaseClientProvider } from './auth.constants';
 
-@Module({
+@@Module({
   imports: [
     PassportModule,
     JwtModule.register({
@@ -18,7 +18,8 @@ import { supabaseClientProvider } from './auth.constants';
       privateKey: process.env.JWT_PRIVATE_KEY,
       signOptions: {
         algorithm: 'RS256',
-        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m',
+        // Utilisation d'une assertion pour éviter l'erreur TS2322
+        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as any, 
       },
     }),
   ],

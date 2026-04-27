@@ -3,7 +3,8 @@ import { IsEmail, IsNotEmpty, IsString, IsPhoneNumber, MinLength } from 'class-v
 
 export class RegisterDto {
   @ApiProperty({
-    description: 'Adresse email de l\'utilisateur',
+    description: `"Adresse·email·de·l'utilisateur"`
+    ,
     example: 'user@example.com',
   })
   @IsEmail()
@@ -11,7 +12,7 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
-    description: 'Mot de passe de l\'utilisateur',
+    description: `"Mot·de·passe·de·l'utilisateur"`,
     example: 'password123',
     minLength: 6,
   })
@@ -21,7 +22,8 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty({
-    description: 'Nom de l\'utilisateur',
+    description: `"Nom·de·l'utilisateur"`,
+
     example: 'Dupont',
   })
   @IsString()
@@ -29,7 +31,7 @@ export class RegisterDto {
   nom: string;
 
   @ApiProperty({
-    description: 'Prénom de l\'utilisateur',
+    description: `"Prénom·de·l'utilisateur"`,
     example: 'Jean',
   })
   @IsString()
@@ -37,7 +39,7 @@ export class RegisterDto {
   prenom: string;
 
   @ApiProperty({
-    description: 'Numéro de téléphone',
+    description: `"Numéro·de·téléphone"`,
     example: '+23566123456',
   })
   @IsString()
@@ -45,9 +47,23 @@ export class RegisterDto {
   phone: string;
 
   @ApiProperty({
-    description: 'Quartier de résidence',
+    description: `"Quartier·de·résidence"`,
     example: 'Chagoua',
-    enum: ['Amriguébé', 'Chagoua', 'Dembé', 'Farcha', 'Goudji', 'Habena', 'Kabalaye', 'Klemat', 'Lamadji', 'Moursal', 'Ndjari', 'Paris-Congo', 'Sabangali', 'Walia', 'Autre'],
+    enum: ['Amriguébé',
+         'Chagoua', 
+         'Dembé',
+          'Farcha', 
+          'Goudji',
+           'Habena',
+            'Kabalaye', 
+            'Klemat',
+            'Lamadji',
+            'Moursal',
+            'Ndjari', 
+            'Paris-Congo',
+            'Sabangali', 
+            'Walia',
+            'Autre'],
   })
   @IsString()
   @IsNotEmpty()
