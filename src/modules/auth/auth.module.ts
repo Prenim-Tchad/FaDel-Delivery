@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -18,9 +18,9 @@ import { supabaseClientProvider } from './auth.constants';
       privateKey: process.env.JWT_PRIVATE_KEY,
       signOptions: {
         algorithm: 'RS256',
-        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as string,
-      } as any,
-    }),
+        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m',
+      },
+    } as JwtModuleOptions), // CORRECTION : Utilise le type officiel au lieu de any
   ],
   controllers: [AuthController],
   providers: [

@@ -12,6 +12,13 @@ import { RegisterDto } from './dto/register.dto';
 // import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserRole, UserPayload } from '../../shared/types';
 
+// Interface pour mapper ce que tu as configuré dans ton app Flutter/Web
+interface FaDelUserMetadata {
+  nom: string;
+  prenom: string;
+  phone: string;
+  quartier: string;
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -120,22 +127,21 @@ export class AuthService {
 
   // Méthodes JWT RS256
   async signInWithJwt(dto: LoginDto) {
-    // D'abord authentifier avec Supabase
     const supabaseResult = await this.signIn(dto);
+    // CORRECTION : Cast immédiat des métadonnées
+    const metadata = supabaseResult.user
+      .user_metadata as unknown as FaDelUserMetadata;
+    const userRole = this.getUserRoleFromMetadata(metadata);
 
-    // Générer les tokens JWT
-    const userRole = this.getUserRoleFromMetadata(
-      supabaseResult.user.user_metadata,
-    );
     const tokenPair = await this.jwtAuthService.generateTokenPair(
       supabaseResult.user.id,
       supabaseResult.user.email!,
       userRole,
       {
-        nom: (supabaseResult.user.user_metadata as any)?.nom,
-        prenom: (supabaseResult.user.user_metadata as any)?.prenom,
-        phone: (supabaseResult.user.user_metadata as any)?.phone,
-        quartier: (supabaseResult.user.user_metadata as any)?.quartier,
+        nom: metadata.nom,
+        prenom: metadata.prenom,
+        phone: metadata.phone,
+        quartier: metadata.quartier,
       },
     );
 
@@ -145,15 +151,15 @@ export class AuthService {
         id: supabaseResult.user.id,
         email: supabaseResult.user.email,
         role: userRole,
-        nom: (supabaseResult.user.user_metadata as any)?.nom,
-        prenom: (supabaseResult.user.user_metadata as any)?.prenom,
-        phone: (supabaseResult.user.user_metadata as any)?.phone,
-        quartier: (supabaseResult.user.user_metadata as any)?.quartier,
+        nom: metadata.nom,
+        prenom: metadata.prenom,
+        phone: metadata.phone,
+        quartier: metadata.quartier,
       },
     };
   }
 
-  async validateUser(userId: string): Promise<any> {
+  async validateUser(userId: string): Promise<UserPayload | null> {
     // Ici, vous devriez récupérer l'utilisateur depuis votre base de données Prisma
     // Pour l'exemple, on simule avec Supabase
     const { data, error } =
@@ -162,15 +168,19 @@ export class AuthService {
     if (error || !data.user) {
       return null;
     }
+    const metadata = data.user.user_metadata as unknown as FaDelUserMetadata & {
+      role?: string;
+    };
+    const userRole = this.getUserRoleFromMetadata(metadata);
 
     return {
-      id: data.user.id,
-      email: data.user.email,
-      role: this.getUserRoleFromMetadata(data.user.user_metadata),
-      nom: (data.user.user_metadata as any)?.nom,
-      prenom: (data.user.user_metadata as any)?.prenom,
-      phone: (data.user.user_metadata as any)?.phone,
-      quartier: (data.user.user_metadata as any)?.quartier,
+      sub: data.user.id,
+      email: data.user.email!,
+      role: userRole,
+      nom: metadata.nom,
+      prenom: metadata.prenom,
+      phone: metadata.phone,
+      quartier: metadata.quartier,
     };
   }
 
@@ -182,13 +192,12 @@ export class AuthService {
     return this.jwtAuthService.refreshAccessToken(refreshToken);
   }
 
-  private getUserRoleFromMetadata(metadata: any): UserRole {
-    // Logique pour déterminer le rôle depuis les métadonnées
-    // Par défaut, tous les utilisateurs sont des clients
-    // Vous pouvez étendre cette logique selon vos besoins
-    if ((metadata as any)?.role) {
-      return (metadata as any).role as UserRole;
+  private getUserRoleFromMetadata(
+    metadata: FaDelUserMetadata & { role?: string },
+  ): UserRole {
+    if (metadata.role) {
+      return metadata.role as UserRole;
     }
-    return UserRole.CUSTOMER;
+    return UserRole.CUSTOMER; // Par défaut, on considère que c'est un client
   }
 }

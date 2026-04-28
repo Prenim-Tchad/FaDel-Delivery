@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { UserPayload, TokenPair, UserRole } from '../../shared/types';
 
 @Injectable()
@@ -20,14 +20,14 @@ export class JwtAuthService {
     };
 
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as string,
+      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m',
       algorithm: 'RS256',
-    } as any);
+    } as JwtSignOptions);
 
     const refreshToken = await this.jwtService.signAsync({ sub: userId }, {
-      expiresIn: (process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d') as string,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d',
       algorithm: 'RS256',
-    } as any);
+    } as JwtSignOptions);
 
     return {
       accessToken,
@@ -42,7 +42,7 @@ export class JwtAuthService {
         algorithms: ['RS256'],
       });
       return payload;
-    } catch (_error) {
+    } catch {
       throw new Error('Token invalide ou expiré');
     }
   }
@@ -56,7 +56,7 @@ export class JwtAuthService {
         },
       );
       return payload;
-    } catch (_error) {
+    } catch {
       throw new Error('Refresh token invalide ou expiré');
     }
   }

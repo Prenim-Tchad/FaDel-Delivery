@@ -26,7 +26,7 @@ export class FoodPartnerGuard extends SupabaseAuthGuard {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = (request as any).user as UserPayload;
+    const user = request.user as UserPayload;
 
     // Check if user is a partner
     if (!(user as any)?.isPartner) {
@@ -34,8 +34,8 @@ export class FoodPartnerGuard extends SupabaseAuthGuard {
     }
 
     // For create/update operations, check if the partner owns the food item
-    const method = (request as any).method as string;
-    const foodId = (request as any).params as any;
+    const method = request.method as string;
+    const foodId = request.params;
 
     if (method === 'POST' || (method === 'PATCH' && foodId)) {
       // For food creation, the partnerId should match the user's ID

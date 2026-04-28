@@ -30,3 +30,7 @@ export interface AuthTokens {
   token_type: string;
   expires_in: number;
 }
+
+export interface AuthenticatedRequest extends Request {
+  user: UserPayload;
+}

@@ -12,7 +12,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       password: process.env.REDIS_PASSWORD || undefined,
       db: 0,
       lazyConnect: true,
-    } as any);
+    });
 
     this.client.on('connect', () => {
       console.log('✅ Redis connected successfully');

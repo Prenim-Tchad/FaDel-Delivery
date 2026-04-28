@@ -17,7 +17,7 @@ export class CreateRestaurantDto {
     example: 'La Casa du Délice',
   })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     description: 'Description du restaurant',
@@ -33,14 +33,14 @@ export class CreateRestaurantDto {
     example: "Avenue de la Paix, N'Djaména",
   })
   @IsString()
-  address: string;
+  address!: string;
 
   @ApiProperty({
     description: 'Numéro de téléphone du restaurant',
     example: '+235 123 456 789',
   })
   @IsString()
-  phone: string;
+  phone!: string;
 
   @ApiProperty({
     description: 'Email du restaurant',
@@ -100,7 +100,7 @@ export class CreateRestaurantDto {
 
   @ApiProperty({ description: 'Ville du restaurant', example: 'N’Djaména' })
   @IsString()
-  city: string;
+  city!: string;
 
   @ApiProperty({
     description: 'Pays du restaurant',
@@ -164,7 +164,7 @@ export class CreateRestaurantDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  ownerId: string;
+  ownerId!: string;
 
   @ApiProperty({
     description: 'Liste des zones de livraison',

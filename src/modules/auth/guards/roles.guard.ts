@@ -5,7 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole, UserPayload } from '../../../shared/types';
+import { UserRole } from '../../../shared/types';
+import { AuthenticatedRequest } from '../../../shared/types/auth.types';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -21,8 +22,8 @@ export class RolesGuard implements CanActivate {
       return true; // Pas de rôles requis, accès autorisé
     }
 
-    const request = context.switchToHttp().getRequest();
-    const user = (request as any).user as UserPayload;
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user; // Plus besoin de (request as any) !
     if (!user) {
       throw new ForbiddenException('Utilisateur non authentifié');
     }

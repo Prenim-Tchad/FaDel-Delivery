@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserPayload } from '../../../shared/types/auth.types';
+//import { UserPayload } from '../../../shared/types/auth.types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -14,10 +14,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   // Remplace ta ligne 16 par celle-ci :
-  handleRequest<TUser = any>(err: any, user: any, info: any): TUser {
+  handleRequest<TUser = any>(err: any, user: any): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException();
     }
-    return user; // Ici, 'user' sera casté en TUser automatiquement
+    return user as TUser;
   }
 }

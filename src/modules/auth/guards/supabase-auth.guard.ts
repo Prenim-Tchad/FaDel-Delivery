@@ -12,9 +12,7 @@ export class SupabaseAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const authorization = (request.headers as any)?.authorization as
-      | string
-      | undefined;
+    const authorization = request.headers?.authorization as string | undefined;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
       throw new UnauthorizedException('Token manquant.');
@@ -26,7 +24,7 @@ export class SupabaseAuthGuard implements CanActivate {
     }
 
     const user = await this.authService.validateToken(token);
-    (request as any).user = user;
+    request.user = user;
     return true;
   }
 }
