@@ -5,9 +5,15 @@ import {
   Inject,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express'; // Import impératif
 import { SupabaseAuthGuard } from '../../auth/guards/supabase-auth.guard';
 import { AuthService } from '../../auth/auth.service';
 import { UserPayload } from '../../../shared/types/auth.types';
+
+// On définit une interface locale pour typer la requête
+interface AuthenticatedRequest extends Request {
+  user: UserPayload;
+}
 
 @Injectable()
 export class FoodPartnerGuard extends SupabaseAuthGuard {
@@ -19,29 +25,29 @@ export class FoodPartnerGuard extends SupabaseAuthGuard {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // First check if user is authenticated
+    // 1. Vérification de l'authentification (via le parent)
     const isAuthenticated = await super.canActivate(context);
     if (!isAuthenticated) {
       return false;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as UserPayload;
+    // 2. Typage explicite de la requête pour supprimer les erreurs ESLint
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
 
-    // Check if user is a partner
-    if (!(user as any)?.isPartner) {
+    // 3. Vérification sécurisée du statut de partenaire
+    // Note : On n'utilise plus "as any", TypeScript reconnaît .isPartner grâce à UserPayload
+    if (!user?.isPartner) {
       throw new ForbiddenException('Only partners can perform this action');
     }
 
-    // For create/update operations, check if the partner owns the food item
-    const method = request.method as string;
-    const foodId = request.params;
+    // 4. Extraction sécurisée des métadonnées de la requête
+    const method = request.method;
+    const params = request.params; // L'accès à .params est maintenant sûr
 
-    if (method === 'POST' || (method === 'PATCH' && foodId)) {
-      // For food creation, the partnerId should match the user's ID
-      // For food updates, we need to check ownership (this would require database lookup)
-      // For now, we'll allow partners to create/update their own items
-      // In a real implementation, you'd check against the database
+    if (method === 'POST' || (method === 'PATCH' && params.id)) {
+      // Logique de vérification de propriété pour FaDel-1
+      // À implémenter avec un service de base de données plus tard
     }
 
     return true;

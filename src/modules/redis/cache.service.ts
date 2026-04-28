@@ -53,9 +53,9 @@ export class CacheService {
     await this.set(key, menu, ttlSeconds);
   }
 
-  async getRestaurantMenu(restaurantId: string): Promise<any | null> {
+  async getRestaurantMenu(restaurantId: string): Promise<any[] | null> {
     const key = `restaurant_menu:${restaurantId}`;
-    return this.get<any>(key);
+    return this.get<any[]>(key);
   }
 
   async invalidateRestaurantMenu(restaurantId: string): Promise<void> {
@@ -115,9 +115,9 @@ export class CacheService {
     await this.set(key, stats, ttlSeconds);
   }
 
-  async getRestaurantStats(restaurantId: string): Promise<any | null> {
+  async getRestaurantStats(restaurantId: string): Promise<any[] | null> {
     const key = `restaurant_stats:${restaurantId}`;
-    return this.get<any>(key);
+    return this.get<any[]>(key);
   }
 
   // Invalidation massive

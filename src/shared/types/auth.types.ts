@@ -14,6 +14,7 @@ export interface UserPayload {
   prenom?: string;
   phone?: string;
   quartier?: string;
+  isPartner: boolean;
   iat?: number;
   exp?: number;
 }

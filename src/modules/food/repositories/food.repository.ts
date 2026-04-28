@@ -10,7 +10,10 @@ export class FoodRepository {
   private foods: Food[] = []; // In-memory storage for demo purposes
   private nextId = 1;
 
-  create(createFoodDto: CreateFoodDto): Food {
+  async create(createFoodDto: CreateFoodDto): Promise<Food> {
+    // Simule une opération asynchrone
+    await Promise.resolve();
+
     const food: Food = {
       id: this.generateId(),
       ...createFoodDto,
@@ -26,15 +29,18 @@ export class FoodRepository {
     return food;
   }
 
-  findAll(filters: FoodFiltersDto = {}): {
+  async findAll(filters: FoodFiltersDto = {}): Promise<{
     items: Food[];
     total: number;
     page: number;
     limit: number;
-  } {
+  }> {
+    // Simule l'attente de la base de données
+    await Promise.resolve();
+
     let filteredFoods = [...this.foods];
 
-    // Apply filters
+    // Application des filtres
     if (filters.category) {
       filteredFoods = filteredFoods.filter(
         (food) => food.category === filters.category,
@@ -55,13 +61,13 @@ export class FoodRepository {
 
     if (filters.minPrice !== undefined) {
       filteredFoods = filteredFoods.filter(
-        (food) => food.price >= filters.minPrice!,
+        (food) => food.price >= (filters.minPrice ?? 0),
       );
     }
 
     if (filters.maxPrice !== undefined) {
       filteredFoods = filteredFoods.filter(
-        (food) => food.price <= filters.maxPrice!,
+        (food) => food.price <= (filters.maxPrice ?? Infinity),
       );
     }
 
@@ -98,11 +104,13 @@ export class FoodRepository {
     };
   }
 
-  findOne(id: string): Food | null {
+  async findOne(id: string): Promise<Food | null> {
+    await Promise.resolve();
     return this.foods.find((food) => food.id === id) || null;
   }
 
-  update(id: string, updateFoodDto: UpdateFoodDto): Food | null {
+  async update(id: string, updateFoodDto: UpdateFoodDto): Promise<Food | null> {
+    await Promise.resolve();
     const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return null;
@@ -118,7 +126,8 @@ export class FoodRepository {
     return updatedFood;
   }
 
-  remove(id: string): boolean {
+  async remove(id: string): Promise<boolean> {
+    await Promise.resolve();
     const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return false;
@@ -128,11 +137,13 @@ export class FoodRepository {
     return true;
   }
 
-  findByPartner(partnerId: string): Food[] {
+  async findByPartner(partnerId: string): Promise<Food[]> {
+    await Promise.resolve();
     return this.foods.filter((food) => food.partnerId === partnerId);
   }
 
-  findFeatured(): Food[] {
+  async findFeatured(): Promise<Food[]> {
+    await Promise.resolve();
     return this.foods.filter((food) => food.isFeatured);
   }
 
