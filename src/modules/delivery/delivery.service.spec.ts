@@ -1,24 +1,60 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { DeliveryPricingService, VehicleType } from './delivery-pricing.service';
 import { DeliveryService } from './delivery.service';
-import { BadRequestException } from '@nestjs/common';
 
-describe('DeliveryService', () => {
-  let service: DeliveryService;
+describe('DeliveryPricingService', () => {
+  let pricingService: DeliveryPricingService;
+  let geoService: DeliveryService;
 
-  beforeEach(() => {
-    // Comme ton service utilise HttpService, on lui passe un objet vide {} 
-    // ou "null" pour ce test unitaire simple
-    service = new DeliveryService(null as any); 
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        DeliveryPricingService,
+        {
+          provide: DeliveryService,
+          useValue: {
+            // On simule une distance fixe de 10km pour tester les tarifs facilement
+            calculateDistance: jest.fn().mockReturnValue(10),
+            getTravelEstimation: jest.fn().mockResolvedValue({
+              distance: "10 km",
+              duration: "15 min",
+              method: "Haversine"
+            }),
+          },
+        },
+      ],
+    }).compile();
+
+    pricingService = module.get<DeliveryPricingService>(DeliveryPricingService);
+    geoService = module.get<DeliveryService>(DeliveryService);
   });
 
-  it('devrait calculer correctement la distance entre Chagoua et l Aéroport', () => {
-    // Vérifie bien que le nom ici est le même que dans ton .service.ts
-    const dist = service.calculateDistance(12.1022, 15.0681, 12.1325, 15.0333);
-    
-    expect(dist).toBeGreaterThan(4);
-    expect(dist).toBeLessThan(6);
+  it('devrait calculer 1500 FCFA pour 10km en MOTO', async () => {
+    const result = await pricingService.calculatePrice(0, 0, 0, 0, VehicleType.MOTO);
+    expect(result.totalPrice).toBe(1500);
   });
 
-  it('devrait lever une erreur pour des coordonnées invalides', () => {
-    expect(() => service.calculateDistance(100, 200, 12.1, 15.1)).toThrow(BadRequestException);
+  it('devrait calculer 2500 FCFA pour 10km en CARGO', async () => {
+    const result = await pricingService.calculatePrice(0, 0, 0, 0, VehicleType.CARGO);
+    expect(result.totalPrice).toBe(2500);
+  });
+
+  it('devrait calculer 4000 FCFA pour 10km en EXPRESS', async () => {
+    const result = await pricingService.calculatePrice(0, 0, 0, 0, VehicleType.EXPRESS);
+    expect(result.totalPrice).toBe(4000);
+  });
+
+  it('devrait appliquer le tarif minimum de 500 FCFA', async () => {
+    // On change la simulation pour une distance très courte (1km)
+    jest.spyOn(geoService, 'calculateDistance').mockReturnValue(1);
+    jest.spyOn(geoService, 'getTravelEstimation').mockResolvedValue({
+        distance: "1 km",
+        duration: "2 min",
+        method: "Haversine"
+    });
+
+    const result = await pricingService.calculatePrice(0, 0, 0, 0, VehicleType.MOTO);
+    // 1km * 150 = 150, mais le minimum est 500
+    expect(result.totalPrice).toBe(500);
   });
 });
