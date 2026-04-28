@@ -87,7 +87,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return this.client.hdel(key, ...fields);
   }
 
-  async hincrby(key: string, field: string, increment: number): Promise<number> {
+  async hincrby(
+    key: string,
+    field: string,
+    increment: number,
+  ): Promise<number> {
     return this.client.hincrby(key, field, increment);
   }
 

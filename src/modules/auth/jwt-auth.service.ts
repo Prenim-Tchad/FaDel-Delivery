@@ -6,7 +6,12 @@ import { UserPayload, TokenPair, UserRole } from '../../../shared/types';
 export class JwtAuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async generateTokenPair(userId: string, email: string, role: UserRole, additionalData?: any): Promise<TokenPair> {
+  async generateTokenPair(
+    userId: string,
+    email: string,
+    role: UserRole,
+    additionalData?: any,
+  ): Promise<TokenPair> {
     const payload: UserPayload = {
       sub: userId,
       email,
@@ -47,9 +52,12 @@ export class JwtAuthService {
 
   async verifyRefreshToken(token: string): Promise<{ sub: string }> {
     try {
-      const payload = await this.jwtService.verifyAsync<{ sub: string }>(token, {
-        algorithms: ['RS256'],
-      });
+      const payload = await this.jwtService.verifyAsync<{ sub: string }>(
+        token,
+        {
+          algorithms: ['RS256'],
+        },
+      );
       return payload;
     } catch (error) {
       throw new Error('Refresh token invalide ou expiré');

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { FoodRepository } from '../repositories/food.repository';
 import { CreateFoodDto } from '../dtos/create-food.dto';
 import { UpdateFoodDto } from '../dtos/update-food.dto';
@@ -18,7 +22,9 @@ export class FoodService {
       }
 
       if (createFoodDto.preparationTime <= 0) {
-        throw new BadRequestException('Preparation time must be greater than 0');
+        throw new BadRequestException(
+          'Preparation time must be greater than 0',
+        );
       }
 
       return await this.foodRepository.create(createFoodDto);
@@ -68,8 +74,13 @@ export class FoodService {
         throw new BadRequestException('Price must be greater than 0');
       }
 
-      if (updateFoodDto.preparationTime !== undefined && updateFoodDto.preparationTime <= 0) {
-        throw new BadRequestException('Preparation time must be greater than 0');
+      if (
+        updateFoodDto.preparationTime !== undefined &&
+        updateFoodDto.preparationTime <= 0
+      ) {
+        throw new BadRequestException(
+          'Preparation time must be greater than 0',
+        );
       }
 
       const updatedFood = await this.foodRepository.update(id, updateFoodDto);
@@ -79,7 +90,10 @@ export class FoodService {
 
       return updatedFood;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new BadRequestException('Failed to update food item');

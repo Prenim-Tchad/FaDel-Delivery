@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({
-    description: 'Nom de l\'utilisateur',
+    description: "Nom de l'utilisateur",
     example: 'Dupont',
   })
   @IsOptional()
@@ -11,7 +11,7 @@ export class UpdateProfileDto {
   nom?: string;
 
   @ApiPropertyOptional({
-    description: 'Prénom de l\'utilisateur',
+    description: "Prénom de l'utilisateur",
     example: 'Jean',
   })
   @IsOptional()
@@ -29,7 +29,23 @@ export class UpdateProfileDto {
   @ApiPropertyOptional({
     description: 'Quartier de résidence',
     example: 'Chagoua',
-    enum: ['Amriguébé', 'Chagoua', 'Dembé', 'Farcha', 'Goudji', 'Habena', 'Kabalaye', 'Klemat', 'Lamadji', 'Moursal', 'Ndjari', 'Paris-Congo', 'Sabangali', 'Walia', 'Autre'],
+    enum: [
+      'Amriguébé',
+      'Chagoua',
+      'Dembé',
+      'Farcha',
+      'Goudji',
+      'Habena',
+      'Kabalaye',
+      'Klemat',
+      'Lamadji',
+      'Moursal',
+      'Ndjari',
+      'Paris-Congo',
+      'Sabangali',
+      'Walia',
+      'Autre',
+    ],
   })
   @IsOptional()
   @IsString()

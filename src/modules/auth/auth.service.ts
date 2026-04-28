@@ -1,4 +1,9 @@
-import { Inject, Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { SUPABASE_CLIENT } from './auth.constants';
 import { JwtAuthService } from './jwt-auth.service';
@@ -31,7 +36,8 @@ export class AuthService {
     }
 
     return {
-      message: 'Inscription réussie. Vérifiez votre email pour confirmer votre compte.',
+      message:
+        'Inscription réussie. Vérifiez votre email pour confirmer votre compte.',
       user: data.user,
     };
   }
@@ -70,7 +76,8 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    const { data, error } = await this.supabaseClient.auth.admin.getUserById(userId);
+    const { data, error } =
+      await this.supabaseClient.auth.admin.getUserById(userId);
 
     if (error || !data.user) {
       throw new BadRequestException('Impossible de récupérer le profil.');
@@ -117,7 +124,9 @@ export class AuthService {
     const supabaseResult = await this.signIn(dto);
 
     // Générer les tokens JWT
-    const userRole = this.getUserRoleFromMetadata(supabaseResult.user.user_metadata);
+    const userRole = this.getUserRoleFromMetadata(
+      supabaseResult.user.user_metadata,
+    );
     const tokenPair = await this.jwtAuthService.generateTokenPair(
       supabaseResult.user.id,
       supabaseResult.user.email!,
@@ -147,7 +156,8 @@ export class AuthService {
   async validateUser(userId: string): Promise<any> {
     // Ici, vous devriez récupérer l'utilisateur depuis votre base de données Prisma
     // Pour l'exemple, on simule avec Supabase
-    const { data, error } = await this.supabaseClient.auth.admin.getUserById(userId);
+    const { data, error } =
+      await this.supabaseClient.auth.admin.getUserById(userId);
 
     if (error || !data.user) {
       return null;
@@ -182,5 +192,3 @@ export class AuthService {
     return UserRole.CUSTOMER;
   }
 }
-
-

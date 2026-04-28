@@ -98,7 +98,9 @@ export class FoodController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid partner ID',
   })
-  async findByPartner(@Param('partnerId', ParseUUIDPipe) partnerId: string): Promise<Food[]> {
+  async findByPartner(
+    @Param('partnerId', ParseUUIDPipe) partnerId: string,
+  ): Promise<Food[]> {
     return this.foodService.findByPartner(partnerId);
   }
 
