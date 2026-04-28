@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsEnum, IsOptional, IsArray, IsBoolean, IsObject, Min, Max, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+  IsObject,
+  Min,
+  Max,
+  IsUUID,
+} from 'class-validator';
 import { FoodCategory, FoodStatus, FoodType } from '../enums/food.enums';
 
 export class CreateFoodDto {
@@ -12,7 +23,7 @@ export class CreateFoodDto {
 
   @ApiProperty({
     description: 'Detailed description of the food item',
-    example:` 'Traditional West African rice dish with tomatoes, peppers, and spices'`,
+    example: ` 'Traditional West African rice dish with tomatoes, peppers, and spices'`,
   })
   @IsString()
   description: string;

@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { CacheService } from './cache.service';
 
@@ -108,7 +112,9 @@ export class CartService {
     const lockAcquired = await this.redisService.set(lockKey, 'locked', 10); // Lock de 10 secondes
 
     if (!lockAcquired) {
-      throw new BadRequestException('Panier en cours de modification, veuillez réessayer.');
+      throw new BadRequestException(
+        'Panier en cours de modification, veuillez réessayer.',
+      );
     }
 
     try {
@@ -290,13 +296,16 @@ export class CartService {
     cart.subtotal = subtotal;
 
     // Calculer le total final
-    cart.totalAmount = cart.subtotal + cart.deliveryFee + cart.serviceFee - cart.discountAmount;
+    cart.totalAmount =
+      cart.subtotal + cart.deliveryFee + cart.serviceFee - cart.discountAmount;
 
     return cart;
   }
 
   // Valider le panier avant commande
-  async validateCart(userId: string): Promise<{ valid: boolean; errors: string[] }> {
+  async validateCart(
+    userId: string,
+  ): Promise<{ valid: boolean; errors: string[] }> {
     const cart = await this.getCart(userId);
     if (!cart) {
       return { valid: false, errors: ['Panier vide'] };
@@ -332,7 +341,9 @@ export class CartService {
 
     const validation = await this.validateCart(userId);
     if (!validation.valid) {
-      throw new BadRequestException(`Panier invalide: ${validation.errors.join(', ')}`);
+      throw new BadRequestException(
+        `Panier invalide: ${validation.errors.join(', ')}`,
+      );
     }
 
     return cart;
@@ -354,7 +365,11 @@ export class CartService {
       totalCarts: carts.length,
       totalItems: carts.reduce((sum, cart) => sum + cart.items.length, 0),
       totalValue: carts.reduce((sum, cart) => sum + cart.totalAmount, 0),
-      averageCartValue: carts.length > 0 ? carts.reduce((sum, cart) => sum + cart.totalAmount, 0) / carts.length : 0,
+      averageCartValue:
+        carts.length > 0
+          ? carts.reduce((sum, cart) => sum + cart.totalAmount, 0) /
+            carts.length
+          : 0,
     };
   }
 }

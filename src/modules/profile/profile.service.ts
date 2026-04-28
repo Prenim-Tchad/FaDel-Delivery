@@ -11,7 +11,8 @@ export class ProfileService {
   ) {}
 
   async getProfile(userId: string) {
-    const { data, error } = await this.supabaseClient.auth.admin.getUserById(userId);
+    const { data, error } =
+      await this.supabaseClient.auth.admin.getUserById(userId);
 
     if (error || !data.user) {
       throw new BadRequestException('Impossible de récupérer le profil.');
@@ -36,7 +37,8 @@ export class ProfileService {
     const { nom, prenom, phone, quartier } = dto;
 
     // Récupérer les métadonnées actuelles
-    const { data: currentUser, error: getError } = await this.supabaseClient.auth.admin.getUserById(userId);
+    const { data: currentUser, error: getError } =
+      await this.supabaseClient.auth.admin.getUserById(userId);
 
     if (getError || !currentUser.user) {
       throw new BadRequestException('Utilisateur non trouvé.');
@@ -53,9 +55,12 @@ export class ProfileService {
       ...(quartier !== undefined && { quartier }),
     };
 
-    const { data, error } = await this.supabaseClient.auth.admin.updateUserById(userId, {
-      user_metadata: updatedMetadata,
-    });
+    const { data, error } = await this.supabaseClient.auth.admin.updateUserById(
+      userId,
+      {
+        user_metadata: updatedMetadata,
+      },
+    );
 
     if (error || !data.user) {
       throw new BadRequestException('Impossible de mettre à jour le profil.');

@@ -16,7 +16,8 @@ export class Food {
 
   @ApiProperty({
     description: 'Detailed description of the food item',
-    example: 'Traditional West African rice dish with tomatoes, peppers, and spices',
+    example:
+      'Traditional West African rice dish with tomatoes, peppers, and spices',
   })
   description: string;
 

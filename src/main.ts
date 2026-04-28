@@ -36,20 +36,30 @@ async function bootstrap() {
   });
 
   // Validation globale
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // CORS pour le développement
   app.enableCors({
-    origin: ['http://localhost:3001', 'http://localhost:8080', 'http://localhost:4200'],
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:8080',
+      'http://localhost:4200',
+    ],
     credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 3001);
-  console.log(`🚀 Application FaDel Delivery démarrée sur: http://localhost:${process.env.PORT ?? 3001}`);
-  console.log(`📚 Documentation API disponible sur: http://localhost:${process.env.PORT ?? 3001}/api`);
+  console.log(
+    `🚀 Application FaDel Delivery démarrée sur: http://localhost:${process.env.PORT ?? 3001}`,
+  );
+  console.log(
+    `📚 Documentation API disponible sur: http://localhost:${process.env.PORT ?? 3001}/api`,
+  );
 }
 bootstrap();
