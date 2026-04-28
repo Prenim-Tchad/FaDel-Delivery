@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserPayload, TokenPair, UserRole } from '../../../shared/types';
+import { UserPayload, TokenPair, UserRole } from '../../shared/types';
 
 @Injectable()
 export class JwtAuthService {
@@ -19,15 +19,15 @@ export class JwtAuthService {
       ...additionalData,
     };
 
-    const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m',
+    const accessToken = await this.jwtService.signAsync(payload as any, {
+      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m' as any,
       algorithm: 'RS256',
     });
 
     const refreshToken = await this.jwtService.signAsync(
-      { sub: userId },
+      { sub: userId } as any,
       {
-        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d',
+        expiresIn: (process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d') as any,
         algorithm: 'RS256',
       },
     );

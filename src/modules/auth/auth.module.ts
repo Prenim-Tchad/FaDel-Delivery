@@ -10,7 +10,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { supabaseClientProvider } from './auth.constants';
 
-@@Module({
+@Module({
   imports: [
     PassportModule,
     JwtModule.register({
@@ -19,7 +19,7 @@ import { supabaseClientProvider } from './auth.constants';
       signOptions: {
         algorithm: 'RS256',
         // Utilisation d'une assertion pour éviter l'erreur TS2322
-        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as any, 
+        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as any,
       },
     }),
   ],
@@ -33,6 +33,12 @@ import { supabaseClientProvider } from './auth.constants';
     JwtStrategy,
     supabaseClientProvider,
   ],
-  exports: [AuthService, JwtAuthService, SupabaseAuthGuard, JwtAuthGuard, RolesGuard],
+  exports: [
+    AuthService,
+    JwtAuthService,
+    SupabaseAuthGuard,
+    JwtAuthGuard,
+    RolesGuard,
+  ],
 })
 export class AuthModule {}
