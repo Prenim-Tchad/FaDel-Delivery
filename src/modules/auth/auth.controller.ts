@@ -64,8 +64,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Récupérer le profil utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil récupéré' })
   @ApiResponse({ status: 401, description: 'Token invalide' })
-  async getProfile(@Request() req) {
-    return this.authService.getProfile(req.user.id);
+  async getProfile(@Request() req: AuthenticatedRequest) {
+    return this.authService.getProfile(req.user.sub);
   }
 
   @Post('refresh')
