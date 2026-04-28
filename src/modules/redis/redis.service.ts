@@ -8,11 +8,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor() {
     this.client = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
+      port: parseInt(process.env.REDIS_PORT || '6379', 10),
       password: process.env.REDIS_PASSWORD || undefined,
       db: 0,
-      retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3,
       lazyConnect: true,
     });
 
@@ -158,7 +156,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async getJson<T>(key: string): Promise<T | null> {
     const data = await this.get(key);
-    return data ? JSON.parse(data) : null;
+    return data ? (JSON.parse(data) as T) : null;
   }
 
   // Pipeline pour les opérations groupées

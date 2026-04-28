@@ -7,7 +7,7 @@ export const SUPABASE_CLIENT = 'SUPABASE_CLIENT';
 
 export const supabaseClientProvider = {
   provide: SUPABASE_CLIENT,
-  useFactory: (): SupabaseClient => {
+  useFactory: (): SupabaseClient<any, any, 'public', any, any> => {
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

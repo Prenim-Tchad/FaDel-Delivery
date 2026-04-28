@@ -3,6 +3,14 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { SUPABASE_CLIENT } from '../auth/auth.constants';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 
+// 1. On définit l'interface ici si elle n'est pas exportée ailleurs
+interface FaDelUserMetadata {
+  nom: string;
+  prenom: string;
+  phone: string;
+  quartier: string;
+  role?: string;
+}
 @Injectable()
 export class ProfileService {
   constructor(
@@ -18,7 +26,7 @@ export class ProfileService {
       throw new BadRequestException('Impossible de récupérer le profil.');
     }
 
-    const metadata = data.user.user_metadata || {};
+    const metadata = data.user.user_metadata as unknown as FaDelUserMetadata;
 
     return {
       id: data.user.id,
@@ -32,7 +40,6 @@ export class ProfileService {
       updatedAt: data.user.updated_at,
     };
   }
-
   async updateProfile(userId: string, dto: UpdateProfileDto) {
     const { nom, prenom, phone, quartier } = dto;
 

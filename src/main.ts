@@ -62,4 +62,7 @@ async function bootstrap() {
     `📚 Documentation API disponible sur: http://localhost:${process.env.PORT ?? 3001}/api`,
   );
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Erreur lors du démarrage de FaDel Delivery:', err);
+  process.exit(1); // Arrête le processus proprement en cas d'échec critique
+});
