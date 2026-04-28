@@ -10,7 +10,7 @@ class ApiClient {
 
   static Future<Map<String, dynamic>> checkHealth() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl'));
+      final response = await http.get(Uri.parse(baseUrl));
       return {
         'status': response.statusCode == 200 ? 'UP' : 'DOWN',
         'message': response.body,

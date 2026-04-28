@@ -49,6 +49,7 @@ export class RegisterDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsPhoneNumber('TD')
   phone: string;
 
   @ApiProperty({

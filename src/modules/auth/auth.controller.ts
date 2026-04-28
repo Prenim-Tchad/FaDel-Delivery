@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Patch,
+  //Patch,
   Post,
   Request,
   UseGuards,
@@ -16,7 +16,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+//import { UpdateProfileDto } from './dto/update-profile.dto';
 import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 
 @ApiTags('auth')

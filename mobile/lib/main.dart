@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'services/api_client.dart';
 import 'services/auth_service.dart';
 import 'login.dart';
 import 'register.dart';
