@@ -128,10 +128,12 @@ export class AuthService {
   // Méthodes JWT RS256
   async signInWithJwt(dto: LoginDto) {
     const supabaseResult = await this.signIn(dto);
-    // CORRECTION : Cast immédiat des métadonnées
     const metadata = supabaseResult.user
       .user_metadata as unknown as FaDelUserMetadata;
     const userRole = this.getUserRoleFromMetadata(metadata);
+
+    // Ajout de la logique isPartner ici aussi pour la cohérence
+    const isPartner = userRole === UserRole.PARTNER;
 
     const tokenPair = await this.jwtAuthService.generateTokenPair(
       supabaseResult.user.id,
@@ -142,6 +144,7 @@ export class AuthService {
         prenom: metadata.prenom,
         phone: metadata.phone,
         quartier: metadata.quartier,
+        isPartner: isPartner, // On l'ajoute au payload JWT
       },
     );
 
@@ -151,6 +154,7 @@ export class AuthService {
         id: supabaseResult.user.id,
         email: supabaseResult.user.email,
         role: userRole,
+        isPartner: isPartner,
         nom: metadata.nom,
         prenom: metadata.prenom,
         phone: metadata.phone,
@@ -160,23 +164,24 @@ export class AuthService {
   }
 
   async validateUser(userId: string): Promise<UserPayload | null> {
-    // Ici, vous devriez récupérer l'utilisateur depuis votre base de données Prisma
-    // Pour l'exemple, on simule avec Supabase
     const { data, error } =
       await this.supabaseClient.auth.admin.getUserById(userId);
 
     if (error || !data.user) {
       return null;
     }
+
     const metadata = data.user.user_metadata as unknown as FaDelUserMetadata & {
       role?: string;
     };
     const userRole = this.getUserRoleFromMetadata(metadata);
 
+    // CORRECTION : On utilise "userRole" qui est défini juste au-dessus
     return {
       sub: data.user.id,
       email: data.user.email!,
       role: userRole,
+      isPartner: userRole === UserRole.PARTNER,
       nom: metadata.nom,
       prenom: metadata.prenom,
       phone: metadata.phone,
