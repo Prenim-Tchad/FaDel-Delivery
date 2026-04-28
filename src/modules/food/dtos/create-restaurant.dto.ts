@@ -11,7 +11,7 @@ export class CreateRestaurantDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ description: 'Adresse complète du restaurant', example: 'Avenue de la Paix, N'Djaména' })
+  @ApiProperty({ description: 'Adresse complète du restaurant', example: 'Avenue de la Paix, N\'Djaména' })
   @IsString()
   address: string;
 

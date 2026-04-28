@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  //url      = "postgresql://admin:password_a_changer@database:5432/fadel_delivery?schema=public"
 }
 
 model Profile {

@@ -10,7 +10,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { supabaseClientProvider } from './auth.constants';
 
-@@Module({
+@Module({
   imports: [
     PassportModule,
     JwtModule.register({
@@ -33,6 +33,12 @@ import { supabaseClientProvider } from './auth.constants';
     JwtStrategy,
     supabaseClientProvider,
   ],
-  exports: [AuthService, JwtAuthService, SupabaseAuthGuard, JwtAuthGuard, RolesGuard],
+  exports: [
+    AuthService,
+    JwtAuthService,
+    SupabaseAuthGuard,
+    JwtAuthGuard,
+    RolesGuard,
+  ],
 })
 export class AuthModule {}

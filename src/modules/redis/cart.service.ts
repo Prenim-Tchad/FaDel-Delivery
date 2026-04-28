@@ -352,7 +352,7 @@ export class CartService {
   // Statistiques des paniers
   async getCartStats(): Promise<any> {
     const cartKeys = await this.redisService.keys('cart:*');
-    const carts = [];
+    const carts: Cart[] = [];
 
     for (const key of cartKeys) {
       const cart = await this.redisService.getJson<Cart>(key);

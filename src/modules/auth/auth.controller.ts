@@ -7,6 +7,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -78,8 +79,9 @@ export class AuthController {
   @Post('logout')
   @ApiOperation({ summary: 'Déconnexion utilisateur' })
   @ApiResponse({ status: 200, description: 'Déconnexion réussie' })
-  async logout(@Request() req) {
-    const token = req.headers.authorization.replace('Bearer ', '');
+  async logout(@Request() req: ExpressRequest) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.replace('Bearer ', '') || '';
     return this.authService.signOut(token);
   }
 }

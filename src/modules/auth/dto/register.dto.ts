@@ -75,5 +75,5 @@ export class RegisterDto {
   })
   @IsString()
   @IsNotEmpty()
-  quartier: string;
+  quartier!: string;
 }
