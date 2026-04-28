@@ -26,9 +26,12 @@ export class FoodRepository {
     return food;
   }
 
-  findAll(
-    filters: FoodFiltersDto = {},
-  ): { items: Food[]; total: number; page: number; limit: number } {
+  findAll(filters: FoodFiltersDto = {}): {
+    items: Food[];
+    total: number;
+    page: number;
+    limit: number;
+  } {
     let filteredFoods = [...this.foods];
 
     // Apply filters

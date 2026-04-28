@@ -13,10 +13,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, _info: any) {
+  // Remplace ta ligne 16 par celle-ci :
+  handleRequest<TUser = any>(err: any, user: any, info: any): TUser {
     if (err || !user) {
-      throw err || new UnauthorizedException('Token JWT invalide ou expiré');
+      throw err || new UnauthorizedException();
     }
-    return user as UserPayload;
+    return user; // Ici, 'user' sera casté en TUser automatiquement
   }
 }

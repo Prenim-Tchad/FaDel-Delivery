@@ -113,7 +113,7 @@ export class FoodService {
   }
 
   async findFeatured(): Promise<Food[]> {
-    try {_
+    try {
       return await this.foodRepository.findFeatured();
     } catch (_error) {
       throw new BadRequestException('Failed to retrieve featured food items');

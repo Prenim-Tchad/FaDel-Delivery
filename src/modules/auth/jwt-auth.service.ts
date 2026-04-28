@@ -24,13 +24,10 @@ export class JwtAuthService {
       algorithm: 'RS256',
     } as any);
 
-    const refreshToken = await this.jwtService.signAsync(
-      { sub: userId },
-      {
-        expiresIn: (process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d') as string,
-        algorithm: 'RS256',
-      } as any,
-    );
+    const refreshToken = await this.jwtService.signAsync({ sub: userId }, {
+      expiresIn: (process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d') as string,
+      algorithm: 'RS256',
+    } as any);
 
     return {
       accessToken,

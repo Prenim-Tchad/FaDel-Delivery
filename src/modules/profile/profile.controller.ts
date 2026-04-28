@@ -44,7 +44,10 @@ export class ProfileController {
   @ApiOperation({ summary: 'Mettre à jour le profil utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil mis à jour' })
   @ApiResponse({ status: 400, description: 'Données invalides' })
-  async updateProfile(@Request() req: AuthenticatedRequest, @Body() dto: UpdateProfileDto) {
+  async updateProfile(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: UpdateProfileDto,
+  ) {
     return this.profileService.updateProfile(req.user.sub, dto);
   }
 
