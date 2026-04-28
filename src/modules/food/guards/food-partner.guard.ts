@@ -1,6 +1,5 @@
 import {
   Injectable,
-  CanActivate,
   ExecutionContext,
   ForbiddenException,
   Inject,
@@ -8,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { SupabaseAuthGuard } from '../../auth/guards/supabase-auth.guard';
 import { AuthService } from '../../auth/auth.service';
+import { UserPayload } from '../../../shared/types/auth.types';
 
 @Injectable()
 export class FoodPartnerGuard extends SupabaseAuthGuard {
@@ -26,16 +26,16 @@ export class FoodPartnerGuard extends SupabaseAuthGuard {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const user = (request as any).user as UserPayload;
 
     // Check if user is a partner
-    if (!user?.isPartner) {
+    if (!(user as any)?.isPartner) {
       throw new ForbiddenException('Only partners can perform this action');
     }
 
     // For create/update operations, check if the partner owns the food item
-    const method = request.method;
-    const foodId = request.params.id;
+    const method = (request as any).method as string;
+    const foodId = (request as any).params as any;
 
     if (method === 'POST' || (method === 'PATCH' && foodId)) {
       // For food creation, the partnerId should match the user's ID

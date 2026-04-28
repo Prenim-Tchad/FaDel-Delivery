@@ -8,12 +8,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
+import { UserPayload } from '../../shared/types/auth.types';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+
+interface AuthenticatedRequest extends ExpressRequest {
+  user: UserPayload;
+}
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';

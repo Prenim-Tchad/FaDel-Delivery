@@ -5,7 +5,6 @@ import {
   Min,
   Max,
   IsOptional,
-  IsUUID,
 } from 'class-validator';
 
 export class RatingDto {

@@ -16,7 +16,7 @@ export class JwtAuthService {
       sub: userId,
       email,
       role,
-      ...additionalData,
+      ...(additionalData as Partial<UserPayload>),
     };
 
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -45,7 +45,7 @@ export class JwtAuthService {
         algorithms: ['RS256'],
       });
       return payload;
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Token invalide ou expiré');
     }
   }
@@ -59,7 +59,7 @@ export class JwtAuthService {
         },
       );
       return payload;
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Refresh token invalide ou expiré');
     }
   }

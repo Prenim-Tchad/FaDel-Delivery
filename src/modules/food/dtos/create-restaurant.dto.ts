@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber, IsBoolean, IsUrl, IsUUID, Min, IsLatitude, IsLongitude, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsUrl, IsUUID, Min, IsLatitude, IsLongitude, IsArray } from 'class-validator';
 
 export class CreateRestaurantDto {
   @ApiProperty({ description: 'Nom du restaurant', example: 'La Casa du Délice' })

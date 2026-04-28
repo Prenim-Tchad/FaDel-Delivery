@@ -9,7 +9,7 @@ import { SUPABASE_CLIENT } from './auth.constants';
 import { JwtAuthService } from './jwt-auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+// import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserRole, UserPayload } from '../../shared/types';
 
 @Injectable()
@@ -132,10 +132,10 @@ export class AuthService {
       supabaseResult.user.email!,
       userRole,
       {
-        nom: supabaseResult.user.user_metadata?.nom,
-        prenom: supabaseResult.user.user_metadata?.prenom,
-        phone: supabaseResult.user.user_metadata?.phone,
-        quartier: supabaseResult.user.user_metadata?.quartier,
+        nom: (supabaseResult.user.user_metadata as any)?.nom,
+        prenom: (supabaseResult.user.user_metadata as any)?.prenom,
+        phone: (supabaseResult.user.user_metadata as any)?.phone,
+        quartier: (supabaseResult.user.user_metadata as any)?.quartier,
       },
     );
 
@@ -145,10 +145,10 @@ export class AuthService {
         id: supabaseResult.user.id,
         email: supabaseResult.user.email,
         role: userRole,
-        nom: supabaseResult.user.user_metadata?.nom,
-        prenom: supabaseResult.user.user_metadata?.prenom,
-        phone: supabaseResult.user.user_metadata?.phone,
-        quartier: supabaseResult.user.user_metadata?.quartier,
+        nom: (supabaseResult.user.user_metadata as any)?.nom,
+        prenom: (supabaseResult.user.user_metadata as any)?.prenom,
+        phone: (supabaseResult.user.user_metadata as any)?.phone,
+        quartier: (supabaseResult.user.user_metadata as any)?.quartier,
       },
     };
   }
@@ -167,10 +167,10 @@ export class AuthService {
       id: data.user.id,
       email: data.user.email,
       role: this.getUserRoleFromMetadata(data.user.user_metadata),
-      nom: data.user.user_metadata?.nom,
-      prenom: data.user.user_metadata?.prenom,
-      phone: data.user.user_metadata?.phone,
-      quartier: data.user.user_metadata?.quartier,
+      nom: (data.user.user_metadata as any)?.nom,
+      prenom: (data.user.user_metadata as any)?.prenom,
+      phone: (data.user.user_metadata as any)?.phone,
+      quartier: (data.user.user_metadata as any)?.quartier,
     };
   }
 
@@ -186,8 +186,8 @@ export class AuthService {
     // Logique pour déterminer le rôle depuis les métadonnées
     // Par défaut, tous les utilisateurs sont des clients
     // Vous pouvez étendre cette logique selon vos besoins
-    if (metadata?.role) {
-      return metadata.role as UserRole;
+    if ((metadata as any)?.role) {
+      return (metadata as any).role as UserRole;
     }
     return UserRole.CUSTOMER;
   }

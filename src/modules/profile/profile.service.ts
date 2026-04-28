@@ -18,15 +18,15 @@ export class ProfileService {
       throw new BadRequestException('Impossible de récupérer le profil.');
     }
 
-    const metadata = data.user.user_metadata || {};
+    const metadata = (data.user.user_metadata as any) || {};
 
     return {
       id: data.user.id,
       email: data.user.email,
-      nom: metadata.nom || '',
-      prenom: metadata.prenom || '',
-      phone: metadata.phone || '',
-      quartier: metadata.quartier || '',
+      nom: (metadata as any).nom || '',
+      prenom: (metadata as any).prenom || '',
+      phone: (metadata as any).phone || '',
+      quartier: (metadata as any).quartier || '',
       confirmedAt: data.user.confirmed_at,
       createdAt: data.user.created_at,
       updatedAt: data.user.updated_at,

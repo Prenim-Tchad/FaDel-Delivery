@@ -18,9 +18,8 @@ import { supabaseClientProvider } from './auth.constants';
       privateKey: process.env.JWT_PRIVATE_KEY,
       signOptions: {
         algorithm: 'RS256',
-        // Utilisation d'une assertion pour éviter l'erreur TS2322
-        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as any, 
-      },
+        expiresIn: (process.env.JWT_ACCESS_TOKEN_EXPIRATION || '15m') as string,
+      } as any,
     }),
   ],
   controllers: [AuthController],

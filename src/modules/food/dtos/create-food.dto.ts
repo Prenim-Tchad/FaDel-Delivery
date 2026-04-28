@@ -8,10 +8,9 @@ import {
   IsBoolean,
   IsObject,
   Min,
-  Max,
   IsUUID,
 } from 'class-validator';
-import { FoodCategory, FoodStatus, FoodType } from '../enums/food.enums';
+import { FoodCategory, FoodType } from '../enums/food.enums';
 
 export class CreateFoodDto {
   @ApiProperty({

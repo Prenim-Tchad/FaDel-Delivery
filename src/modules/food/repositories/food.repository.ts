@@ -10,7 +10,7 @@ export class FoodRepository {
   private foods: Food[] = []; // In-memory storage for demo purposes
   private nextId = 1;
 
-  async create(createFoodDto: CreateFoodDto): Promise<Food> {
+  create(createFoodDto: CreateFoodDto): Food {
     const food: Food = {
       id: this.generateId(),
       ...createFoodDto,
@@ -26,9 +26,9 @@ export class FoodRepository {
     return food;
   }
 
-  async findAll(
+  findAll(
     filters: FoodFiltersDto = {},
-  ): Promise<{ items: Food[]; total: number; page: number; limit: number }> {
+  ): { items: Food[]; total: number; page: number; limit: number } {
     let filteredFoods = [...this.foods];
 
     // Apply filters
@@ -95,11 +95,11 @@ export class FoodRepository {
     };
   }
 
-  async findOne(id: string): Promise<Food | null> {
+  findOne(id: string): Food | null {
     return this.foods.find((food) => food.id === id) || null;
   }
 
-  async update(id: string, updateFoodDto: UpdateFoodDto): Promise<Food | null> {
+  update(id: string, updateFoodDto: UpdateFoodDto): Food | null {
     const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return null;
@@ -115,7 +115,7 @@ export class FoodRepository {
     return updatedFood;
   }
 
-  async remove(id: string): Promise<boolean> {
+  remove(id: string): boolean {
     const foodIndex = this.foods.findIndex((food) => food.id === id);
     if (foodIndex === -1) {
       return false;
@@ -125,11 +125,11 @@ export class FoodRepository {
     return true;
   }
 
-  async findByPartner(partnerId: string): Promise<Food[]> {
+  findByPartner(partnerId: string): Food[] {
     return this.foods.filter((food) => food.partnerId === partnerId);
   }
 
-  async findFeatured(): Promise<Food[]> {
+  findFeatured(): Food[] {
     return this.foods.filter((food) => food.isFeatured);
   }
 

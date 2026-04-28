@@ -51,7 +51,7 @@ export class FoodService {
         ...result,
         totalPages,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new BadRequestException('Failed to retrieve food items');
     }
   }
@@ -89,13 +89,7 @@ export class FoodService {
       }
 
       return updatedFood;
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
+    } catch (_error) {
       throw new BadRequestException('Failed to update food item');
     }
   }
@@ -119,9 +113,9 @@ export class FoodService {
   }
 
   async findFeatured(): Promise<Food[]> {
-    try {
+    try {_
       return await this.foodRepository.findFeatured();
-    } catch (error) {
+    } catch (_error) {
       throw new BadRequestException('Failed to retrieve featured food items');
     }
   }
