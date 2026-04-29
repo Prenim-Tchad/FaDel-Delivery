@@ -9,6 +9,7 @@ import {
   IsLatitude,
   IsLongitude,
   IsArray,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class CreateRestaurantDto {
@@ -155,7 +156,7 @@ export class CreateRestaurantDto {
     example: 'ckabc123',
     required: false,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   cuisineCategoryId?: string;
 
@@ -165,6 +166,23 @@ export class CreateRestaurantDto {
   })
   @IsUUID()
   ownerId!: string;
+
+  @ApiProperty({
+    description: 'Numéro de RCCM du restaurant',
+    example: 'RCCM/NDJ/2023/001',
+    required: false,
+  })
+  @IsOptional()
+  rccm?: string;
+
+  @ApiProperty({
+    description: 'Slug du restaurant pour les URLs conviviales',
+    example: 'lacasa',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  slug?: string;
 
   @ApiProperty({
     description: 'Liste des zones de livraison',

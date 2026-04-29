@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  //url      = "postgresql://admin:password_a_changer@database:5432/fadel_delivery?schema=public"
 }
 
 model Profile {
@@ -61,6 +60,8 @@ model Restaurant {
   phone         String
   email         String? @unique
   website       String?
+  slug          String? @unique
+  rccm          String? @unique
   logoUrl       String? @map("logo_url")
   coverImageUrl String? @map("cover_image_url")
 
