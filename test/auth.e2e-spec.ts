@@ -1,7 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { RedisService } from '../src/modules/redis/redis.service';
+
+// Mock RedisService
+const mockRedisService = {
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  onModuleInit: jest.fn(),
+  onModuleDestroy: jest.fn(),
+};
+
+// Dans beforeEach :
+const moduleFixture: TestingModule = await Test.createTestingModule({
+  imports: [AppModule],
+})
+  .overrideProvider(RedisService)
+  .useValue(mockRedisService)
+  .compile();
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;

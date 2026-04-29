@@ -90,5 +90,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+    "globals": {
+     "ts-jest": {
+    "diagnostics": false
   }
+}
+  } 
 }
