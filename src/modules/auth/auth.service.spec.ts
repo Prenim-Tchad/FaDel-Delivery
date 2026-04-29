@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { Server } from 'http'; // ✅ import Server
-import { AppModule } from './../src/app.module';
-import { RedisService } from '../src/modules/redis/redis.service';
-import { SUPABASE_CLIENT } from '../src/modules/auth/auth.constants';
+import { AppModule } from '../../app.module';
+import { RedisService } from '../redis/redis.service';
+import { SUPABASE_CLIENT } from './auth.constants';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 const mockRedisService = {
