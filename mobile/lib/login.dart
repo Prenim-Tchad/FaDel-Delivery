@@ -280,31 +280,32 @@ class _LoginBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        // Subtle Gaussian blur halo - guidance without visual weight
         Positioned(
-          top: -80,
-          right: -60,
+          top: -120,
+          right: -80,
           child: Container(
-            width: 260,
-            height: 260,
+            width: 280,
+            height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(colors: [
-                const Color(0xFF4F7CFF).withOpacity(0.18),
+                const Color(0xFF22C55E).withOpacity(0.08), // Signal Green halo
                 Colors.transparent,
               ]),
             ),
           ),
         ),
         Positioned(
-          bottom: 20,
-          left: -80,
+          bottom: -100,
+          left: -100,
           child: Container(
-            width: 300,
-            height: 300,
+            width: 320,
+            height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(colors: [
-                const Color(0xFF8A5FE0).withOpacity(0.14),
+                const Color(0xFF000000).withOpacity(0.04), // Subtle black
                 Colors.transparent,
               ]),
             ),
@@ -340,41 +341,60 @@ class _InputField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          label.toUpperCase(),
           style: const TextStyle(
-            color: Color(0xFFCDD5F0),
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontFamily: 'Jakarta Sans',
+            color: Color(0xFF000000),
+            fontSize: 11,
+            fontWeight: FontWeight.w900, // Black
+            letterSpacing: 0.8, // Wide spacing for micro-labels
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         TextField(
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: const TextStyle(
+            fontFamily: 'Jakarta Sans',
+            color: Color(0xFF000000),
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFF4A5B7A)),
-            prefixIcon:
-                Icon(icon, color: const Color(0xFF4F7CFF), size: 20),
+            hintStyle: const TextStyle(
+              fontFamily: 'Jakarta Sans',
+              color: Color(0x4D000000),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            prefixIcon: Icon(icon, color: const Color(0xFF22C55E), size: 20),
             suffixIcon: suffix,
             filled: true,
-            fillColor: const Color(0xFF0D1526),
+            fillColor: const Color(0xFFF9FAFB), // Mist Gray
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFF1E2D4A)),
+              borderRadius: BorderRadius.circular(32), // Squircle
+              borderSide: const BorderSide(
+                color: Color(0xFFE5E7EB),
+                width: 1,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFF1E2D4A)),
+              borderRadius: BorderRadius.circular(32),
+              borderSide: const BorderSide(
+                color: Color(0xFFE5E7EB),
+                width: 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4F7CFF), width: 1.5),
+              borderRadius: BorderRadius.circular(32),
+              borderSide: const BorderSide(
+                color: Color(0xFF22C55E),
+                width: 2,
+              ),
             ),
           ),
         ),
@@ -383,7 +403,7 @@ class _InputField extends StatelessWidget {
   }
 }
 
-class _GradientButton extends StatelessWidget {
+class _GradientButton extends StatefulWidget {
   final String label;
   final bool isLoading;
   final VoidCallback onTap;
@@ -395,43 +415,78 @@ class _GradientButton extends StatelessWidget {
   });
 
   @override
+  State<_GradientButton> createState() => _GradientButtonState();
+}
+
+class _GradientButtonState extends State<_GradientButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isLoading ? null : onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        height: 54,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF4F7CFF), Color(0xFF8A5FE0)],
+      onTapDown: widget.isLoading ? null : (_) => _controller.forward(),
+      onTapUp: widget.isLoading ? null : (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: widget.isLoading ? null : () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
+          height: 56,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: const Color(0xFF000000), // Pure Black
+            borderRadius: BorderRadius.circular(36), // Squircle
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF000000).withOpacity(0.12),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF4F7CFF).withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Center(
-          child: isLoading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2.5),
-                )
-              : Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
+          child: Center(
+            child: widget.isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFFFFFFF),
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : Text(
+                    widget.label.toUpperCase(),
+                    style: const TextStyle(
+                      fontFamily: 'Jakarta Sans',
+                      color: Color(0xFFFFFFFF), // Optical White
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900, // Black
+                      letterSpacing: 0.6,
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );

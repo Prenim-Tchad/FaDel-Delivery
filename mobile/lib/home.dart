@@ -137,160 +137,110 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E1A),
+      backgroundColor: const Color(0xFFF9FAFB), // Mist Gray (App Background)
       body: FadeTransition(
         opacity: _fadeAnim,
         child: CustomScrollView(
           slivers: [
             // ── Header ──────────────────────────────────────────────────────
             SliverToBoxAdapter(
-              child: Stack(
-                children: [
-                  Container(
-                    height: 220,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF1A2A50), Color(0xFF0A0E1A)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+              child: Container(
+                color: const Color(0xFFFFFFFF), // Optical White header
+                child: Stack(
+                  children: [
+                    // Subtle halo
+                    Positioned(
+                      top: -100,
+                      right: -60,
+                      child: Container(
+                        width: 240,
+                        height: 240,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              const Color(0xFF22C55E).withOpacity(0.06),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: -60,
-                    right: -40,
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            const Color(0xFF4F7CFF).withOpacity(0.2),
-                            Colors.transparent,
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: const [
+                                          Text(
+                                            '👋',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Où allons-nous aujourd\'hui ?',
+                                            style: TextStyle(
+                                              fontFamily: 'Jakarta Sans',
+                                              color: Color(0xFF000000),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: -0.05,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: const [
+                                          Icon(
+                                            Icons.location_on,
+                                            color: Color(0xFF22C55E),
+                                            size: 14,
+                                          ),
+                                          SizedBox(width: 6),
+                                          Text(
+                                            'Kabalaye, N\'Djamena',
+                                            style: TextStyle(
+                                              fontFamily: 'Jakarta Sans',
+                                              color: Color(0xFF6B7280),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                _NotifBell(),
+                                const SizedBox(width: 12),
+                                _UserAvatar(),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // Search Bar
+                            _SearchBar(),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: const [
-                                        Text(
-                                          '👋  ',
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Text(
-                                          'Bonjour, Ernest !',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: const [
-                                        Icon(
-                                          Icons.location_on,
-                                          color: Color(0xFF4F7CFF),
-                                          size: 14,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Kabalaye, N\'Djamena',
-                                          style: TextStyle(
-                                            color: Color(0xFF8B9CC8),
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              _NotifBell(),
-                              const SizedBox(width: 12),
-                              _UserAvatar(),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          // Barre de recherche
-                          Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF131929),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: const Color(0xFF2A3A5C),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 14),
-                                const Icon(
-                                  Icons.search,
-                                  color: Color(0xFF4F7CFF),
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 10),
-                                const Expanded(
-                                  child: Text(
-                                    'Rechercher un service...',
-                                    style: TextStyle(
-                                      color: Color(0xFF4A5B7A),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(6),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF4F7CFF),
-                                        Color(0xFF8A5FE0),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.tune,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
-            // ── Accès rapides ────────────────────────────────────────────────
+            // ── Quick Actions ────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
                   children: _quickActions
                       .map((q) => Expanded(child: _QuickActionTile(action: q)))
@@ -299,7 +249,7 @@ class _HomePageState extends State<HomePage>
               ),
             ),
 
-            // ── Bannière ─────────────────────────────────────────────────────
+            // ── Banner Card ──────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -307,36 +257,39 @@ class _HomePageState extends State<HomePage>
               ),
             ),
 
-            // ── Actualités ───────────────────────────────────────────────────
+            // ── Services Section ─────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                 child: Row(
                   children: [
                     const Text(
-                      'Nos Services',
+                      'NOS SERVICES',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Jakarta Sans',
+                        color: Color(0xFF000000),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.8,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
+                        horizontal: 10,
+                        vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4F7CFF).withOpacity(0.18),
+                        color: const Color(0xFF22C55E).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
-                        '6 Services',
+                        '8 Services',
                         style: TextStyle(
-                          color: Color(0xFF4F7CFF),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Jakarta Sans',
+                          color: Color(0xFF22C55E),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -344,10 +297,12 @@ class _HomePageState extends State<HomePage>
                     TextButton(
                       onPressed: () {},
                       child: const Text(
-                        'Voir tout',
+                        'Voir tout →',
                         style: TextStyle(
-                          color: Color(0xFF4F7CFF),
-                          fontSize: 13,
+                          fontFamily: 'Jakarta Sans',
+                          color: Color(0xFF22C55E),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -364,8 +319,8 @@ class _HomePageState extends State<HomePage>
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
                   childAspectRatio: 0.83,
                 ),
               ),
@@ -391,7 +346,7 @@ class _HomePageState extends State<HomePage>
           setState(() => _selectedIndex = i);
           if (i == 4) {
             try {
-              // Déconnexion via le service d'authentification
+              // Logout via authentication service
               await AuthService.logout();
               await Supabase.instance.client.auth.signOut();
 
@@ -415,33 +370,102 @@ class _HomePageState extends State<HomePage>
 
 // ── Widgets privés ─────────────────────────────────────────────────────────────
 
+class _SearchBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB), // Mist Gray
+        borderRadius: BorderRadius.circular(36), // Squircle
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF000000).withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const SizedBox(width: 16),
+          const Icon(
+            Icons.search,
+            color: Color(0xFF22C55E),
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Chercher un service...',
+                border: InputBorder.none,
+                hintStyle: const TextStyle(
+                  fontFamily: 'Jakarta Sans',
+                  color: Color(0xFF9CA3AF),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'Jakarta Sans',
+                color: Color(0xFF000000),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF000000),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.tune,
+              color: Color(0xFFFFFFFF),
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
+  }
+}
+
 class _NotifBell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          width: 42,
-          height: 42,
+          width: 44,
+          height: 44,
           decoration: BoxDecoration(
-            color: const Color(0xFF131929),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF2A3A5C)),
+            color: const Color(0xFFF9FAFB),
+            borderRadius: BorderRadius.circular(32), // Squircle
+            border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
           child: const Icon(
             Icons.notifications_outlined,
-            color: Colors.white,
+            color: Color(0xFF000000),
             size: 20,
           ),
         ),
         Positioned(
-          top: 8,
-          right: 8,
+          top: 6,
+          right: 6,
           child: Container(
-            width: 9,
-            height: 9,
+            width: 10,
+            height: 10,
             decoration: const BoxDecoration(
-              color: Color(0xFFFF6B6B),
+              color: Color(0xFFEF4444),
               shape: BoxShape.circle,
             ),
           ),
@@ -455,21 +479,20 @@ class _UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 42,
-      height: 42,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4F7CFF), Color(0xFF8A5FE0)],
-        ),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF000000),
+        borderRadius: BorderRadius.circular(32), // Squircle
       ),
       child: const Center(
         child: Text(
           'MD',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 14,
+            fontFamily: 'Jakarta Sans',
+            color: Color(0xFFFFFFFF),
+            fontWeight: FontWeight.w900,
+            fontSize: 13,
           ),
         ),
       ),
@@ -481,41 +504,35 @@ class _BannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
+      height: 136,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E3A7A), Color(0xFF4F2D8A)],
-        ),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF000000), // Pure Black
+        borderRadius: BorderRadius.circular(40), // Squircle
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF000000).withOpacity(0.1),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Stack(
         children: [
+          // Subtle halo
           Positioned(
-            right: -20,
+            right: -40,
             top: -20,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 140,
+              height: 140,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.06),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 30,
-            bottom: -30,
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.06),
+                color: const Color(0xFF22C55E).withOpacity(0.08),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Row(
               children: [
                 Expanded(
@@ -524,60 +541,62 @@ class _BannerCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        '🔥 Nouveau !',
+                        '🚀 NOUVEAU',
                         style: TextStyle(
-                          color: Color(0xFFFFD580),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Jakarta Sans',
+                          color: Color(0xFF22C55E),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.6,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       const Text(
-                        'Paiement de factures\ndirectement depuis l\'app',
+                        'Paiement de factures\nà portée de main',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Jakarta Sans',
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
                           height: 1.3,
+                          letterSpacing: -0.05,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
-                          vertical: 6,
+                          vertical: 7,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                          ),
+                          color: const Color(0xFF22C55E),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         child: const Text(
                           'Découvrir →',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Jakarta Sans',
+                            color: Color(0xFF000000),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 76,
+                  height: 76,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xFF22C55E),
+                    borderRadius: BorderRadius.circular(28),
                   ),
                   child: const Icon(
                     Icons.receipt_long_outlined,
-                    color: Colors.white,
-                    size: 38,
+                    color: Color(0xFF000000),
+                    size: 36,
                   ),
                 ),
               ],
@@ -589,168 +608,303 @@ class _BannerCard extends StatelessWidget {
   }
 }
 
-class _QuickActionTile extends StatelessWidget {
+class _QuickActionTile extends StatefulWidget {
   final _QuickAction action;
   const _QuickActionTile({required this.action});
 
   @override
+  State<_QuickActionTile> createState() => _QuickActionTileState();
+}
+
+class _QuickActionTileState extends State<_QuickActionTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
       onTap: () {},
-      child: Column(
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: action.color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: action.color.withOpacity(0.25)),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFF000000),
+                borderRadius: BorderRadius.circular(28), // Squircle
+              ),
+              child: Icon(widget.action.icon,
+                  color: const Color(0xFFFFFFFF), size: 24),
             ),
-            child: Icon(action.icon, color: action.color, size: 24),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            action.label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFFCDD5F0),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+            const SizedBox(height: 8),
+            Text(
+              widget.action.label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Jakarta Sans',
+                color: Color(0xFF000000),
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ServiceTile extends StatelessWidget {
+class _ServiceTile extends StatefulWidget {
   final _Service service;
   const _ServiceTile({required this.service});
 
   @override
+  State<_ServiceTile> createState() => _ServiceTileState();
+}
+
+class _ServiceTileState extends State<_ServiceTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
       onTap: () {},
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: service.color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: service.color.withOpacity(0.2)),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFFFF),
+                borderRadius: BorderRadius.circular(28), // Squircle
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF000000).withOpacity(0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(widget.service.icon,
+                  color: widget.service.color, size: 26),
             ),
-            child: Icon(service.icon, color: service.color, size: 26),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            service.label,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            style: const TextStyle(
-              color: Color(0xFFCDD5F0),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              height: 1.3,
+            const SizedBox(height: 8),
+            Text(
+              widget.service.label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: const TextStyle(
+                fontFamily: 'Jakarta Sans',
+                color: Color(0xFF000000),
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                height: 1.2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _NewsTile extends StatelessWidget {
+class _NewsTile extends StatefulWidget {
   final _NewsItem news;
   const _NewsTile({required this.news});
 
   @override
+  State<_NewsTile> createState() => _NewsTileState();
+}
+
+class _NewsTileState extends State<_NewsTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF131929),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF1E2D4A)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: news.tagColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(news.icon, color: news.tagColor, size: 22),
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      onTap: () {},
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(36), // Squircle
+            border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF000000).withOpacity(0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9FAFB),
+                  borderRadius: BorderRadius.circular(26),
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(widget.news.icon,
+                    color: widget.news.tagColor, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: news.tagColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        news.tag,
-                        style: TextStyle(
-                          color: news.tagColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: widget.news.tagColor.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            widget.news.tag.toUpperCase(),
+                            style: TextStyle(
+                              fontFamily: 'Jakarta Sans',
+                              color: widget.news.tagColor,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
                         ),
+                        const Spacer(),
+                        Text(
+                          widget.news.date,
+                          style: const TextStyle(
+                            fontFamily: 'Jakarta Sans',
+                            color: Color(0xFF9CA3AF),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.news.title,
+                      style: const TextStyle(
+                        fontFamily: 'Jakarta Sans',
+                        color: Color(0xFF000000),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.02,
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 4),
                     Text(
-                      news.date,
+                      widget.news.subtitle,
                       style: const TextStyle(
-                        color: Color(0xFF4A5B7A),
-                        fontSize: 11,
+                        fontFamily: 'Jakarta Sans',
+                        color: Color(0xFF6B7280),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  news.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  news.subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF8B9CC8),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFFD1D5DB),
+                size: 14,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          const Icon(
-            Icons.arrow_forward_ios,
-            color: Color(0xFF4A5B7A),
-            size: 14,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -764,17 +918,17 @@ class _BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavItem(Icons.home_outlined, Icons.home, 'Accueil'),
-      _NavItem(Icons.map_outlined, Icons.map, 'Carte'),
-      _NavItem(Icons.chat_bubble_outline, Icons.chat_bubble, 'Messagerie'),
-      _NavItem(Icons.person_outline, Icons.person, 'Profil'),
-      _NavItem(Icons.logout_outlined, Icons.logout, 'Quitter'),
+      _NavItem(Icons.home_outlined, Icons.home, 'ACCUEIL'),
+      _NavItem(Icons.map_outlined, Icons.map, 'CARTE'),
+      _NavItem(Icons.chat_bubble_outline, Icons.chat_bubble, 'MSG'),
+      _NavItem(Icons.person_outline, Icons.person, 'PROFIL'),
+      _NavItem(Icons.logout_outlined, Icons.logout, 'QUITTER'),
     ];
 
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF0F1726),
-        border: Border(top: BorderSide(color: Color(0xFF1E2D4A))),
+        color: Color(0xFFFFFFFF),
+        border: Border(top: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
       ),
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
       child: Row(
@@ -791,31 +945,33 @@ class _BottomNav extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
-                      vertical: 6,
+                      vertical: 8,
                     ),
                     decoration: BoxDecoration(
                       color: selected
-                          ? const Color(0xFF4F7CFF).withOpacity(0.15)
+                          ? const Color(0xFF22C55E).withOpacity(0.12)
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Icon(
                       selected ? items[i].activeIcon : items[i].icon,
                       color: selected
-                          ? const Color(0xFF4F7CFF)
-                          : const Color(0xFF4A5B7A),
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xFF9CA3AF),
                       size: 22,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     items[i].label,
                     style: TextStyle(
+                      fontFamily: 'Jakarta Sans',
                       color: selected
-                          ? const Color(0xFF4F7CFF)
-                          : const Color(0xFF4A5B7A),
-                      fontSize: 10,
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xFF9CA3AF),
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
