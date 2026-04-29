@@ -4,7 +4,6 @@ import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { RedisService } from '../src/modules/redis/redis.service';
 
-// Mock RedisService
 const mockRedisService = {
   get: jest.fn(),
   set: jest.fn(),
@@ -13,18 +12,9 @@ const mockRedisService = {
   onModuleDestroy: jest.fn(),
 };
 
-// Dans beforeEach :
-const moduleFixture: TestingModule = await Test.createTestingModule({
-  imports: [AppModule],
-})
-  .overrideProvider(RedisService)
-  .useValue(mockRedisService)
-  .compile();
-
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
-  // Données de test uniques pour éviter les conflits en DB
   const testUser = {
     email: `test-${Date.now()}@fadel.td`,
     password: 'Password123!',
@@ -37,17 +27,30 @@ describe('AuthController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(RedisService)
+      .useValue(mockRedisService)
+      .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
-  describe('/auth/signup (POST)', () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('/auth/register (POST)', () => {
     it('devrait inscrire un nouvel utilisateur', () => {
       return request(app.getHttpServer())
-        .post('/auth/signup')
+        .post('/auth/register')
         .send(testUser)
         .expect(201)
         .expect((res) => {
@@ -56,18 +59,18 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('devrait échouer si l’email est déjà utilisé', () => {
+    it("devrait échouer si l'email est déjà utilisé", () => {
       return request(app.getHttpServer())
-        .post('/auth/signup')
+        .post('/auth/register')
         .send(testUser)
         .expect(400);
     });
   });
 
-  describe('/auth/signin (POST)', () => {
-    it('devrait connecter l’utilisateur et retourner des tokens', () => {
+  describe('/auth/login (POST)', () => {
+    it("devrait connecter l'utilisateur et retourner des tokens", () => {
       return request(app.getHttpServer())
-        .post('/auth/signin')
+        .post('/auth/login')
         .send({
           email: testUser.email,
           password: testUser.password,
@@ -82,16 +85,12 @@ describe('AuthController (e2e)', () => {
 
     it('devrait rejeter un mauvais mot de passe', () => {
       return request(app.getHttpServer())
-        .post('/auth/signin')
+        .post('/auth/login') 
         .send({
           email: testUser.email,
           password: 'wrongpassword',
         })
         .expect(401);
     });
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });

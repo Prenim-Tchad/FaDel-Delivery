@@ -89,11 +89,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
     "globals": {
-     "ts-jest": {
-    "diagnostics": false
-  }
+      "ts-jest": {
+          "diagnostics": false
+               }
 }
   } 
 }
