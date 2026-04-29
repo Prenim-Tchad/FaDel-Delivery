@@ -43,13 +43,29 @@ jobs:
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
 
-      - name: Build Project
-        run: npm run build
+      - name: Sync Database Schema (Prisma Push)
+        run: npx prisma db push --skip-generate
         env:
-          # On passe des variables fictives juste pour le build
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
-          JWT_SECRET: dummy_secret_for_ci
-          FIREBASE_SERVICE_ACCOUNT_PATH: ./firebase-adminsdk.json
 
       - name: Lint Check
         run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm run test
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
+          JWT_SECRET: dummy_secret_fadel_2026
+          # Variables Supabase indispensables pour ton module Auth
+          SUPABASE_URL: https://placeholder-project.supabase.co
+          SUPABASE_ANON_KEY: dummy_key_for_ci_checks
+          SUPABASE_SERVICE_ROLE_KEY: dummy_admin_key
+
+      - name: Build Project
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
+          JWT_SECRET: dummy_secret_fadel_2026
+          SUPABASE_URL: https://placeholder-project.supabase.co
+          SUPABASE_ANON_KEY: dummy_key_for_ci_checks
+          SUPABASE_SERVICE_ROLE_KEY: dummy_admin_key
