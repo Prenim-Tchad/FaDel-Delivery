@@ -61,6 +61,8 @@ model Restaurant {
   phone         String
   email         String? @unique
   website       String?
+  slug          String? @unique
+  rccm          String? @unique
   logoUrl       String? @map("logo_url")
   coverImageUrl String? @map("cover_image_url")
 
