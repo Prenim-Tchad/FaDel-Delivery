@@ -48,7 +48,11 @@ async function bootstrap() {
   app.enableCors({
     // On autorise localhost sur tous les ports pour le développement (Flutter Web change souvent de port)
     origin: (origin, callback) => {
-      if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      if (
+        !origin ||
+        origin.startsWith('http://localhost') ||
+        origin.startsWith('http://127.0.0.1')
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -61,8 +65,12 @@ async function bootstrap() {
   // Utilise le port 3000 par défaut (car ton Flutter cherche le 3000 dans la capture)
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  console.log(`🚀 Application FaDel Delivery démarrée sur: http://localhost:${port}`);
-  console.log(`📚 Documentation API disponible sur: http://localhost:${port}/api`);
+  console.log(
+    `🚀 Application FaDel Delivery démarrée sur: http://localhost:${port}`,
+  );
+  console.log(
+    `📚 Documentation API disponible sur: http://localhost:${port}/api`,
+  );
 }
 
 bootstrap().catch((err) => {
