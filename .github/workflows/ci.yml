@@ -44,7 +44,7 @@ jobs:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
 
       - name: Sync Database Schema (Prisma Push)
-        run: npx prisma db push --skip-generate
+        run: npx prisma db push 
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fadel_test
 
