@@ -19,10 +19,10 @@ export class MenuCategoryService {
   /**
    * Crée une catégorie de menu pour un restaurant donné
    */
-  async create(
-    restaurantId: string,
-    dto: CreateMenuCategoryDto,
-  ): Promise<MenuCategory> {
+  create(
+  restaurantId: string,
+  dto: CreateMenuCategoryDto,
+): MenuCategory {
     try {
       // Vérification que le restaurant existe
       const exists = this.menuCategoryRepository.restaurantExists();

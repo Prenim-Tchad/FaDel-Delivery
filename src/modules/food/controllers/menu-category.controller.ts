@@ -65,12 +65,12 @@ export class MenuCategoryController {
     status: HttpStatus.NOT_FOUND,     // 404
     description: 'Restaurant introuvable',
   })
-  async create(
+  create(
     // ParseUUIDPipe : valide automatiquement que :id est un UUID valide
     // Si ce n'est pas un UUID → erreur 400 automatique avant d'entrer dans le service
     @Param('id', ParseUUIDPipe) restaurantId: string,
     @Body() createMenuCategoryDto: CreateMenuCategoryDto,
-  ): Promise<MenuCategory> {
-    return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
-  }
+  ): MenuCategory {
+  return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
+}
 }
