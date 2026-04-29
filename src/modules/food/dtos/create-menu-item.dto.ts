@@ -15,14 +15,14 @@ export class CreateMenuItemDto {
     example: 'cuid123',
   })
   @IsUUID()
-  menuCategoryId: string;
+  menuCategoryId!: string;
 
   @ApiProperty({
     description: 'Nom de l’article du menu',
     example: 'Poulet Yassa',
   })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     description: 'Description de l’article',
@@ -36,7 +36,7 @@ export class CreateMenuItemDto {
   @ApiProperty({ description: 'Prix en CFA', example: 3500 })
   @IsNumber()
   @Min(0)
-  price: number;
+  price!: number;
 
   @ApiProperty({
     description: 'URL de l’image',
