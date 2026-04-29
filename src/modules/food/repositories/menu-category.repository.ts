@@ -18,10 +18,7 @@ export class MenuCategoryRepository {
   /**
    * Crée une nouvelle catégorie de menu
    */
-  create(
-    restaurantId: string,
-    dto: CreateMenuCategoryDto,
-  ): MenuCategory {
+  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
     const category: MenuCategory = {
       id: this.generateId(),
       restaurantId,
