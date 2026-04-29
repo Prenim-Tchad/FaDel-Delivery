@@ -44,25 +44,28 @@ async function bootstrap() {
     }),
   );
 
-  // CORS pour le développement
+  // CORS OPTIMISÉ POUR FLUTTER
   app.enableCors({
-    origin: [
-      'http://localhost:3001',
-      'http://localhost:8080',
-      'http://localhost:4200',
-    ],
+    // On autorise localhost sur tous les ports pour le développement (Flutter Web change souvent de port)
+    origin: (origin, callback) => {
+      if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 3001);
-  console.log(
-    `🚀 Application FaDel Delivery démarrée sur: http://localhost:${process.env.PORT ?? 3001}`,
-  );
-  console.log(
-    `📚 Documentation API disponible sur: http://localhost:${process.env.PORT ?? 3001}/api`,
-  );
+  // Utilise le port 3000 par défaut (car ton Flutter cherche le 3000 dans la capture)
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  console.log(`🚀 Application FaDel Delivery démarrée sur: http://localhost:${port}`);
+  console.log(`📚 Documentation API disponible sur: http://localhost:${port}/api`);
 }
+
 bootstrap().catch((err) => {
   console.error('❌ Erreur lors du démarrage de FaDel Delivery:', err);
-  process.exit(1); // Arrête le processus proprement en cas d'échec critique
+  process.exit(1);
 });
