@@ -2,16 +2,22 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtAuthService } from './jwt-auth.service';
 import { SUPABASE_CLIENT } from './auth.constants';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common'; // ✅ UnauthorizedException retiré
 import { UserRole } from '../../shared/types';
+
+interface SupabaseMock {
+  auth: {
+    signUp: jest.Mock;
+    signInWithPassword: jest.Mock;
+  };
+}
 
 describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtAuthService;
-  let supabaseMock: any;
+  let supabaseMock: SupabaseMock; // ✅ typé
 
   beforeEach(async () => {
-    // Simulation du client Supabase
     supabaseMock = {
       auth: {
         signUp: jest.fn(),
@@ -56,7 +62,6 @@ describe('AuthService', () => {
 
   describe('signInWithJwt', () => {
     it('devrait retourner un profil complet avec isPartner calculé', async () => {
-      // 1. Simuler le succès de connexion Supabase
       const mockSupabaseUser = {
         id: 'user_123',
         email: 'chef@resto.td',
@@ -71,7 +76,6 @@ describe('AuthService', () => {
         error: null,
       });
 
-      // 2. Simuler la génération de tokens
       (jwtService.generateTokenPair as jest.Mock).mockResolvedValue({
         accessToken: 'jwt_at',
         refreshToken: 'jwt_rt',
@@ -82,8 +86,7 @@ describe('AuthService', () => {
         password: 'password',
       });
 
-      // 3. Vérifications
-      expect(result.user.isPartner).toBe(true); // Vérifie que notre logique isPartner fonctionne
+      expect(result.user.isPartner).toBe(true);
       expect(result.accessToken).toBe('jwt_at');
     });
   });

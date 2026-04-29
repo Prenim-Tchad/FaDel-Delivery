@@ -3,6 +3,7 @@ import { FoodService } from './food.service';
 import { FoodRepository } from '../repositories/food.repository';
 import { BadRequestException } from '@nestjs/common';
 import { FoodStatus } from '../enums/food.enums';
+import { CreateFoodDto } from '../dto/create-food.dto';
 
 describe('FoodService', () => {
   let service: FoodService;
@@ -14,7 +15,6 @@ describe('FoodService', () => {
         FoodService,
         {
           provide: FoodRepository,
-          // On simule (mock) le repository pour ne pas toucher à la vraie base
           useValue: {
             create: jest.fn(),
             findOne: jest.fn(),
@@ -29,7 +29,7 @@ describe('FoodService', () => {
 
   describe('create', () => {
     it('devrait rejeter un prix négatif ou nul (Règle Métier)', async () => {
-      const dto = {
+      const dto: Partial<CreateFoodDto> = {
         name: 'Burger',
         price: 0,
         preparationTime: 15,
@@ -38,13 +38,13 @@ describe('FoodService', () => {
         partnerId: '1',
       };
 
-      await expect(service.create(dto as any)).rejects.toThrow(
+      await expect(service.create(dto as CreateFoodDto)).rejects.toThrow(
         BadRequestException,
       );
     });
 
     it('devrait créer un plat avec succès si les données sont valides', async () => {
-      const dto = {
+      const dto: Partial<CreateFoodDto> = {
         name: 'Pizza',
         price: 5000,
         preparationTime: 20,
@@ -52,18 +52,19 @@ describe('FoodService', () => {
         category: 'Italien',
         partnerId: '1',
       };
+
       const expectedResult = {
         id: 'food_1',
         ...dto,
         status: FoodStatus.AVAILABLE,
       };
 
-      // On simule la réponse du repo
-      (repo.create as jest.Mock).mockResolvedValue(expectedResult);
+      jest.mocked(repo.create).mockResolvedValue(expectedResult as any); // ✅ jest.mocked
 
-      const result = await service.create(dto as any);
+      const result = await service.create(dto as CreateFoodDto);
+
       expect(result).toEqual(expectedResult);
-      expect(repo.create).toHaveBeenCalledWith(dto);
+      expect(jest.mocked(repo.create)).toHaveBeenCalledWith(dto); // ✅ jest.mocked évite unbound-method
     });
   });
 });
