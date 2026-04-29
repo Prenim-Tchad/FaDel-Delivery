@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  //Patch,
+  HttpCode,
   Post,
   Request,
   UseGuards,
@@ -39,6 +39,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Connexion utilisateur' })
   @ApiResponse({
     status: 200,

@@ -15,7 +15,10 @@ import { Type } from 'class-transformer';
  * Peut être déplacée dans src/common/ pour être partagée entre tous les modules
  */
 export class MultiLangFieldDto {
-  @ApiProperty({ description: 'Texte en Français', example: 'Plats principaux' })
+  @ApiProperty({
+    description: 'Texte en Français',
+    example: 'Plats principaux',
+  })
   @IsString()
   fr!: string;
 
@@ -27,7 +30,10 @@ export class MultiLangFieldDto {
   @IsString()
   ar!: string;
 
-  @ApiProperty({ description: 'Texto en Español', example: 'Platos principales' })
+  @ApiProperty({
+    description: 'Texto en Español',
+    example: 'Platos principales',
+  })
   @IsString()
   es!: string;
 }
