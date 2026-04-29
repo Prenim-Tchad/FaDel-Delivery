@@ -15,20 +15,20 @@ import { MenuCategoryRepository } from './repositories/menu-category.repository'
  */
 @Module({
   controllers: [
-    FoodController,           // ✅ lead - routes food
-    MenuCategoryController,   // 🆕 saleh - POST /food/restaurants/:id/menu-categories
+    FoodController, // ✅ lead - routes food
+    MenuCategoryController, // 🆕 saleh - POST /food/restaurants/:id/menu-categories
   ],
   providers: [
-    FoodService,              // ✅ lead
-    MenuCategoryService,      // 🆕 saleh
-    FoodRepository,           // ✅ lead
-    MenuCategoryRepository,   // 🆕 saleh
+    FoodService, // ✅ lead
+    MenuCategoryService, // 🆕 saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // 🆕 saleh
   ],
   exports: [
-    FoodService,              // ✅ lead
-    MenuCategoryService,      // 🆕 saleh
-    FoodRepository,           // ✅ lead
-    MenuCategoryRepository,   // 🆕 saleh
+    FoodService, // ✅ lead
+    MenuCategoryService, // 🆕 saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // 🆕 saleh
   ],
 })
 export class FoodModule {}
