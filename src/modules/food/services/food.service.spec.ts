@@ -4,7 +4,6 @@ import { PrismaService } from '../../../prisma.service';
 
 describe('RestaurantRepository', () => {
   let repository: RestaurantRepository;
-  let prisma: PrismaService;
 
   const mockPrisma = {
     restaurant: {
@@ -23,7 +22,6 @@ describe('RestaurantRepository', () => {
     }).compile();
 
     repository = module.get<RestaurantRepository>(RestaurantRepository);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -38,11 +36,12 @@ describe('RestaurantRepository', () => {
         phone: '+23566000000',
         rccm: 'RCCM-TD-2026-B-1234',
         cuisineCategoryId: 'cat-123',
-        ownerId: 'user-456'
+        ownerId: 'user-456',
       };
 
       mockPrisma.restaurant.create.mockResolvedValue({ id: '1', ...dto });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const result = await repository.create(dto as any);
 
       expect(result).toHaveProperty('id');

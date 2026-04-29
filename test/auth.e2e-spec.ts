@@ -102,6 +102,7 @@ describe('AuthController (e2e)', () => {
   // ── Register ─────────────────────────────────────────────────────────────
   describe('/auth/register (POST)', () => {
     it('devrait inscrire un nouvel utilisateur', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .post('/auth/register')
         .send(testUser)
@@ -113,6 +114,7 @@ describe('AuthController (e2e)', () => {
     });
 
     it('devrait échouer si données invalides (email manquant)', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ ...testUser, email: '' })
@@ -124,7 +126,7 @@ describe('AuthController (e2e)', () => {
         data: { user: null, session: null },
         error: { message: 'Email already registered' },
       });
-
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .post('/auth/register')
         .send(testUser)
@@ -135,6 +137,7 @@ describe('AuthController (e2e)', () => {
   // ── Login ─────────────────────────────────────────────────────────────────
   describe('/auth/login (POST)', () => {
     it("devrait connecter l'utilisateur et retourner des tokens", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: testUser.email, password: testUser.password })
@@ -152,7 +155,7 @@ describe('AuthController (e2e)', () => {
         data: { user: null, session: null },
         error: { message: 'Invalid login credentials' },
       });
-
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: testUser.email, password: 'wrongpassword' })
