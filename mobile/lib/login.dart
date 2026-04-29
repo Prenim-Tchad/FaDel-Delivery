@@ -100,13 +100,13 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E1A),
+      backgroundColor: const Color(0xFFF9FAFB), // Mist Gray background
       body: Stack(
         children: [
           const _LoginBackground(),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: FadeTransition(
                 opacity: _fadeAnim,
                 child: SlideTransition(
@@ -116,39 +116,39 @@ class _LoginPageState extends State<LoginPage>
                     children: [
                       const SizedBox(height: 60),
                       const AppLogo(size: 100),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       const Text(
-                        'FaDel',
+                        'FADEL',
                         style: TextStyle(
-                          fontFamily: 'Georgia',
+                          fontFamily: 'Jakarta Sans',
                           fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w900, // Black weight
+                          color: Color(0xFF000000), // Pure Black
+                          letterSpacing: -0.05, // Tight tracking
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       const Text(
-                        'Votre plateforme de livraison sécurisé et rapide.',
+                        'Livraison sûre, rapide, toujours là.',
                         style: TextStyle(
+                          fontFamily: 'Jakarta Sans',
                           fontSize: 14,
-                          color: Color(0xFF8B9CC8),
-                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w500, // Medium
+                          color: Color(0xFF000000),
+                          letterSpacing: 0.2,
                         ),
                       ),
                       const SizedBox(height: 56),
                       Container(
-                        padding: const EdgeInsets.all(28),
+                        padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF131929),
-                          borderRadius: BorderRadius.circular(28),
-                          border: Border.all(
-                              color: const Color(0xFF2A3A5C), width: 1),
+                          color: const Color(0xFFFFFFFF), // Optical White
+                          borderRadius: BorderRadius.circular(40), // Squircle
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF4F7CFF).withOpacity(0.1),
-                              blurRadius: 40,
-                              offset: const Offset(0, 10),
+                              color: const Color(0xFF000000).withOpacity(0.08),
+                              blurRadius: 24,
+                              offset: const Offset(0, 8),
                             ),
                           ],
                         ),
@@ -156,20 +156,27 @@ class _LoginPageState extends State<LoginPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Connexion',
+                              'CONNEXION',
                               style: TextStyle(
+                                fontFamily: 'Jakarta Sans',
                                 fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                fontWeight: FontWeight.w900, // Black
+                                color: Color(0xFF000000),
+                                letterSpacing: -0.05, // Tight
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 8),
                             const Text(
-                              'Bienvenue ! Connectez-vous pour continuer.',
+                              'Accédez à vos livraisons en un clic.',
                               style: TextStyle(
-                                  fontSize: 13, color: Color(0xFF8B9CC8)),
+                                fontFamily: 'Jakarta Sans',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF000000),
+                                letterSpacing: 0.2,
+                              ),
                             ),
-                            const SizedBox(height: 28),
+                            const SizedBox(height: 32),
                             _InputField(
                               controller: _emailController,
                               label: 'Adresse e-mail',
@@ -211,36 +218,41 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 28),
+                            const SizedBox(height: 32),
                             _GradientButton(
-                              label: 'Se connecter',
+                              label: 'CONTINUER',
                               isLoading: _isLoading,
                               onTap: _login,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            "Vous n'avez pas un compte ?",
+                            "Pas encore de compte ?",
                             style: TextStyle(
-                                color: Color(0xFF8B9CC8), fontSize: 14),
+                              fontFamily: 'Jakarta Sans',
+                              color: Color(0xFF000000),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => RegisterPage()),
+                                  builder: (_) => const RegisterPage()),
                             ),
                             child: const Text(
-                              "Créez votre compte",
+                              " S'inscrire",
                               style: TextStyle(
-                                color: Color(0xFF4F7CFF),
+                                fontFamily: 'Jakarta Sans',
+                                color: Color(0xFF22C55E),
                                 fontSize: 14,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                           ),
