@@ -36,10 +36,20 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     it('devrait lever une BadRequestException si Supabase retourne une erreur', async () => {
-      supabaseMock.auth.signUp.mockResolvedValue({ data: {}, error: { message: 'Email existant' } });
+      supabaseMock.auth.signUp.mockResolvedValue({
+        data: {},
+        error: { message: 'Email existant' },
+      });
 
-      const dto = { email: 'test@fadel.td', password: '123', nom: 'T', prenom: 'H', phone: '1', quartier: 'M' };
-      
+      const dto = {
+        email: 'test@fadel.td',
+        password: '123',
+        nom: 'T',
+        prenom: 'H',
+        phone: '1',
+        quartier: 'M',
+      };
+
       await expect(service.signUp(dto)).rejects.toThrow(BadRequestException);
     });
   });
@@ -47,21 +57,30 @@ describe('AuthService', () => {
   describe('signInWithJwt', () => {
     it('devrait retourner un profil complet avec isPartner calculé', async () => {
       // 1. Simuler le succès de connexion Supabase
-      const mockSupabaseUser = { 
-        id: 'user_123', 
-        email: 'chef@resto.td', 
-        user_metadata: { role: UserRole.PARTNER, nom: 'Resto A' } 
+      const mockSupabaseUser = {
+        id: 'user_123',
+        email: 'chef@resto.td',
+        user_metadata: { role: UserRole.PARTNER, nom: 'Resto A' },
       };
-      
+
       supabaseMock.auth.signInWithPassword.mockResolvedValue({
-        data: { session: { access_token: 'at', refresh_token: 'rt' }, user: mockSupabaseUser },
+        data: {
+          session: { access_token: 'at', refresh_token: 'rt' },
+          user: mockSupabaseUser,
+        },
         error: null,
       });
 
       // 2. Simuler la génération de tokens
-      (jwtService.generateTokenPair as jest.Mock).mockResolvedValue({ accessToken: 'jwt_at', refreshToken: 'jwt_rt' });
+      (jwtService.generateTokenPair as jest.Mock).mockResolvedValue({
+        accessToken: 'jwt_at',
+        refreshToken: 'jwt_rt',
+      });
 
-      const result = await service.signInWithJwt({ email: 'chef@resto.td', password: 'password' });
+      const result = await service.signInWithJwt({
+        email: 'chef@resto.td',
+        password: 'password',
+      });
 
       // 3. Vérifications
       expect(result.user.isPartner).toBe(true); // Vérifie que notre logique isPartner fonctionne

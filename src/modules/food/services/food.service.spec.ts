@@ -29,14 +29,34 @@ describe('FoodService', () => {
 
   describe('create', () => {
     it('devrait rejeter un prix négatif ou nul (Règle Métier)', async () => {
-      const dto = { name: 'Burger', price: 0, preparationTime: 15, ingredients: [], category: 'FastFood', partnerId: '1' };
-      
-      await expect(service.create(dto as any)).rejects.toThrow(BadRequestException);
+      const dto = {
+        name: 'Burger',
+        price: 0,
+        preparationTime: 15,
+        ingredients: [],
+        category: 'FastFood',
+        partnerId: '1',
+      };
+
+      await expect(service.create(dto as any)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('devrait créer un plat avec succès si les données sont valides', async () => {
-      const dto = { name: 'Pizza', price: 5000, preparationTime: 20, ingredients: ['Tomate'], category: 'Italien', partnerId: '1' };
-      const expectedResult = { id: 'food_1', ...dto, status: FoodStatus.AVAILABLE };
+      const dto = {
+        name: 'Pizza',
+        price: 5000,
+        preparationTime: 20,
+        ingredients: ['Tomate'],
+        category: 'Italien',
+        partnerId: '1',
+      };
+      const expectedResult = {
+        id: 'food_1',
+        ...dto,
+        status: FoodStatus.AVAILABLE,
+      };
 
       // On simule la réponse du repo
       (repo.create as jest.Mock).mockResolvedValue(expectedResult);

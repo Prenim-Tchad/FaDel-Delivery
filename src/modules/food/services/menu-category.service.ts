@@ -19,10 +19,7 @@ export class MenuCategoryService {
   /**
    * Crée une catégorie de menu pour un restaurant donné
    */
-  create(
-  restaurantId: string,
-  dto: CreateMenuCategoryDto,
-): MenuCategory {
+  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
     try {
       // Vérification que le restaurant existe
       const exists = this.menuCategoryRepository.restaurantExists();
@@ -41,7 +38,6 @@ export class MenuCategoryService {
 
       // Création de la catégorie
       return this.menuCategoryRepository.create(restaurantId, dto);
-
     } catch (error) {
       if (
         error instanceof NotFoundException ||
