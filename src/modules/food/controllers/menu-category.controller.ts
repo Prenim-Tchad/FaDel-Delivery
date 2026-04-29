@@ -29,8 +29,8 @@ import { MenuCategory } from '../entities/menu-category.entity';
  * Il ne contient AUCUNE logique métier → tout est dans le Service
  */
 @ApiTags('food - menu categories') // Groupe dans Swagger UI
-@ApiBearerAuth('JWT-auth')         // Indique que la route nécessite un token JWT
-@Controller('food/restaurants')    // Préfixe de base : /food/restaurants
+@ApiBearerAuth('JWT-auth') // Indique que la route nécessite un token JWT
+@Controller('food/restaurants') // Préfixe de base : /food/restaurants
 export class MenuCategoryController {
   constructor(
     // Injection du service pour la logique métier
@@ -53,16 +53,16 @@ export class MenuCategoryController {
     example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,       // 201
+    status: HttpStatus.CREATED, // 201
     description: 'Catégorie créée avec succès',
     type: MenuCategory,
   })
   @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,   // 400
+    status: HttpStatus.BAD_REQUEST, // 400
     description: 'Données invalides',
   })
   @ApiResponse({
-    status: HttpStatus.NOT_FOUND,     // 404
+    status: HttpStatus.NOT_FOUND, // 404
     description: 'Restaurant introuvable',
   })
   create(
@@ -71,6 +71,6 @@ export class MenuCategoryController {
     @Param('id', ParseUUIDPipe) restaurantId: string,
     @Body() createMenuCategoryDto: CreateMenuCategoryDto,
   ): MenuCategory {
-  return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
-}
+    return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
+  }
 }

@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 describe('NotificationService', () => {
   let service: NotificationService;
 
-  // On crée un "Mock" de Twilio pour ne pas envoyer de vrais SMS pendant le test
+  // 1. Définition du mock avec un typage partiel pour éviter 'any'
   const mockTwilioClient = {
     messages: {
       create: jest.fn().mockResolvedValue({ sid: 'SM12345' }),
@@ -19,11 +19,14 @@ describe('NotificationService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn((key: string) => {
-              if (key === 'TWILIO_ACCOUNT_SID') return 'AC913...';
-              if (key === 'TWILIO_AUTH_TOKEN') return '9bf3b...';
-              if (key === 'TWILIO_WHATSAPP_NUMBER') return '+14155238886';
-              return null;
+            // Typage explicite du retour pour éviter 'no-unsafe-return'
+            get: jest.fn((key: string): string | null => {
+              const config: Record<string, string> = {
+                TWILIO_ACCOUNT_SID: 'AC913...',
+                TWILIO_AUTH_TOKEN: '9bf3b...',
+                TWILIO_WHATSAPP_NUMBER: '+14155238886',
+              };
+              return config[key] || null;
             }),
           },
         },
@@ -31,21 +34,45 @@ describe('NotificationService', () => {
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);
-    // On force l'injection du mock Twilio dans le service
-    (service as any).client = mockTwilioClient;
+
+    // 2. Injection sécurisée du mock Twilio (Ligne 56 / 74)
+    // On utilise un type d'interface temporaire pour l'accès à la propriété privée 'client'
+    // Cela neutralise définitivement 'Unsafe assignment of an any value'
+    (service as unknown as { client: unknown }).client = mockTwilioClient;
   });
 
   it('devrait formater correctement le message de confirmation de commande', async () => {
     const phone = '+23568383778';
-    await service.sendOrderConfirmation(phone, '1001', 1500, 'Chagoua');
+    const orderId = '1001';
+    const amount = 1500;
+    const neighborhood = 'Chagoua';
 
-    // On vérifie que le message contient bien les informations clés
+    await service.sendOrderConfirmation(phone, orderId, amount, neighborhood);
+
+    // 3. Vérification robuste avec RegExp
+    // Valide la présence de l'ID, du prix en FCFA et du quartier (Chagoua)
     expect(mockTwilioClient.messages.create).toHaveBeenCalledWith(
       expect.objectContaining({
         to: `whatsapp:${phone}`,
-        body: expect.stringContaining('#1001'),
-        body: expect.stringContaining('1500 FCFA'),
-        body: expect.stringContaining('Chagoua'),
+        body: expect.stringMatching(
+          new RegExp(`#${orderId}.*${amount} FCFA.*${neighborhood}`),
+        ),
+      }),
+    );
+  });
+
+  it('devrait envoyer une alerte correcte au livreur', async () => {
+    const phone = '+23599001122';
+    const distance = '2.5 km';
+    const price = 500;
+    const pickup = 'Boutique Total';
+
+    await service.sendDriverAlert(phone, distance, price, pickup);
+
+    expect(mockTwilioClient.messages.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: `whatsapp:${phone}`,
+        body: expect.stringContaining(distance),
       }),
     );
   });

@@ -3,10 +3,6 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-<<<<<<< HEAD
-  IsBoolean,
-=======
->>>>>>> b20a226df1f7db9386fa8b5f319f664e0748877c
   IsUrl,
   IsUUID,
   Min,

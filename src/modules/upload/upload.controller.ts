@@ -14,23 +14,28 @@ import { R2StorageService } from './r2-storage.service';
 @Controller('upload')
 export class UploadController {
   constructor(private readonly r2Service: R2StorageService) {}
-  @Get('test-whatsapp') // <-- N'oublie pas le décorateur
-  async testMyPhone() {
-    // <-- Vérifie qu'il n'y a pas de "function" écrit devant
+
+  @Get('test-whatsapp')
+  testMyPhone() {
+    // 1. Retrait de 'async' car il n'y a pas de 'await' à l'intérieur
     const monNumero = '+23568383778';
-    // ton code...
-    return { success: true };
+
+    // 2. Utilisation de la variable pour éviter l'erreur 'no-unused-vars'
+    console.log(`Test de notification pour le numéro : ${monNumero}`);
+
+    return {
+      success: true,
+      target: monNumero,
+    };
   }
 
   @Post('food')
-  @UseInterceptors(FileInterceptor('file')) // 'file' est le nom du champ envoyé par Flutter
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFoodImage(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          // 1. Limite à 2 Mo (2 * 1024 * 1024 octets)
           new MaxFileSizeValidator({ maxSize: 2097152 }),
-          // 2. Vérifie le type MIME (Regex pour images classiques)
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg|webp)' }),
         ],
       }),

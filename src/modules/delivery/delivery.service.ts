@@ -2,6 +2,21 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
+// 1. Définition des interfaces pour typer la réponse Google Maps (évite l'erreur 'any')
+interface GoogleMapsElement {
+  status: string;
+  duration: { text: string };
+  distance: { text: string };
+}
+
+interface GoogleMapsRow {
+  elements: GoogleMapsElement[];
+}
+
+interface GoogleMapsResponse {
+  rows: GoogleMapsRow[];
+}
+
 @Injectable()
 export class DeliveryService {
   private readonly EARTH_RADIUS_KM = 6371;
@@ -9,7 +24,7 @@ export class DeliveryService {
   constructor(private readonly httpService: HttpService) {}
 
   /**
-   * Méthode synchrone pour le calcul mathématique simple (utilisée par ton test)
+   * Méthode synchrone pour le calcul mathématique simple
    */
   calculateDistance(
     lat1: number,
@@ -17,7 +32,6 @@ export class DeliveryService {
     lat2: number,
     lon2: number,
   ): number {
-    // Validation pour que le test "devrait lever une erreur" passe
     if (!this.isValid(lat1, lon1) || !this.isValid(lat2, lon2)) {
       throw new BadRequestException('Coordonnées GPS invalides');
     }
@@ -33,25 +47,35 @@ export class DeliveryService {
     lat2: number,
     lon2: number,
   ) {
-    const distance = this.calculateDistance(lat1, lon1, lat2, lon2);
-    let duration = null;
+    const distanceHaversine = this.calculateDistance(lat1, lon1, lat2, lon2);
+    let duration: string | null = null;
 
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     if (apiKey) {
       try {
         const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat1},${lon1}&destinations=${lat2},${lon2}&key=${apiKey}`;
-        const response = await firstValueFrom(this.httpService.get(url));
 
-        if (response.data.rows?.[0]?.elements?.[0]?.status === 'OK') {
-          duration = response.data.rows[0].elements[0].duration.text;
+        // 2. Typage explicite de la réponse HTTP
+        const response = await firstValueFrom(
+          this.httpService.get<GoogleMapsResponse>(url),
+        );
+
+        // 3. Accès sécurisé aux données typées (règle l'erreur .rows access)
+        const firstRow = response.data.rows[0];
+        const firstElement = firstRow?.elements[0];
+
+        if (firstElement?.status === 'OK') {
+          duration = firstElement.duration.text;
         }
-      } catch (error) {
-        console.error('Google Maps API Error', error);
+      } catch (error: unknown) {
+        // 4. Gestion sécurisée du type error pour le Lint
+        const msg = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Google Maps API Error', msg);
       }
     }
 
     return {
-      distance: `${distance} km`,
+      distance: `${distanceHaversine} km`,
       duration: duration || 'Estimation indisponible',
       method: duration ? 'Google Maps' : 'Haversine',
     };
