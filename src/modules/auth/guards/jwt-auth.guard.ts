@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+//import { UserPayload } from '../../../shared/types/auth.types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -12,10 +13,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: any) {
+  // Remplace ta ligne 16 par celle-ci :
+  handleRequest<TUser = any>(err: any, user: any): TUser {
     if (err || !user) {
-      throw err || new UnauthorizedException('Token JWT invalide ou expiré');
+      throw err || new UnauthorizedException();
     }
-    return user;
+    return user as TUser;
   }
 }
