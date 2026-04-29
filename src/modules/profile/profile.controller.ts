@@ -16,6 +16,12 @@ import {
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
+import { UserPayload } from '../../shared/types/auth.types';
+import type { Request as ExpressRequest } from 'express';
+
+interface AuthenticatedRequest extends ExpressRequest {
+  user: UserPayload;
+}
 
 @ApiTags('profile')
 @Controller('profile')
@@ -28,8 +34,8 @@ export class ProfileController {
   @ApiOperation({ summary: "Récupérer le profil complet de l'utilisateur" })
   @ApiResponse({ status: 200, description: 'Profil récupéré avec succès' })
   @ApiResponse({ status: 401, description: 'Token invalide' })
-  async getProfile(@Request() req) {
-    return this.profileService.getProfile(req.user.id);
+  async getProfile(@Request() req: AuthenticatedRequest) {
+    return this.profileService.getProfile(req.user.sub);
   }
 
   @UseGuards(SupabaseAuthGuard)
@@ -38,8 +44,11 @@ export class ProfileController {
   @ApiOperation({ summary: 'Mettre à jour le profil utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil mis à jour' })
   @ApiResponse({ status: 400, description: 'Données invalides' })
-  async updateProfile(@Request() req, @Body() dto: UpdateProfileDto) {
-    return this.profileService.updateProfile(req.user.id, dto);
+  async updateProfile(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: UpdateProfileDto,
+  ) {
+    return this.profileService.updateProfile(req.user.sub, dto);
   }
 
   @UseGuards(SupabaseAuthGuard)
@@ -48,7 +57,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Supprimer le profil utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil supprimé' })
   @ApiResponse({ status: 401, description: 'Token invalide' })
-  async deleteProfile(@Request() req) {
-    return this.profileService.deleteProfile(req.user.id);
+  async deleteProfile(@Request() req: AuthenticatedRequest) {
+    return this.profileService.deleteProfile(req.user.sub);
   }
 }

@@ -2,21 +2,27 @@ import {
   Body,
   Controller,
   Get,
-  Patch,
+  //Patch,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
+import { UserPayload } from '../../shared/types/auth.types';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+
+interface AuthenticatedRequest extends ExpressRequest {
+  user: UserPayload;
+}
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+//import { UpdateProfileDto } from './dto/update-profile.dto';
 import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 
 @ApiTags('auth')
@@ -58,8 +64,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Récupérer le profil utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil récupéré' })
   @ApiResponse({ status: 401, description: 'Token invalide' })
-  async getProfile(@Request() req) {
-    return this.authService.getProfile(req.user.id);
+  async getProfile(@Request() req: AuthenticatedRequest) {
+    return this.authService.getProfile(req.user.sub);
   }
 
   @Post('refresh')
@@ -78,8 +84,9 @@ export class AuthController {
   @Post('logout')
   @ApiOperation({ summary: 'Déconnexion utilisateur' })
   @ApiResponse({ status: 200, description: 'Déconnexion réussie' })
-  async logout(@Request() req) {
-    const token = req.headers.authorization.replace('Bearer ', '');
+  async logout(@Request() req: ExpressRequest) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.replace('Bearer ', '') || '';
     return this.authService.signOut(token);
   }
 }

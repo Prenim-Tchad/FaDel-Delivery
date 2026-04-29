@@ -8,10 +8,9 @@ import {
   IsBoolean,
   IsObject,
   Min,
-  Max,
   IsUUID,
 } from 'class-validator';
-import { FoodCategory, FoodStatus, FoodType } from '../enums/food.enums';
+import { FoodCategory, FoodType } from '../enums/food.enums';
 
 export class CreateFoodDto {
   @ApiProperty({
@@ -19,14 +18,14 @@ export class CreateFoodDto {
     example: 'Jollof Rice',
   })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     description: 'Detailed description of the food item',
     example: ` 'Traditional West African rice dish with tomatoes, peppers, and spices'`,
   })
   @IsString()
-  description: string;
+  description!: string;
 
   @ApiProperty({
     description: 'Price of the food item in CFA francs',
@@ -34,7 +33,7 @@ export class CreateFoodDto {
   })
   @IsNumber()
   @Min(0)
-  price: number;
+  price!: number;
 
   @ApiProperty({
     description: 'Category of the food item',
@@ -42,7 +41,7 @@ export class CreateFoodDto {
     example: FoodCategory.MAIN_COURSE,
   })
   @IsEnum(FoodCategory)
-  category: FoodCategory;
+  category!: FoodCategory;
 
   @ApiProperty({
     description: 'Type of the food item (dietary restrictions)',
@@ -50,7 +49,7 @@ export class CreateFoodDto {
     example: FoodType.REGULAR,
   })
   @IsEnum(FoodType)
-  type: FoodType;
+  type!: FoodType;
 
   @ApiProperty({
     description: 'Preparation time in minutes',
@@ -58,7 +57,7 @@ export class CreateFoodDto {
   })
   @IsNumber()
   @Min(1)
-  preparationTime: number;
+  preparationTime!: number;
 
   @ApiProperty({
     description: 'Ingredients list',
@@ -67,7 +66,7 @@ export class CreateFoodDto {
   })
   @IsArray()
   @IsString({ each: true })
-  ingredients: string[];
+  ingredients!: string[];
 
   @ApiProperty({
     description: 'URL of the food image',
@@ -107,5 +106,5 @@ export class CreateFoodDto {
     example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @IsUUID()
-  partnerId: string;
+  partnerId!: string;
 }

@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  //url      = "postgresql://admin:password_a_changer@database:5432/fadel_delivery?schema=public"
 }
 
 model Profile {
@@ -193,6 +194,7 @@ model MenuItem {
   menuCategory   MenuCategory        @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
   modifierGroups MenuModifierGroup[]
   orderItems     OrderItem[]
+ 
 
   @@index([menuCategoryId, isAvailable, sortOrder])
   @@index([isVegetarian, isVegan, isHalal])
@@ -235,6 +237,7 @@ model MenuModifierOption {
   // Relations
   modifierGroup MenuModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
   orderItemOptions OrderItemOption[]
+  
 
   @@index([modifierGroupId, isAvailable, sortOrder])
   @@map("menu_modifier_options")
