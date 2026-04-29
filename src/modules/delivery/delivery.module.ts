@@ -5,18 +5,15 @@ import { DeliveryService } from './delivery.service';
 import { DeliveryPricingService } from './delivery-pricing.service'; // 🆕 Import du nouveau service
 
 @Module({
-  imports: [
-    HttpModule,
-    ConfigModule,
-  ],
-  controllers: [], 
+  imports: [HttpModule, ConfigModule],
+  controllers: [],
   providers: [
-    DeliveryService, 
-    DeliveryPricingService // 🆕 Ajouté ici
+    DeliveryService,
+    DeliveryPricingService, // 🆕 Ajouté ici
   ],
   exports: [
-    DeliveryService, 
-    DeliveryPricingService // 🆕 Exporté pour que le module 'Orders' puisse calculer le montant total
+    DeliveryService,
+    DeliveryPricingService, // 🆕 Exporté pour que le module 'Orders' puisse calculer le montant total
   ],
 })
 export class DeliveryModule {}

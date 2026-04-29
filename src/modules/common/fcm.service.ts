@@ -10,7 +10,9 @@ export class FcmService implements OnModuleInit {
 
   onModuleInit() {
     // Assure-toi que c'est écrit comme ça :
-    const serviceAccount = require(this.configService.get('FIREBASE_CREDENTIALS_PATH')!);
+    const serviceAccount = require(
+      this.configService.get('FIREBASE_CREDENTIALS_PATH')!,
+    );
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),

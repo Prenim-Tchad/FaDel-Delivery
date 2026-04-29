@@ -3,9 +3,9 @@ import { DeliveryService } from './delivery.service';
 
 // Définition des types de véhicules pour éviter les erreurs de frappe
 export enum VehicleType {
-  MOTO = 'MOTO',       // Standard : 150 FCFA/km
-  CARGO = 'CARGO',     // Gros colis : 250 FCFA/km
-  EXPRESS = 'EXPRESS'  // Prioritaire : 400 FCFA/km
+  MOTO = 'MOTO', // Standard : 150 FCFA/km
+  CARGO = 'CARGO', // Gros colis : 250 FCFA/km
+  EXPRESS = 'EXPRESS', // Prioritaire : 400 FCFA/km
 }
 
 @Injectable()
@@ -27,9 +27,20 @@ export class DeliveryPricingService {
   /**
    * Calcule le prix total de la livraison
    */
-  async calculatePrice(lat1: number, lon1: number, lat2: number, lon2: number, vehicle: VehicleType) {
+  async calculatePrice(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+    vehicle: VehicleType,
+  ) {
     // 1. Récupération de la distance (via ton module #22)
-    const estimation = await this.geoService.getTravelEstimation(lat1, lon1, lat2, lon2);
+    const estimation = await this.geoService.getTravelEstimation(
+      lat1,
+      lon1,
+      lat2,
+      lon2,
+    );
     const distanceKm = parseFloat(estimation.distance);
 
     // 2. Sélection du tarif correspondant au véhicule
@@ -46,7 +57,9 @@ export class DeliveryPricingService {
     // Arrondi au multiple de 25 le plus proche (courant pour la monnaie au Tchad)
     const roundedPrice = Math.ceil(totalPrice / 25) * 25;
 
-    this.logger.log(`Calcul prix : ${distanceKm}km avec ${vehicle} = ${roundedPrice} FCFA`);
+    this.logger.log(
+      `Calcul prix : ${distanceKm}km avec ${vehicle} = ${roundedPrice} FCFA`,
+    );
 
     return {
       distance: estimation.distance,
@@ -55,7 +68,7 @@ export class DeliveryPricingService {
       unitRate: ratePerKm,
       totalPrice: roundedPrice,
       currency: 'FCFA',
-      method: estimation.method // Précise si c'est Haversine ou Google Maps
+      method: estimation.method, // Précise si c'est Haversine ou Google Maps
     };
   }
 }
