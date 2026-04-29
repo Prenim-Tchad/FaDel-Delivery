@@ -78,9 +78,9 @@ describe('AuthController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(SUPABASE_CLIENT)   // ✅ mock Supabase
+      .overrideProvider(SUPABASE_CLIENT) // ✅ mock Supabase
       .useValue(mockSupabaseClient)
-      .overrideProvider(RedisService)      // ✅ mock Redis
+      .overrideProvider(RedisService) // ✅ mock Redis
       .useValue(mockRedisService)
       .compile();
 
@@ -112,14 +112,14 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it("devrait échouer si données invalides (email manquant)", () => {
+    it('devrait échouer si données invalides (email manquant)', () => {
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({ ...testUser, email: '' })
         .expect(400);
     });
 
-    it("devrait échouer si Supabase retourne une erreur", () => {
+    it('devrait échouer si Supabase retourne une erreur', () => {
       mockSupabaseClient.auth.signUp.mockResolvedValueOnce({
         data: { user: null, session: null },
         error: { message: 'Email already registered' },
