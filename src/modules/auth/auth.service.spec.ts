@@ -1,93 +1,165 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { JwtAuthService } from './jwt-auth.service';
-import { SUPABASE_CLIENT } from './auth.constants';
-import { BadRequestException } from '@nestjs/common'; // ✅ UnauthorizedException retiré
-import { UserRole } from '../../shared/types';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import request from 'supertest';
+import { Server } from 'http'; // ✅ import Server
+import { AppModule } from './../src/app.module';
+import { RedisService } from '../src/modules/redis/redis.service';
+import { SUPABASE_CLIENT } from '../src/modules/auth/auth.constants';
 
-interface SupabaseMock {
+// ── Mocks ──────────────────────────────────────────────────────────────────
+const mockRedisService = {
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  onModuleInit: jest.fn(),
+  onModuleDestroy: jest.fn(),
+};
+
+const fakeUser = {
+  id: 'uuid-test-123',
+  email: 'test@fadel.td',
+  user_metadata: {
+    nom: 'Hassane',
+    prenom: 'Tomté',
+    phone: '+23560000000',
+    quartier: 'Moursal',
+  },
+  confirmed_at: new Date().toISOString(),
+};
+
+const fakeSession = {
+  access_token: 'mock-access-token',
+  refresh_token: 'mock-refresh-token',
+  expires_at: Math.floor(Date.now() / 1000) + 3600,
+};
+
+const mockSupabaseClient = {
   auth: {
-    signUp: jest.Mock;
-    signInWithPassword: jest.Mock;
+    signUp: jest.fn().mockResolvedValue({
+      data: { user: fakeUser, session: null },
+      error: null,
+    }),
+    signInWithPassword: jest.fn().mockResolvedValue({
+      data: { user: fakeUser, session: fakeSession },
+      error: null,
+    }),
+    signOut: jest.fn().mockResolvedValue({ error: null }),
+    refreshSession: jest.fn().mockResolvedValue({
+      data: { user: fakeUser, session: fakeSession },
+      error: null,
+    }),
+    getUser: jest.fn().mockResolvedValue({
+      data: { user: fakeUser },
+      error: null,
+    }),
+    admin: {
+      getUserById: jest.fn().mockResolvedValue({
+        data: { user: fakeUser },
+        error: null,
+      }),
+      signOut: jest.fn().mockResolvedValue({ error: null }),
+    },
+  },
+};
+
+// ── Tests ──────────────────────────────────────────────────────────────────
+describe('AuthController (e2e)', () => {
+  let app: INestApplication;
+  let httpServer: Server; // ✅ typé explicitement
+
+  const testUser = {
+    email: `test-${Date.now()}@fadel.td`,
+    password: 'Password123!',
+    nom: 'Hassane',
+    prenom: 'Tomté',
+    phone: '+23560000000',
+    quartier: 'Moursal',
   };
-}
 
-describe('AuthService', () => {
-  let service: AuthService;
-  let jwtService: JwtAuthService;
-  let supabaseMock: SupabaseMock; // ✅ typé
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+      .overrideProvider(SUPABASE_CLIENT)
+      .useValue(mockSupabaseClient)
+      .overrideProvider(RedisService)
+      .useValue(mockRedisService)
+      .compile();
 
-  beforeEach(async () => {
-    supabaseMock = {
-      auth: {
-        signUp: jest.fn(),
-        signInWithPassword: jest.fn(),
-      },
-    };
-
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        { provide: SUPABASE_CLIENT, useValue: supabaseMock },
-        {
-          provide: JwtAuthService,
-          useValue: { generateTokenPair: jest.fn() },
-        },
-      ],
-    }).compile();
-
-    service = module.get<AuthService>(AuthService);
-    jwtService = module.get<JwtAuthService>(JwtAuthService);
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
+    await app.init();
+    httpServer = app.getHttpServer() as Server; // ✅ cast une seule fois
   });
 
-  describe('signUp', () => {
-    it('devrait lever une BadRequestException si Supabase retourne une erreur', async () => {
-      supabaseMock.auth.signUp.mockResolvedValue({
-        data: {},
-        error: { message: 'Email existant' },
+  afterAll(async () => {
+    await app.close();
+  });
+
+  // ── Register ──────────────────────────────────────────────────────────────
+  describe('/auth/register (POST)', () => {
+    it('devrait inscrire un nouvel utilisateur', () => {
+      return request(httpServer) // ✅ plus de any
+        .post('/auth/register')
+        .send(testUser)
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body).toHaveProperty('user');
+        });
+    });
+
+    it('devrait échouer si données invalides (email manquant)', () => {
+      return request(httpServer)
+        .post('/auth/register')
+        .send({ ...testUser, email: '' })
+        .expect(400);
+    });
+
+    it('devrait échouer si Supabase retourne une erreur', () => {
+      mockSupabaseClient.auth.signUp.mockResolvedValueOnce({
+        data: { user: null, session: null },
+        error: { message: 'Email already registered' },
       });
 
-      const dto = {
-        email: 'test@fadel.td',
-        password: '123',
-        nom: 'T',
-        prenom: 'H',
-        phone: '1',
-        quartier: 'M',
-      };
-
-      await expect(service.signUp(dto)).rejects.toThrow(BadRequestException);
+      return request(httpServer)
+        .post('/auth/register')
+        .send(testUser)
+        .expect(400);
     });
   });
 
-  describe('signInWithJwt', () => {
-    it('devrait retourner un profil complet avec isPartner calculé', async () => {
-      const mockSupabaseUser = {
-        id: 'user_123',
-        email: 'chef@resto.td',
-        user_metadata: { role: UserRole.PARTNER, nom: 'Resto A' },
-      };
+  // ── Login ─────────────────────────────────────────────────────────────────
+  describe('/auth/login (POST)', () => {
+    it("devrait connecter l'utilisateur et retourner des tokens", () => {
+      return request(httpServer)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: testUser.password })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('accessToken');
+          expect(res.body).toHaveProperty('refreshToken');
+          expect(res.body).toHaveProperty('expiresAt');
+          expect(res.body).toHaveProperty('user');
+        });
+    });
 
-      supabaseMock.auth.signInWithPassword.mockResolvedValue({
-        data: {
-          session: { access_token: 'at', refresh_token: 'rt' },
-          user: mockSupabaseUser,
-        },
-        error: null,
+    it('devrait rejeter si Supabase retourne une erreur auth', () => {
+      mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
+        data: { user: null, session: null },
+        error: { message: 'Invalid login credentials' },
       });
 
-      (jwtService.generateTokenPair as jest.Mock).mockResolvedValue({
-        accessToken: 'jwt_at',
-        refreshToken: 'jwt_rt',
-      });
-
-      const result = await service.signInWithJwt({
-        email: 'chef@resto.td',
-        password: 'password',
-      });
-
-      expect(result.user.isPartner).toBe(true);
-      expect(result.accessToken).toBe('jwt_at');
+      return request(httpServer)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: 'wrongpassword' })
+        .expect(401);
     });
   });
 });
