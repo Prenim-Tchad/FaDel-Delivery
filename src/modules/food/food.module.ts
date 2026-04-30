@@ -20,23 +20,23 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
   controllers: [
     FoodController,             // ✅ lead - routes food
     MenuCategoryController,     // ✅ saleh - tâches #31 #32
-    MenuItemController,         // 🆕 saleh - tâche #33
+    MenuItemController,         // ✅ saleh - tâche #33
   ],
   providers: [
     FoodService,                // ✅ lead
     MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // 🆕 saleh
+    MenuItemService,            // ✅ saleh
     FoodRepository,             // ✅ lead
     MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // 🆕 saleh
+    MenuItemRepository,         // ✅ saleh
   ],
   exports: [
     FoodService,                // ✅ lead
     MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // 🆕 saleh
+    MenuItemService,            // ✅ saleh
     FoodRepository,             // ✅ lead
     MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // 🆕 saleh
+    MenuItemRepository,         // ✅ saleh
   ],
 })
 export class FoodModule {}
