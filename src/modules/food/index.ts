@@ -18,7 +18,7 @@ export { FoodCategory, FoodStatus, FoodType } from './enums/food.enums';
 export { FoodPartnerGuard } from './guards/food-partner.guard';
 
 // ============================================
-// Menu Categories — Saleh
+// Menu Categories — Saleh (tâches #31 #32)
 // ============================================
 // Controller
 export { MenuCategoryController } from './controllers/menu-category.controller';
@@ -28,6 +28,20 @@ export { MenuCategoryService } from './services/menu-category.service';
 export { MenuCategoryRepository } from './repositories/menu-category.repository';
 // Entity
 export { MenuCategory, MultiLangField } from './entities/menu-category.entity';
-// DTO
+// DTOs
 export { CreateMenuCategoryDto, MultiLangFieldDto } from './dtos/create-menu-category.dto';
-export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto'; // 🆕
+export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
+
+// ============================================
+// Menu Items — Saleh (tâche #33)
+// ============================================
+// Controller
+export { MenuItemController } from './controllers/menu-item.controller';
+// Service
+export { MenuItemService } from './services/menu-item.service';
+// Repository
+export { MenuItemRepository } from './repositories/menu-item.repository';
+// Entity
+export { MenuItem } from './entities/menu-item.entity';
+// DTO
+export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
