@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { NotFoundException } from '@nestjs/common';
-import { DayOfWeek } from '../dtos/create-opening-hours.dto';
 
 describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   let service: RestaurantService;
@@ -49,7 +48,7 @@ it('should throw NotFoundException if restaurant does not exist when setting hou
     service.updateOpeningHours('cuid-123', {
       hours: [
         { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
-      ],
+        ],
     }),
   ).rejects.toThrow(NotFoundException);
 
