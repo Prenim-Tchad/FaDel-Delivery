@@ -29,15 +29,9 @@ import { MenuCategory } from '../entities/menu-category.entity';
  * PUT    /food/menu-categories/:id             → modifier
  * DELETE /food/menu-categories/:id             → soft-delete
  */
-<<<<<<< HEAD
-@ApiTags('food - menu categories') // Groupe dans Swagger UI
-@ApiBearerAuth('JWT-auth') // Indique que la route nécessite un token JWT
-@Controller('food/restaurants') // Préfixe de base : /food/restaurants
-=======
 @ApiTags('food - menu categories')
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
->>>>>>> developp
 export class MenuCategoryController {
   constructor(
     private readonly menuCategoryService: MenuCategoryService,
@@ -58,28 +52,16 @@ export class MenuCategoryController {
     example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @ApiResponse({
-<<<<<<< HEAD
-    status: HttpStatus.CREATED, // 201
-=======
     status: HttpStatus.CREATED,
->>>>>>> developp
     description: 'Catégorie créée avec succès',
     type: MenuCategory,
   })
   @ApiResponse({
-<<<<<<< HEAD
-    status: HttpStatus.BAD_REQUEST, // 400
-    description: 'Données invalides',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND, // 404
-=======
     status: HttpStatus.BAD_REQUEST,
     description: 'Données invalides',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
->>>>>>> developp
     description: 'Restaurant introuvable',
   })
   create(
@@ -88,8 +70,6 @@ export class MenuCategoryController {
   ): MenuCategory {
     return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
   }
-<<<<<<< HEAD
-=======
 
   /**
    * PUT /food/menu-categories/:id
@@ -154,5 +134,4 @@ export class MenuCategoryController {
   ): MenuCategory {
     return this.menuCategoryService.remove(id);
   }
->>>>>>> developp
 }

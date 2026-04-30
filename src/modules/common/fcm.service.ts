@@ -77,7 +77,7 @@ export class FcmService implements OnModuleInit {
       };
 
       // Utilisation de sendMulticast au lieu de sendEachForMulticast
-      const response: admin.messaging.BatchResponse = await messaging.sendMulticast(message);
+      const response = await messaging.sendEachForMulticast(message);
       return response;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'FCM Multicast Error';

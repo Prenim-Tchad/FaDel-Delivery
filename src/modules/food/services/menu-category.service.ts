@@ -23,36 +23,6 @@ export class MenuCategoryService {
    * Crée une catégorie de menu pour un restaurant donné
    * POST /food/restaurants/:id/menu-categories
    */
-<<<<<<< HEAD
-  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
-    try {
-      // Vérification que le restaurant existe
-      const exists = this.menuCategoryRepository.restaurantExists();
-      if (!exists) {
-        throw new NotFoundException(
-          `Restaurant avec l'ID ${restaurantId} introuvable`,
-        );
-      }
-
-      // Validation du sort_order
-      if (dto.sort_order < 0) {
-        throw new BadRequestException(
-          "L'ordre d'affichage ne peut pas être négatif",
-        );
-      }
-
-      // Création de la catégorie
-      return this.menuCategoryRepository.create(restaurantId, dto);
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      throw new BadRequestException(
-        'Échec de la création de la catégorie de menu',
-=======
   create(
     restaurantId: string,
     dto: CreateMenuCategoryDto,
@@ -62,7 +32,6 @@ export class MenuCategoryService {
     if (!exists) {
       throw new NotFoundException(
         `Restaurant avec l'ID ${restaurantId} introuvable`,
->>>>>>> developp
       );
     }
 
@@ -75,8 +44,6 @@ export class MenuCategoryService {
 
     return this.menuCategoryRepository.create(restaurantId, dto);
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Modifie une catégorie existante
@@ -134,5 +101,4 @@ export class MenuCategoryService {
 
     return deleted;
   }
->>>>>>> developp
 }
