@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../../../prisma.service';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
+import { OpeningHourItemDto } from '../dtos/create-opening-hours.dto';
 
 @Injectable()
 export class RestaurantRepository {
@@ -53,6 +54,19 @@ export class RestaurantRepository {
     });
   }
 
+  async updateOpeningHours(restaurantId: string, hours: OpeningHourItemDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.openingHours.deleteMany({
+        where: { restaurantId },
+      });
+      return tx.openingHours.createMany({
+        data: hours.map((h) => ({
+          ...h,
+          restaurantId,
+        })),
+      });
+    });
+  }
   async delete(id: string) {
     return this.prisma.restaurant.delete({
       where: { id },
