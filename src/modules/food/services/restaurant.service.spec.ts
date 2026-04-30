@@ -5,7 +5,6 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('RestaurantService', () => {
   let service: RestaurantService;
-  let repository: RestaurantRepository;
 
   const mockRepository = {
     create: jest.fn(),
@@ -24,7 +23,6 @@ describe('RestaurantService', () => {
     }).compile();
 
     service = module.get<RestaurantService>(RestaurantService);
-    repository = module.get<RestaurantRepository>(RestaurantRepository);
   });
 
   it('should be defined', () => {
