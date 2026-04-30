@@ -30,7 +30,7 @@ export class MenuItemService {
     dto: CreateMenuItemDto,
   ): MenuItem {
     // Règle métier 1 : vérifier que la catégorie existe
-    const exists = this.menuItemRepository.menuCategoryExists(menuCategoryId);
+    const exists = this.menuItemRepository.menuCategoryExists();
     if (!exists) {
       throw new NotFoundException(
         `Catégorie de menu avec l'ID ${menuCategoryId} introuvable`,

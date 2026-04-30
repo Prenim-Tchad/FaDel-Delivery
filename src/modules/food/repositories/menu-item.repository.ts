@@ -65,7 +65,7 @@ export class MenuItemRepository {
    * });
    * return !!category;
    */
-  menuCategoryExists(_menuCategoryId: string): boolean {
+  menuCategoryExists(): boolean {
     // TODO: remplacer par vérification Prisma
     // Le _ devant le paramètre indique à TypeScript qu'on sait
     // qu'il n'est pas utilisé pour l'instant (évite l'erreur lint)
