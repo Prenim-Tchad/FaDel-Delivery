@@ -1,4 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import {
+  MenuCategory as PrismaMenuCategory,
+} from '@prisma/client';
 import { PrismaService } from '../../../prisma.service';
 import { MenuCategory } from '../entities/menu-category.entity';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
@@ -6,15 +9,10 @@ import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 
 /**
  * Repository MenuCategory — gère l'accès aux données via Prisma
- *
- * Remplace le stockage in-memory par PostgreSQL via PrismaService
  */
 @Injectable()
 export class MenuCategoryRepository {
-  constructor(
-    // Injection du PrismaService pour accéder à la base de données
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Crée une nouvelle catégorie de menu pour un restaurant
@@ -25,16 +23,15 @@ export class MenuCategoryRepository {
   ): Promise<MenuCategory> {
     const category = await this.prisma.menuCategory.create({
       data: {
-  restaurantId,
-  // Conversion en objet JSON simple pour Prisma
-  name: JSON.parse(JSON.stringify(dto.name)),
-  description: dto.description
-    ? JSON.parse(JSON.stringify(dto.description))
-    : null,
-  sortOrder: dto.sort_order,
-  isDeleted: false,
-  deletedAt: null,
-},
+        restaurantId,
+        name: JSON.parse(JSON.stringify(dto.name)),
+        description: dto.description
+          ? JSON.parse(JSON.stringify(dto.description))
+          : null,
+        sortOrder: dto.sort_order,
+        isDeleted: false,
+        deletedAt: null,
+      },
     });
 
     return this.mapToEntity(category);
@@ -45,10 +42,7 @@ export class MenuCategoryRepository {
    */
   async findOne(id: string): Promise<MenuCategory | null> {
     const category = await this.prisma.menuCategory.findFirst({
-      where: {
-        id,
-        isDeleted: false, // exclut les supprimés
-      },
+      where: { id, isDeleted: false },
     });
 
     if (!category) return null;
@@ -66,12 +60,12 @@ export class MenuCategoryRepository {
       where: { id },
       data: {
         ...(dto.name && { name: JSON.parse(JSON.stringify(dto.name)) }),
-...(dto.description !== undefined && {
-  description: dto.description
-    ? JSON.parse(JSON.stringify(dto.description))
-    : null,
-}),
-...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
+        ...(dto.description !== undefined && {
+          description: dto.description
+            ? JSON.parse(JSON.stringify(dto.description))
+            : null,
+        }),
+        ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
       },
     });
 
@@ -105,19 +99,22 @@ export class MenuCategoryRepository {
 
   /**
    * Convertit un objet Prisma en entité MenuCategory
-   * Nécessaire car Prisma retourne des types différents de nos entités
+   * Utilise le type Prisma généré pour éviter les erreurs any
    */
-  private mapToEntity(data: any): MenuCategory {
-    return {
-      id: data.id,
-      restaurantId: data.restaurantId,
-      name: data.name,
-      description: data.description ?? undefined,
-      sort_order: data.sortOrder,
-      isDeleted: data.isDeleted,
-      deletedAt: data.deletedAt ?? undefined,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-  }
+  private mapToEntity(data: PrismaMenuCategory): MenuCategory {
+  return {
+    id: data.id,
+    restaurantId: data.restaurantId,
+    // Double cast : Json Prisma → unknown → MultiLangField
+    name: data.name as unknown as MenuCategory['name'],
+    description: data.description
+      ? (data.description as unknown as MenuCategory['description'])
+      : undefined,
+    sort_order: data.sortOrder,
+    isDeleted: data.isDeleted,
+    deletedAt: data.deletedAt ?? undefined,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
 }

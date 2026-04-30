@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { MenuItem as PrismaMenuItem } from '@prisma/client';
 import { PrismaService } from '../../../prisma.service';
 import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 
 /**
  * Repository MenuItem — gère l'accès aux données via Prisma
- *
- * Remplace le stockage in-memory par PostgreSQL via PrismaService
  */
 @Injectable()
 export class MenuItemRepository {
-  constructor(
-    // Injection du PrismaService pour accéder à la base de données
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Crée un nouvel article dans une catégorie de menu
@@ -54,18 +50,16 @@ export class MenuItemRepository {
    */
   async menuCategoryExists(menuCategoryId: string): Promise<boolean> {
     const category = await this.prisma.menuCategory.findFirst({
-      where: {
-        id: menuCategoryId,
-        isDeleted: false,
-      },
+      where: { id: menuCategoryId, isDeleted: false },
     });
     return !!category;
   }
 
   /**
    * Convertit un objet Prisma en entité MenuItem
+   * Utilise le type Prisma généré pour éviter les erreurs any
    */
-  private mapToEntity(data: any): MenuItem {
+  private mapToEntity(data: PrismaMenuItem): MenuItem {
     return {
       id: data.id,
       menuCategoryId: data.menuCategoryId,

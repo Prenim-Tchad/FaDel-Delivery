@@ -51,10 +51,10 @@ export class MenuItemController {
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
-  async create(
-    @Param('id') menuCategoryId: string,
-    @Body() createMenuItemDto: CreateMenuItemDto,
-  ): Promise<MenuItem> {
-    return this.menuItemService.create(menuCategoryId, createMenuItemDto);
-  }
+  create(
+  @Param('id') menuCategoryId: string,
+  @Body() createMenuItemDto: CreateMenuItemDto,
+): Promise<MenuItem> {
+  return this.menuItemService.create(menuCategoryId, createMenuItemDto);
+}
 }

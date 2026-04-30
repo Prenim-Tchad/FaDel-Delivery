@@ -8,9 +8,7 @@ import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
 
 /**
- * Service MenuItem — contient toute la logique métier des articles de menu
- *
- * Flux : Controller → Service → Repository → données
+ * Service MenuItem — contient toute la logique métier
  */
 @Injectable()
 export class MenuItemService {
@@ -21,16 +19,14 @@ export class MenuItemService {
   /**
    * Crée un article dans une catégorie de menu
    * POST /food/menu-categories/:id/items
-   *
-   * @param menuCategoryId - ID de la catégorie (vient du param :id)
-   * @param dto - Données validées par CreateMenuItemDto
    */
-  create(
+  async create(
     menuCategoryId: string,
     dto: CreateMenuItemDto,
-  ): MenuItem {
-    // Règle métier 1 : vérifier que la catégorie existe
-    const exists = this.menuItemRepository.menuCategoryExists();
+  ): Promise<MenuItem> {
+    // Règle métier 1 : vérifier que la catégorie existe en BDD
+    const exists = await this.menuItemRepository.menuCategoryExists(menuCategoryId);
+
     if (!exists) {
       throw new NotFoundException(
         `Catégorie de menu avec l'ID ${menuCategoryId} introuvable`,
@@ -39,9 +35,7 @@ export class MenuItemService {
 
     // Règle métier 2 : le prix doit être positif
     if (dto.price < 0) {
-      throw new BadRequestException(
-        'Le prix ne peut pas être négatif',
-      );
+      throw new BadRequestException('Le prix ne peut pas être négatif');
     }
 
     // Règle métier 3 : le temps de préparation doit être positif
