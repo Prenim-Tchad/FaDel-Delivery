@@ -23,10 +23,7 @@ export class MenuCategoryService {
    * Crée une catégorie de menu pour un restaurant donné
    * POST /food/restaurants/:id/menu-categories
    */
-  create(
-    restaurantId: string,
-    dto: CreateMenuCategoryDto,
-  ): MenuCategory {
+  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
     // Vérification que le restaurant existe
     const exists = this.menuCategoryRepository.restaurantExists();
     if (!exists) {
@@ -67,9 +64,7 @@ export class MenuCategoryService {
 
     const updated = this.menuCategoryRepository.update(id, dto);
     if (!updated) {
-      throw new BadRequestException(
-        'Échec de la modification de la catégorie',
-      );
+      throw new BadRequestException('Échec de la modification de la catégorie');
     }
 
     return updated;
@@ -94,9 +89,7 @@ export class MenuCategoryService {
 
     const deleted = this.menuCategoryRepository.softDelete(id);
     if (!deleted) {
-      throw new BadRequestException(
-        'Échec de la suppression de la catégorie',
-      );
+      throw new BadRequestException('Échec de la suppression de la catégorie');
     }
 
     return deleted;
