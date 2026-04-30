@@ -21,7 +21,10 @@ async function main() {
   const cuisineCategories = await prisma.cuisineCategory.createMany({
     data: [
       { name: 'Cuisine tchadienne', description: 'Saveurs locales du Tchad' },
-      { name: 'Cuisine africaine', description: 'Plats authentiques du continent' },
+      {
+        name: 'Cuisine africaine',
+        description: 'Plats authentiques du continent',
+      },
       { name: 'Fast food', description: 'Rapide, savoureux et accessible' },
     ],
     skipDuplicates: true,
@@ -133,7 +136,7 @@ async function main() {
                 },
                 {
                   name: 'Boulette de bœuf',
-                  description: 'Boulettes savoureuses servies avec sauce tomate.',
+                  description:'Boulettes savoureuses servies avec sauce tomate.',
                   price: 2200,
                   allergens: ['gluten'],
                   ingredients: ['bœuf', 'épices', 'oignons'],
