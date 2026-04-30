@@ -1,103 +1,123 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../../prisma.service';
 import { MenuCategory } from '../entities/menu-category.entity';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 
 /**
- * Repository MenuCategory — gère l'accès aux données
+ * Repository MenuCategory — gère l'accès aux données via Prisma
  *
- * ⚠️ Stockage en mémoire temporaire
- * Quand Prisma sera prêt, remplacer par PrismaService
+ * Remplace le stockage in-memory par PostgreSQL via PrismaService
  */
 @Injectable()
 export class MenuCategoryRepository {
-  // Stockage en mémoire (sera remplacé par Prisma + PostgreSQL)
-  private categories: MenuCategory[] = [];
-  private nextId = 1;
+  constructor(
+    // Injection du PrismaService pour accéder à la base de données
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
-   * Crée une nouvelle catégorie de menu
+   * Crée une nouvelle catégorie de menu pour un restaurant
    */
-  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
-    const category: MenuCategory = {
-      id: this.generateId(),
-      restaurantId,
-      name: dto.name,
-      description: dto.description,
-      sort_order: dto.sort_order,
-      isDeleted: false,   // par défaut non supprimé
-      deletedAt: null,    // par défaut pas de date de suppression
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async create(
+    restaurantId: string,
+    dto: CreateMenuCategoryDto,
+  ): Promise<MenuCategory> {
+    const category = await this.prisma.menuCategory.create({
+      data: {
+  restaurantId,
+  // Conversion en objet JSON simple pour Prisma
+  name: JSON.parse(JSON.stringify(dto.name)),
+  description: dto.description
+    ? JSON.parse(JSON.stringify(dto.description))
+    : null,
+  sortOrder: dto.sort_order,
+  isDeleted: false,
+  deletedAt: null,
+},
+    });
 
-    this.categories.push(category);
-    return category;
+    return this.mapToEntity(category);
   }
 
   /**
    * Trouve une catégorie par ID (exclut les soft-deleted)
    */
-  findOne(id: string): MenuCategory | null {
-    return this.categories.find(
-      (c) => c.id === id && !c.isDeleted  // exclut les supprimés
-    ) ?? null;
+  async findOne(id: string): Promise<MenuCategory | null> {
+    const category = await this.prisma.menuCategory.findFirst({
+      where: {
+        id,
+        isDeleted: false, // exclut les supprimés
+      },
+    });
+
+    if (!category) return null;
+    return this.mapToEntity(category);
   }
 
   /**
    * Modifie une catégorie existante
    */
-  update(id: string, dto: UpdateMenuCategoryDto): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
+  async update(
+    id: string,
+    dto: UpdateMenuCategoryDto,
+  ): Promise<MenuCategory | null> {
+    const category = await this.prisma.menuCategory.update({
+      where: { id },
+      data: {
+        ...(dto.name && { name: JSON.parse(JSON.stringify(dto.name)) }),
+...(dto.description !== undefined && {
+  description: dto.description
+    ? JSON.parse(JSON.stringify(dto.description))
+    : null,
+}),
+...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
+      },
+    });
 
-    if (index === -1) return null;
-
-    // On fusionne les anciennes données avec les nouvelles
-    this.categories[index] = {
-      ...this.categories[index],
-      ...dto,
-      updatedAt: new Date(), // mise à jour de la date
-    };
-
-    return this.categories[index];
+    return this.mapToEntity(category);
   }
 
   /**
    * Soft-delete : marque la catégorie comme supprimée
-   * sans la supprimer réellement de la base de données
    */
-  softDelete(id: string): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
+  async softDelete(id: string): Promise<MenuCategory | null> {
+    const category = await this.prisma.menuCategory.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
 
-    if (index === -1) return null;
+    return this.mapToEntity(category);
+  }
 
-    // On marque comme supprimé au lieu de supprimer
-    this.categories[index] = {
-      ...this.categories[index],
-      isDeleted: true,        // marqué comme supprimé
-      deletedAt: new Date(),  // date de suppression
-      updatedAt: new Date(),
+  /**
+   * Vérifie si un restaurant existe en BDD
+   */
+  async restaurantExists(restaurantId: string): Promise<boolean> {
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+    return !!restaurant;
+  }
+
+  /**
+   * Convertit un objet Prisma en entité MenuCategory
+   * Nécessaire car Prisma retourne des types différents de nos entités
+   */
+  private mapToEntity(data: any): MenuCategory {
+    return {
+      id: data.id,
+      restaurantId: data.restaurantId,
+      name: data.name,
+      description: data.description ?? undefined,
+      sort_order: data.sortOrder,
+      isDeleted: data.isDeleted,
+      deletedAt: data.deletedAt ?? undefined,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     };
-
-    return this.categories[index];
-  }
-
-  /**
-   * Vérifie si un restaurant existe (temporaire)
-   */
-  restaurantExists(): boolean {
-    // TODO: remplacer par this.prisma.restaurant.findUnique(...)
-    return true;
-  }
-
-  /**
-   * Génère un ID unique temporaire (sera remplacé par UUID Prisma)
-   */
-  private generateId(): string {
-    return `menucat_${this.nextId++}_${Date.now()}`;
   }
 }
