@@ -30,3 +30,16 @@ export { MenuCategoryRepository } from './repositories/menu-category.repository'
 export { MenuCategory, MultiLangField } from './entities/menu-category.entity';
 // DTO
 export { CreateMenuCategoryDto, MultiLangFieldDto } from './dtos/create-menu-category.dto';
+// ============================================
+// Menu Items — Saleh (tâche #33)
+// ============================================
+// Controller
+export { MenuItemController } from './controllers/menu-item.controller';
+// Service
+export { MenuItemService } from './services/menu-item.service';
+// Repository
+export { MenuItemRepository } from './repositories/menu-item.repository';
+// Entity
+export { MenuItem } from './entities/menu-item.entity';
+// DTO
+export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
