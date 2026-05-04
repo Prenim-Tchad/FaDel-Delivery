@@ -18,25 +18,25 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
  */
 @Module({
   controllers: [
-    FoodController,             // ✅ lead - routes food
-    MenuCategoryController,     // ✅ saleh - tâches #31 #32
-    MenuItemController,         // ✅ saleh - tâche #33
+    FoodController, // ✅ lead - routes food
+    MenuCategoryController, // ✅ saleh - tâches #31 #32
+    MenuItemController, // ✅ saleh - tâche #33
   ],
   providers: [
-    FoodService,                // ✅ lead
-    MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // ✅ saleh
-    FoodRepository,             // ✅ lead
-    MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // ✅ saleh
+    FoodService, // ✅ lead
+    MenuCategoryService, // ✅ saleh
+    MenuItemService, // ✅ saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // ✅ saleh
+    MenuItemRepository, // ✅ saleh
   ],
   exports: [
-    FoodService,                // ✅ lead
-    MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // ✅ saleh
-    FoodRepository,             // ✅ lead
-    MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // ✅ saleh
+    FoodService, // ✅ lead
+    MenuCategoryService, // ✅ saleh
+    MenuItemService, // ✅ saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // ✅ saleh
+    MenuItemRepository, // ✅ saleh
   ],
 })
 export class FoodModule {}

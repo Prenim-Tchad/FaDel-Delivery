@@ -21,19 +21,16 @@ export class MenuItemRepository {
    * @param menuCategoryId - ID de la catégorie (vient du param :id de la route)
    * @param dto - Données validées par CreateMenuItemDto
    */
-  create(
-    menuCategoryId: string,
-    dto: CreateMenuItemDto,
-  ): MenuItem {
+  create(menuCategoryId: string, dto: CreateMenuItemDto): MenuItem {
     const item: MenuItem = {
       id: this.generateId(),
-      menuCategoryId,               // ID de la catégorie parente
+      menuCategoryId, // ID de la catégorie parente
       name: dto.name,
       description: dto.description,
       price: dto.price,
       imageUrl: dto.imageUrl,
-      isAvailable: dto.isAvailable ?? true,   // true par défaut
-      isPopular: dto.isPopular ?? false,       // false par défaut
+      isAvailable: dto.isAvailable ?? true, // true par défaut
+      isPopular: dto.isPopular ?? false, // false par défaut
       isVegetarian: dto.isVegetarian ?? false,
       isVegan: dto.isVegan ?? false,
       isGlutenFree: dto.isGlutenFree ?? false,
@@ -44,7 +41,7 @@ export class MenuItemRepository {
       allergens: dto.allergens,
       ingredients: dto.ingredients,
       sortOrder: dto.sortOrder,
-      isDeleted: false,             // non supprimé par défaut
+      isDeleted: false, // non supprimé par défaut
       deletedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
