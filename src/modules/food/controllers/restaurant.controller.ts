@@ -32,12 +32,15 @@ export class RestaurantController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRestaurantDto: UpdateRestaurantDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRestaurantDto: UpdateRestaurantDto,
+  ) {
     return this.restaurantService.update(id, updateRestaurantDto);
   }
 
   // --- #13 : L'endpoint pour les horaires ---
-@Post(':id/opening-hours')
+  @Post(':id/opening-hours')
   async setOpeningHours(
     @Param('id') id: string,
     @Body() dto: CreateOpeningHoursDto,

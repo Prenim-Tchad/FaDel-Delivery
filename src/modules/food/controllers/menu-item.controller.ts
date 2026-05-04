@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+import { Controller, Post, Body, Param, HttpStatus } from '@nestjs/common';
+=======
 import {
   Controller,
   Post,
@@ -8,6 +11,7 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
 import {
   ApiTags,
   ApiOperation,
@@ -32,9 +36,7 @@ import { MenuItem } from '../entities/menu-item.entity';
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class MenuItemController {
-  constructor(
-    private readonly menuItemService: MenuItemService,
-  ) {}
+  constructor(private readonly menuItemService: MenuItemService) {}
 
   /**
    * POST /food/menu-categories/:id/items
@@ -51,18 +53,36 @@ export class MenuItemController {
     example: 'clxxx123',
   })
   @ApiResponse({
+<<<<<<< HEAD
+    status: HttpStatus.CREATED, // 201
+    description: 'Article créé avec succès',
+    type: MenuItem,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST, // 400
+    description: 'Données invalides',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND, // 404
+    description: 'Catégorie de menu introuvable',
+  })
+=======
     status: HttpStatus.CREATED,
     description: 'Article créé avec succès',
     type: MenuItem,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
   create(
     @Param('id') menuCategoryId: string,
     @Body() createMenuItemDto: CreateMenuItemDto,
   ): Promise<MenuItem> {
     return this.menuItemService.create(menuCategoryId, createMenuItemDto);
   }
+<<<<<<< HEAD
+}
+=======
 
   /**
    * PUT /food/menu-items/:id
@@ -119,3 +139,4 @@ export class MenuItemController {
     return this.menuItemService.remove(id);
   }
 }
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3

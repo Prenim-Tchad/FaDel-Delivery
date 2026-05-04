@@ -33,15 +33,21 @@ import { MenuCategory } from '../entities/menu-category.entity';
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class MenuCategoryController {
-  constructor(
-    private readonly menuCategoryService: MenuCategoryService,
-  ) {}
+  constructor(private readonly menuCategoryService: MenuCategoryService) {}
 
   /**
    * POST /food/restaurants/:id/menu-categories
    */
   @Post('restaurants/:id/menu-categories')
+<<<<<<< HEAD
+  @ApiOperation({
+    summary: 'Créer une catégorie de menu pour un restaurant',
+    description:
+      'Crée une catégorie avec nom multilingue (FR/EN/AR/ES), description et ordre.',
+  })
+=======
   @ApiOperation({ summary: 'Créer une catégorie de menu pour un restaurant' })
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
   @ApiParam({
     name: 'id',
     description: 'UUID du restaurant',
@@ -65,7 +71,14 @@ export class MenuCategoryController {
    * PUT /food/menu-categories/:id
    */
   @Put('menu-categories/:id')
+<<<<<<< HEAD
+  @ApiOperation({
+    summary: 'Modifier une catégorie de menu',
+    description: "Modifie le nom, la description ou l'ordre d'une catégorie.",
+  })
+=======
   @ApiOperation({ summary: 'Modifier une catégorie de menu' })
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
   @ApiParam({
     name: 'id',
     description: 'ID de la catégorie',
@@ -89,8 +102,17 @@ export class MenuCategoryController {
    * DELETE /food/menu-categories/:id
    */
   @Delete('menu-categories/:id')
+<<<<<<< HEAD
+  @HttpCode(HttpStatus.OK) // 200 car on retourne la catégorie supprimée
+  @ApiOperation({
+    summary: 'Supprimer une catégorie de menu (soft-delete)',
+    description:
+      'Marque la catégorie comme supprimée sans la supprimer réellement de la base.',
+  })
+=======
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Supprimer une catégorie de menu (soft-delete)' })
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
   @ApiParam({
     name: 'id',
     description: 'ID de la catégorie',
@@ -101,8 +123,16 @@ export class MenuCategoryController {
     description: 'Catégorie supprimée avec succès',
     type: MenuCategory,
   })
+<<<<<<< HEAD
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Catégorie introuvable',
+  })
+  remove(@Param('id') id: string): MenuCategory {
+=======
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
   async remove(@Param('id') id: string): Promise<MenuCategory> {
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     return this.menuCategoryService.remove(id);
   }
 }

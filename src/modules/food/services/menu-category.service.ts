@@ -23,12 +23,18 @@ export class MenuCategoryService {
    * Crée une catégorie de menu pour un restaurant donné
    * POST /food/restaurants/:id/menu-categories
    */
+<<<<<<< HEAD
+  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
+    // Vérification que le restaurant existe
+    const exists = this.menuCategoryRepository.restaurantExists();
+=======
   async create(
     restaurantId: string,
     dto: CreateMenuCategoryDto,
   ): Promise<MenuCategory> {
     // Vérification que le restaurant existe en BDD
     const exists = await this.menuCategoryRepository.restaurantExists(restaurantId);
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     if (!exists) {
       throw new NotFoundException(
         `Restaurant avec l'ID ${restaurantId} introuvable`,

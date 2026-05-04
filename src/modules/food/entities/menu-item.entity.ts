@@ -19,13 +19,13 @@ export class MenuItem {
   menuCategoryId!: string;
 
   @ApiProperty({
-    description: 'Nom de l\'article',
+    description: "Nom de l'article",
     example: 'Poulet Yassa',
   })
   name!: string;
 
   @ApiProperty({
-    description: 'Description de l\'article',
+    description: "Description de l'article",
     example: 'Poulet mariné, oignons et citron',
     required: false,
   })
@@ -38,7 +38,7 @@ export class MenuItem {
   price!: number;
 
   @ApiProperty({
-    description: 'URL de l\'image',
+    description: "URL de l'image",
     example: 'https://example.com/menu/poulet-yassa.jpg',
     required: false,
   })
@@ -111,7 +111,7 @@ export class MenuItem {
   sortOrder?: number;
 
   @ApiProperty({
-    description: 'Indique si l\'article est supprimé (soft-delete)',
+    description: "Indique si l'article est supprimé (soft-delete)",
     example: false,
     default: false,
   })

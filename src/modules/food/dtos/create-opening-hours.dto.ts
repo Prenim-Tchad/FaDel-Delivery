@@ -1,4 +1,12 @@
-import { IsInt, IsString, IsBoolean, IsArray, ValidateNested, Min, Max } from 'class-validator';
+import {
+  IsInt,
+  IsString,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class OpeningHourItemDto {

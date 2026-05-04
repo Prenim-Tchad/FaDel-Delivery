@@ -29,7 +29,10 @@ export { MenuCategoryRepository } from './repositories/menu-category.repository'
 // Entity
 export { MenuCategory, MultiLangField } from './entities/menu-category.entity';
 // DTOs
-export { CreateMenuCategoryDto, MultiLangFieldDto } from './dtos/create-menu-category.dto';
+export {
+  CreateMenuCategoryDto,
+  MultiLangFieldDto,
+} from './dtos/create-menu-category.dto';
 export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
 
 // ============================================
@@ -47,6 +50,11 @@ export { MenuItemService } from './services/menu-item.service';
 export { MenuItemRepository } from './repositories/menu-item.repository';
 // Entity
 export { MenuItem } from './entities/menu-item.entity';
+<<<<<<< HEAD
+// DTO
+export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
+=======
 // DTOs
 export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
 export { UpdateMenuItemDto } from './dtos/update-menu-item.dto';
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3

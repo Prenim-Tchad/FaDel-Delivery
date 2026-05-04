@@ -3,3 +3,8 @@ node_modules
 dist    
 /generated/prisma
 firebase-adminsdk.json
+uploads
+
+# Logs & OS
+npm-debug.log*
+.DS_Store

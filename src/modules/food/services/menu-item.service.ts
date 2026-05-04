@@ -15,20 +15,24 @@ import { MenuItem } from '../entities/menu-item.entity';
  */
 @Injectable()
 export class MenuItemService {
-  constructor(
-    private readonly menuItemRepository: MenuItemRepository,
-  ) {}
+  constructor(private readonly menuItemRepository: MenuItemRepository) {}
 
   /**
    * Crée un article dans une catégorie de menu
    * POST /food/menu-categories/:id/items
    */
+<<<<<<< HEAD
+  create(menuCategoryId: string, dto: CreateMenuItemDto): MenuItem {
+    // Règle métier 1 : vérifier que la catégorie existe
+    const exists = this.menuItemRepository.menuCategoryExists();
+=======
   async create(
     menuCategoryId: string,
     dto: CreateMenuItemDto,
   ): Promise<MenuItem> {
     // Vérification que la catégorie existe en BDD
     const exists = await this.menuItemRepository.menuCategoryExists(menuCategoryId);
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     if (!exists) {
       throw new NotFoundException(
         `Catégorie de menu avec l'ID ${menuCategoryId} introuvable`,
@@ -49,6 +53,9 @@ export class MenuItemService {
 
     return this.menuItemRepository.create(menuCategoryId, dto);
   }
+<<<<<<< HEAD
+}
+=======
 
   /**
    * Modifie un article existant
@@ -104,3 +111,4 @@ export class MenuItemService {
     return deleted;
   }
 }
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3

@@ -19,7 +19,9 @@ export class RestaurantService {
   async findOne(id: string) {
     const restaurant = await this.restaurantRepository.findById(id);
     if (!restaurant) {
-      throw new NotFoundException(`Le restaurant avec l'ID ${id} n'existe pas.`);
+      throw new NotFoundException(
+        `Le restaurant avec l'ID ${id} n'existe pas.`,
+      );
     }
     return restaurant;
   }
@@ -31,7 +33,10 @@ export class RestaurantService {
 
   async updateOpeningHours(id: string, dto: CreateOpeningHoursDto) {
     await this.findOne(id);
-    return this.restaurantRepository.updateOpeningHours(id, dto.hours);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.restaurantRepository.update(id, {
+      openingHours: dto.hours,
+    } as any);
   }
 
   async remove(id: string) {

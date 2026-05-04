@@ -15,6 +15,32 @@ export class MenuItemRepository {
   /**
    * Crée un nouvel article dans une catégorie de menu
    */
+<<<<<<< HEAD
+  create(menuCategoryId: string, dto: CreateMenuItemDto): MenuItem {
+    const item: MenuItem = {
+      id: this.generateId(),
+      menuCategoryId, // ID de la catégorie parente
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+      imageUrl: dto.imageUrl,
+      isAvailable: dto.isAvailable ?? true, // true par défaut
+      isPopular: dto.isPopular ?? false, // false par défaut
+      isVegetarian: dto.isVegetarian ?? false,
+      isVegan: dto.isVegan ?? false,
+      isGlutenFree: dto.isGlutenFree ?? false,
+      isHalal: dto.isHalal ?? false,
+      isKosher: dto.isKosher ?? false,
+      preparationTime: dto.preparationTime,
+      calories: dto.calories,
+      allergens: dto.allergens,
+      ingredients: dto.ingredients,
+      sortOrder: dto.sortOrder,
+      isDeleted: false, // non supprimé par défaut
+      deletedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+=======
   async create(
     menuCategoryId: string,
     dto: CreateMenuItemDto,
@@ -142,6 +168,7 @@ export class MenuItemRepository {
       deletedAt: data.deletedAt ?? undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     };
   }
 }
