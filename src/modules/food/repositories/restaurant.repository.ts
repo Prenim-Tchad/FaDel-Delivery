@@ -54,6 +54,23 @@ export class RestaurantRepository {
     });
   }
 
+  async updateDeliveryZones(restaurantId: string, zones: DeliveryZoneItemDto[]) {
+  return this.prisma.$transaction(async (tx) => {
+    // Supprimer les anciennes zones
+    await tx.deliveryZone.deleteMany({
+      where: { restaurantId },
+    });
+
+    // Créer les nouvelles
+    return tx.deliveryZone.createMany({
+      data: zones.map((z) => ({
+        ...z,
+        restaurantId,
+      })),
+    });
+  });
+}
+
   async updateOpeningHours(restaurantId: string, hours: OpeningHourItemDto[]) {
     return this.prisma.$transaction(async (tx) => {
       await tx.openingHours.deleteMany({

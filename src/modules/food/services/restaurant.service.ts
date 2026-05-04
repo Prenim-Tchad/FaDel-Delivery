@@ -34,6 +34,11 @@ export class RestaurantService {
     return this.restaurantRepository.updateOpeningHours(id, dto.hours);
   }
 
+  async updateDeliveryZones(id: string, dto: CreateDeliveryZonesDto) {
+    await this.findOne(id);
+    return this.restaurantRepository.updateDeliveryZones(id, dto.zones);
+  }
+
   async remove(id: string) {
     // On vérifie d'abord l'existence
     await this.findOne(id);

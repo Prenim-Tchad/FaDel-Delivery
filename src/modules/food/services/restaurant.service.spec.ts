@@ -9,6 +9,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   const mockRepository = {
     findById: jest.fn(),
     updateOpeningHours: jest.fn(),
+    updateDeliveryZones: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -40,6 +41,24 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
     expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(restaurantId, dto.hours);
     expect(result).toBeDefined();
   });
+
+  it('should update delivery zones with radius', async () => {
+  const restaurantId = 'cuid-123';
+  const dto = {
+    zones: [
+      { name: 'Zone Proche', radius: 5, deliveryFee: 500 },
+      { name: 'Zone Large', radius: 15, deliveryFee: 1500 }
+    ]
+  };
+
+  mockRepository.findById.mockResolvedValue({ id: restaurantId });
+  mockRepository.updateDeliveryZones.mockResolvedValue({ count: 2 });
+
+  const result = await service.updateDeliveryZones(restaurantId, dto);
+
+  expect(mockRepository.updateDeliveryZones).toHaveBeenCalledWith(restaurantId, dto.zones);
+  expect(result.count).toBe(2);
+});
 
 it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
   mockRepository.findById.mockResolvedValueOnce(null);

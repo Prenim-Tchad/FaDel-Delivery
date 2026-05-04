@@ -37,12 +37,21 @@ export class RestaurantController {
   }
 
   // --- #13 : L'endpoint pour les horaires ---
-@Post(':id/opening-hours')
+  @Post(':id/opening-hours')
   async setOpeningHours(
     @Param('id') id: string,
     @Body() dto: CreateOpeningHoursDto,
   ) {
     return this.restaurantService.updateOpeningHours(id, dto);
+  }
+
+  // --- #16 : L'endpoint pour les zones de livraison ---
+  @Post(':id/delivery-zones')
+  async setDeliveryZones(
+    @Param('id') id: string,
+    @Body() dto: CreateDeliveryZonesDto,
+  ) {
+    return this.restaurantService.updateDeliveryZones(id, dto);
   }
 
   @Delete(':id')
