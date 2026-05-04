@@ -11,7 +11,7 @@ import { MenuCategory } from '../entities/menu-category.entity';
 /**
  * Service MenuCategory — contient toute la logique métier
  *
- * Flux : Controller → Service → Repository → données
+ * Flux : Controller → Service → Repository → Prisma → PostgreSQL
  */
 @Injectable()
 export class MenuCategoryService {
@@ -23,9 +23,18 @@ export class MenuCategoryService {
    * Crée une catégorie de menu pour un restaurant donné
    * POST /food/restaurants/:id/menu-categories
    */
+<<<<<<< HEAD
   create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
     // Vérification que le restaurant existe
     const exists = this.menuCategoryRepository.restaurantExists();
+=======
+  async create(
+    restaurantId: string,
+    dto: CreateMenuCategoryDto,
+  ): Promise<MenuCategory> {
+    // Vérification que le restaurant existe en BDD
+    const exists = await this.menuCategoryRepository.restaurantExists(restaurantId);
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     if (!exists) {
       throw new NotFoundException(
         `Restaurant avec l'ID ${restaurantId} introuvable`,
@@ -46,9 +55,9 @@ export class MenuCategoryService {
    * Modifie une catégorie existante
    * PUT /food/menu-categories/:id
    */
-  update(id: string, dto: UpdateMenuCategoryDto): MenuCategory {
+  async update(id: string, dto: UpdateMenuCategoryDto): Promise<MenuCategory> {
     // Vérification que la catégorie existe
-    const existing = this.menuCategoryRepository.findOne(id);
+    const existing = await this.menuCategoryRepository.findOne(id);
     if (!existing) {
       throw new NotFoundException(
         `Catégorie avec l'ID ${id} introuvable ou déjà supprimée`,
@@ -62,7 +71,7 @@ export class MenuCategoryService {
       );
     }
 
-    const updated = this.menuCategoryRepository.update(id, dto);
+    const updated = await this.menuCategoryRepository.update(id, dto);
     if (!updated) {
       throw new BadRequestException('Échec de la modification de la catégorie');
     }
@@ -73,21 +82,17 @@ export class MenuCategoryService {
   /**
    * Supprime une catégorie (soft-delete)
    * DELETE /food/menu-categories/:id
-   *
-   * Le soft-delete ne supprime pas réellement la donnée —
-   * il la marque comme supprimée (isDeleted: true)
-   * pour garder l'historique et éviter les pertes de données
    */
-  remove(id: string): MenuCategory {
+  async remove(id: string): Promise<MenuCategory> {
     // Vérification que la catégorie existe
-    const existing = this.menuCategoryRepository.findOne(id);
+    const existing = await this.menuCategoryRepository.findOne(id);
     if (!existing) {
       throw new NotFoundException(
         `Catégorie avec l'ID ${id} introuvable ou déjà supprimée`,
       );
     }
 
-    const deleted = this.menuCategoryRepository.softDelete(id);
+    const deleted = await this.menuCategoryRepository.softDelete(id);
     if (!deleted) {
       throw new BadRequestException('Échec de la suppression de la catégorie');
     }

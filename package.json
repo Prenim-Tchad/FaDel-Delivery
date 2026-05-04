@@ -60,8 +60,12 @@
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.1.19",
     "@types/express": "^5.0.0",
+<<<<<<< HEAD
     "@types/jest": "^29.0.0",
     "@types/multer": "^2.1.0",
+=======
+    "@types/jest": "^29.5.14",
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^7.0.0",

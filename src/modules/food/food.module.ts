@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PrismaService } from '../../prisma.service';
 import { FoodController } from './controllers/food.controller';
 import { MenuCategoryController } from './controllers/menu-category.controller';
 import { MenuItemController } from './controllers/menu-item.controller';
@@ -11,13 +12,10 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
 
 /**
  * FoodModule — regroupe tout ce qui concerne la nourriture
- *
- * controllers : reçoivent les requêtes HTTP
- * providers   : services + repositories (logique métier + données)
- * exports     : ce que les autres modules peuvent utiliser
  */
 @Module({
   controllers: [
+<<<<<<< HEAD
     FoodController, // ✅ lead - routes food
     MenuCategoryController, // ✅ saleh - tâches #31 #32
     MenuItemController, // ✅ saleh - tâche #33
@@ -37,6 +35,29 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
     FoodRepository, // ✅ lead
     MenuCategoryRepository, // ✅ saleh
     MenuItemRepository, // ✅ saleh
+=======
+    FoodController,             // ✅ lead
+    MenuCategoryController,     // ✅ saleh - tâches #31 #32
+    MenuItemController,         // ✅ saleh - tâche #33
+  ],
+  providers: [
+    PrismaService,              // 🆕 nécessaire pour les repositories Prisma
+    FoodService,                // ✅ lead
+    MenuCategoryService,        // ✅ saleh
+    MenuItemService,            // ✅ saleh
+    FoodRepository,             // ✅ lead
+    MenuCategoryRepository,     // ✅ saleh
+    MenuItemRepository,         // ✅ saleh
+  ],
+  exports: [
+    PrismaService,              // 🆕 exporté pour autres modules
+    FoodService,                // ✅ lead
+    MenuCategoryService,        // ✅ saleh
+    MenuItemService,            // ✅ saleh
+    FoodRepository,             // ✅ lead
+    MenuCategoryRepository,     // ✅ saleh
+    MenuItemRepository,         // ✅ saleh
+>>>>>>> ebec9c1f957e06ace8ff134540545740bff8dca3
   ],
 })
 export class FoodModule {}

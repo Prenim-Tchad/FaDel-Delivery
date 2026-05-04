@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { Server } from 'http'; // ✅ import Server
+import { Server } from 'http';
 import { AppModule } from '../../app.module';
 import { RedisService } from '../redis/redis.service';
+import { PrismaService } from '../../prisma.service';
+import { MenuCategoryRepository } from '../food/repositories/menu-category.repository';
+import { MenuItemRepository } from '../food/repositories/menu-item.repository';
 import { SUPABASE_CLIENT } from './auth.constants';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
@@ -13,6 +16,35 @@ const mockRedisService = {
   del: jest.fn(),
   onModuleInit: jest.fn(),
   onModuleDestroy: jest.fn(),
+};
+
+// 🆕 Mock PrismaService
+const mockPrismaService = {
+  profile: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+  menuCategory: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+  menuItem: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+  restaurant: { findUnique: jest.fn() },
+  $connect: jest.fn(),
+  $disconnect: jest.fn(),
+  onModuleInit: jest.fn(),
+};
+
+// 🆕 Mock MenuCategoryRepository
+const mockMenuCategoryRepository = {
+  create: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  softDelete: jest.fn(),
+  restaurantExists: jest.fn(),
+};
+
+// 🆕 Mock MenuItemRepository
+const mockMenuItemRepository = {
+  create: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  softDelete: jest.fn(),
+  menuCategoryExists: jest.fn(),
 };
 
 const fakeUser = {
@@ -65,7 +97,7 @@ const mockSupabaseClient = {
 // ── Tests ──────────────────────────────────────────────────────────────────
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-  let httpServer: Server; // ✅ typé explicitement
+  let httpServer: Server;
 
   const testUser = {
     email: `test-${Date.now()}@fadel.td`,
@@ -84,6 +116,12 @@ describe('AuthController (e2e)', () => {
       .useValue(mockSupabaseClient)
       .overrideProvider(RedisService)
       .useValue(mockRedisService)
+      .overrideProvider(PrismaService)
+      .useValue(mockPrismaService)
+      .overrideProvider(MenuCategoryRepository)
+      .useValue(mockMenuCategoryRepository)
+      .overrideProvider(MenuItemRepository)
+      .useValue(mockMenuItemRepository)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -95,7 +133,7 @@ describe('AuthController (e2e)', () => {
       }),
     );
     await app.init();
-    httpServer = app.getHttpServer() as Server; // ✅ cast une seule fois
+    httpServer = app.getHttpServer() as Server;
   });
 
   afterAll(async () => {
@@ -105,7 +143,7 @@ describe('AuthController (e2e)', () => {
   // ── Register ──────────────────────────────────────────────────────────────
   describe('/auth/register (POST)', () => {
     it('devrait inscrire un nouvel utilisateur', () => {
-      return request(httpServer) // ✅ plus de any
+      return request(httpServer)
         .post('/auth/register')
         .send(testUser)
         .expect(201)
