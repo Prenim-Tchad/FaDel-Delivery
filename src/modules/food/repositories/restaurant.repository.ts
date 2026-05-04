@@ -5,6 +5,10 @@ import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { OpeningHourItemDto } from '../dtos/create-opening-hours.dto';
 import type { DeliveryZoneItemDto } from '../dtos/create-delivery-zone.dto';
 
+export type BatchPayloadResult = {
+  count: number;
+};
+
 @Injectable()
 export class RestaurantRepository {
   constructor(private prisma: PrismaService) {}
@@ -58,37 +62,45 @@ export class RestaurantRepository {
   async updateDeliveryZones(
     restaurantId: string,
     zones: DeliveryZoneItemDto[],
-  ): Promise<unknown> {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.deliveryZone.deleteMany({
-        where: { restaurantId },
-      });
-      const createResult: unknown = await tx.deliveryZone.createMany({
-        data: zones.map((z) => ({
-          ...z,
-          restaurantId,
-        })),
-      });
-      return createResult;
-    });
+  ): Promise<BatchPayloadResult> {
+    const transactionResult: unknown = await this.prisma.$transaction(
+      async (tx) => {
+        await tx.deliveryZone.deleteMany({
+          where: { restaurantId },
+        });
+        const createResult: unknown = await tx.deliveryZone.createMany({
+          data: zones.map((zone, index) => ({
+            name: zone.name ?? `Zone ${index + 1}`,
+            radius: zone.radius,
+            deliveryFee: zone.deliveryFee,
+            restaurantId,
+          })),
+        });
+        return createResult as BatchPayloadResult;
+      },
+    );
+    return transactionResult as BatchPayloadResult;
   }
 
   async updateOpeningHours(
     restaurantId: string,
     hours: OpeningHourItemDto[],
-  ): Promise<unknown> {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.openingHours.deleteMany({
-        where: { restaurantId },
-      });
-      const createResult: unknown = await tx.openingHours.createMany({
-        data: hours.map((h) => ({
-          ...h,
-          restaurantId,
-        })),
-      });
-      return createResult;
-    }) as unknown;
+  ): Promise<BatchPayloadResult> {
+    const transactionResult: unknown = await this.prisma.$transaction(
+      async (tx) => {
+        await tx.openingHours.deleteMany({
+          where: { restaurantId },
+        });
+        const createResult: unknown = await tx.openingHours.createMany({
+          data: hours.map((h) => ({
+            ...h,
+            restaurantId,
+          })),
+        });
+        return createResult as BatchPayloadResult;
+      },
+    );
+    return transactionResult as BatchPayloadResult;
   }
   async delete(id: string): Promise<unknown> {
     return this.prisma.restaurant.delete({

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
+import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
@@ -35,7 +36,7 @@ export class RestaurantService {
   async updateOpeningHours(
     id: string,
     dto: CreateOpeningHoursDto,
-  ): Promise<unknown> {
+  ): Promise<BatchPayloadResult> {
     await this.findOne(id);
     return this.restaurantRepository.updateOpeningHours(id, dto.hours);
   }
@@ -43,7 +44,7 @@ export class RestaurantService {
   async updateDeliveryZones(
     id: string,
     dto: CreateDeliveryZonesDto,
-  ): Promise<unknown> {
+  ): Promise<BatchPayloadResult> {
     await this.findOne(id);
     return this.restaurantRepository.updateDeliveryZones(id, dto.zones);
   }

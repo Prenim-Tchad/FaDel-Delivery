@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RestaurantService } from '../services/restaurant.service';
+import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
@@ -45,7 +46,7 @@ export class RestaurantController {
   async setOpeningHours(
     @Param('id') id: string,
     @Body() dto: CreateOpeningHoursDto,
-  ): Promise<unknown> {
+  ): Promise<BatchPayloadResult> {
     return this.restaurantService.updateOpeningHours(id, dto);
   }
 
@@ -54,7 +55,7 @@ export class RestaurantController {
   async setDeliveryZones(
     @Param('id') id: string,
     @Body() dto: CreateDeliveryZonesDto,
-  ): Promise<unknown> {
+  ): Promise<BatchPayloadResult> {
     return this.restaurantService.updateDeliveryZones(id, dto);
   }
 
