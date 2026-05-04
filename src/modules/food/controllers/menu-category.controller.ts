@@ -37,7 +37,6 @@ export class MenuCategoryController {
 
   /**
    * POST /food/restaurants/:id/menu-categories
-   * Crée une nouvelle catégorie de menu pour un restaurant
    */
   @Post('restaurants/:id/menu-categories')
   @ApiOperation({
@@ -45,6 +44,7 @@ export class MenuCategoryController {
     description:
       'Crée une catégorie avec nom multilingue (FR/EN/AR/ES), description et ordre.',
   })
+  @ApiOperation({ summary: 'Créer une catégorie de menu pour un restaurant' })
   @ApiParam({
     name: 'id',
     description: 'UUID du restaurant',
@@ -55,58 +55,45 @@ export class MenuCategoryController {
     description: 'Catégorie créée avec succès',
     type: MenuCategory,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Données invalides',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Restaurant introuvable',
-  })
-  create(
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Restaurant introuvable' })
+  async create(
     @Param('id', ParseUUIDPipe) restaurantId: string,
     @Body() createMenuCategoryDto: CreateMenuCategoryDto,
-  ): MenuCategory {
+  ): Promise<MenuCategory> {
     return this.menuCategoryService.create(restaurantId, createMenuCategoryDto);
   }
 
   /**
    * PUT /food/menu-categories/:id
-   * Modifie une catégorie existante
    */
   @Put('menu-categories/:id')
   @ApiOperation({
     summary: 'Modifier une catégorie de menu',
     description: "Modifie le nom, la description ou l'ordre d'une catégorie.",
   })
+  @ApiOperation({ summary: 'Modifier une catégorie de menu' })
   @ApiParam({
     name: 'id',
-    description: 'UUID de la catégorie',
-    example: 'menucat_1_1640995200000',
+    description: 'ID de la catégorie',
+    example: 'clxxx123',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Catégorie modifiée avec succès',
     type: MenuCategory,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Données invalides',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Catégorie introuvable',
-  })
-  update(
-    @Param('id') id: string, // pas ParseUUIDPipe car ID in-memory pas UUID
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
+  async update(
+    @Param('id') id: string,
     @Body() updateMenuCategoryDto: UpdateMenuCategoryDto,
-  ): MenuCategory {
+  ): Promise<MenuCategory> {
     return this.menuCategoryService.update(id, updateMenuCategoryDto);
   }
 
   /**
    * DELETE /food/menu-categories/:id
-   * Soft-delete d'une catégorie (ne supprime pas réellement)
    */
   @Delete('menu-categories/:id')
   @HttpCode(HttpStatus.OK) // 200 car on retourne la catégorie supprimée
@@ -115,10 +102,12 @@ export class MenuCategoryController {
     description:
       'Marque la catégorie comme supprimée sans la supprimer réellement de la base.',
   })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Supprimer une catégorie de menu (soft-delete)' })
   @ApiParam({
     name: 'id',
-    description: 'UUID de la catégorie',
-    example: 'menucat_1_1640995200000',
+    description: 'ID de la catégorie',
+    example: 'clxxx123',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -130,6 +119,8 @@ export class MenuCategoryController {
     description: 'Catégorie introuvable',
   })
   remove(@Param('id') id: string): MenuCategory {
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
+  async remove(@Param('id') id: string): Promise<MenuCategory> {
     return this.menuCategoryService.remove(id);
   }
 }
