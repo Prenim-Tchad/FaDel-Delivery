@@ -25,7 +25,7 @@ export class RestaurantRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateRestaurantDto): Promise<unknown> {
-    return (await this.prisma.restaurant.create({
+    return await this.prisma.restaurant.create({
       data: {
         name: data.name,
         address: data.address,
@@ -46,17 +46,17 @@ export class RestaurantRepository {
           connect: { id: data.cuisineCategoryId },
         },
       },
-    })) as unknown;
+    });
   }
 
   async findAll(): Promise<unknown[]> {
-    return (await this.prisma.restaurant.findMany()) as unknown[];
+    return await this.prisma.restaurant.findMany();
   }
 
   async findById(id: string): Promise<object | null> {
-    return (await this.prisma.restaurant.findUnique({
+    return await this.prisma.restaurant.findUnique({
       where: { id },
-    })) as object | null;
+    });
   }
 
   async findProfileById(id: string) {
@@ -69,17 +69,15 @@ export class RestaurantRepository {
     });
   }
 
-  async update(id: string, data: UpdateRestaurantDto) {
-    return this.prisma.restaurant.update({
   async update(id: string, data: UpdateRestaurantDto): Promise<unknown> {
-    return (await this.prisma.restaurant.update({
+    return await this.prisma.restaurant.update({
       where: { id },
       data: {
         name: data.name,
         address: data.address,
         phone: data.phone,
       },
-    })) as unknown;
+    });
   }
 
   async updateDeliveryZones(
@@ -128,8 +126,8 @@ export class RestaurantRepository {
     return transactionResult;
   }
   async delete(id: string): Promise<unknown> {
-    return (await this.prisma.restaurant.delete({
+    return await this.prisma.restaurant.delete({
       where: { id },
-    })) as unknown;
+    });
   }
 }

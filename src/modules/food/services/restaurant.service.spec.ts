@@ -55,7 +55,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       ],
     };
 
-    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.findProfileById.mockResolvedValue({ id: restaurantId });
     mockRepository.updateDeliveryZones.mockResolvedValue({ count: 2 });
 
     const result = await service.updateDeliveryZones(restaurantId, dto);

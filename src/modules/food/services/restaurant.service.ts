@@ -6,6 +6,24 @@ import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
 
+type RestaurantEntity = {
+  id: string;
+  rating?: number | null;
+  openingHours?: Array<{
+    dayOfWeek: number;
+    openTime: string;
+    closeTime: string;
+    isOpen: boolean;
+  }>;
+  deliveryZones?: Array<{
+    name?: string;
+    radius: number;
+    deliveryFee: number;
+  }>;
+  isActive?: boolean | null;
+  [key: string]: unknown;
+};
+
 @Injectable()
 export class RestaurantService {
   constructor(private readonly restaurantRepository: RestaurantRepository) {}
@@ -19,7 +37,9 @@ export class RestaurantService {
   }
 
   async findOne(id: string): Promise<unknown> {
-    const restaurant = await this.restaurantRepository.findById(id);
+    const restaurant = (await this.restaurantRepository.findProfileById(
+      id,
+    )) as RestaurantEntity | null;
     if (!restaurant) {
       throw new NotFoundException(
         `Le restaurant avec l'ID ${id} n'existe pas.`,
@@ -28,10 +48,10 @@ export class RestaurantService {
 
     return {
       ...restaurant,
-      averageRating: restaurant?.rating ?? 0,
-      openingHours: restaurant?.openingHours ?? [],
-      deliveryZones: restaurant?.deliveryZones ?? [],
-      status: restaurant?.isActive ? 'ACTIVE' : 'INACTIVE',
+      averageRating: restaurant.rating ?? 0,
+      openingHours: restaurant.openingHours ?? [],
+      deliveryZones: restaurant.deliveryZones ?? [],
+      status: restaurant.isActive ? 'ACTIVE' : 'INACTIVE',
     } as const;
   }
 
