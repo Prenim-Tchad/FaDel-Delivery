@@ -107,8 +107,10 @@ export class MenuCategoryRepository {
     return {
       id: data.id,
       restaurantId: data.restaurantId,
-      name: data.name,
-      description: data.description ? data.description : undefined,
+      name: data.name as MenuCategory['name'],
+      description: data.description
+        ? (data.description as MenuCategory['description'])
+        : undefined,
       sort_order: data.sortOrder,
       isDeleted: data.isDeleted,
       deletedAt: data.deletedAt ?? undefined,
