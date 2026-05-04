@@ -1,4 +1,3 @@
-import { Controller, Post, Body, Param, HttpStatus } from '@nestjs/common';
 import {
   Controller,
   Post,
@@ -52,7 +51,6 @@ export class MenuItemController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED, // 201
-    status: HttpStatus.CREATED,
     description: 'Article créé avec succès',
     type: MenuItem,
   })
@@ -93,6 +91,8 @@ export class MenuItemController {
   @ApiResponse({
     status: HttpStatus.NOT_FOUND, // 404
     description: 'Catégorie de menu introuvable',
+  })
+  @ApiResponse({
     status: HttpStatus.OK,
     description: 'Article modifié avec succès',
     type: MenuItem,
