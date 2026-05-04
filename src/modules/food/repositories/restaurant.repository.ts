@@ -63,13 +63,13 @@ export class RestaurantRepository {
       await tx.deliveryZone.deleteMany({
         where: { restaurantId },
       });
-      return (await tx.deliveryZone.createMany({
+      return tx.deliveryZone.createMany({
         data: zones.map((z) => ({
           ...z,
           restaurantId,
         })),
-      })) as unknown;
-    }) as unknown;
+      });
+    });
   }
 
   async updateOpeningHours(
