@@ -41,11 +41,16 @@ export class MenuCategoryRepository {
     restaurantId: string,
     dto: CreateMenuCategoryDto,
   ): Promise<MenuCategory> {
-    const category = await this.db.menuCategory.create({
+    const name = dto.name as unknown as Prisma.InputJsonValue;
+    const description = dto.description
+      ? (dto.description as unknown as Prisma.InputJsonValue)
+      : Prisma.JsonNull; // 🆕 Prisma.JsonNull au lieu de null
+
+    const category = await this.prisma.menuCategory.create({
       data: {
         restaurantId,
-        name: dto.name,
-        description: dto.description ?? null,
+        name,
+        description,
         sortOrder: dto.sort_order,
         isDeleted: false,
         deletedAt: null,
@@ -55,27 +60,36 @@ export class MenuCategoryRepository {
     return this.mapToEntity(category);
   }
 
+  /**
+   * Trouve une catégorie par ID (exclut les soft-deleted)
+   */
   async findOne(id: string): Promise<MenuCategory | null> {
-    const category = await this.db.menuCategory.findFirst({
+    const category = await this.prisma.menuCategory.findFirst({
       where: { id, isDeleted: false },
     });
 
-    return category ? this.mapToEntity(category) : null;
+    return this.mapToEntity(category);
   }
 
   async update(
     id: string,
     dto: UpdateMenuCategoryDto,
   ): Promise<MenuCategory | null> {
-    const category = await this.db.menuCategory.update({
+    const name = dto.name
+      ? (dto.name as unknown as Prisma.InputJsonValue)
+      : undefined;
+    const description =
+      dto.description !== undefined
+        ? dto.description
+          ? (dto.description as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull // 🆕 Prisma.JsonNull au lieu de null
+        : undefined;
+
+    const category = await this.prisma.menuCategory.update({
       where: { id },
       data: {
-        ...(dto.name !== undefined && {
-          name: dto.name,
-        }),
-        ...(dto.description !== undefined && {
-          description: dto.description ?? null,
-        }),
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
         ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
       },
     });
@@ -83,6 +97,9 @@ export class MenuCategoryRepository {
     return this.mapToEntity(category);
   }
 
+  /**
+   * Soft-delete : marque la catégorie comme supprimée
+   */
   async softDelete(id: string): Promise<MenuCategory | null> {
     const category = await this.db.menuCategory.update({
       where: { id },
@@ -103,13 +120,18 @@ export class MenuCategoryRepository {
     return restaurant !== null;
   }
 
-  private mapToEntity(data: MenuCategoryRecord): MenuCategory {
+  /**
+   * Convertit un objet Prisma en entité MenuCategory
+   * Utilise le type Prisma généré pour éviter les erreurs any
+   */
+  private mapToEntity(data: PrismaMenuCategory): MenuCategory {
     return {
       id: data.id,
       restaurantId: data.restaurantId,
-      name: data.name as MenuCategory['name'],
+      // Double cast : Json Prisma → unknown → MultiLangField
+      name: data.name as unknown as MenuCategory['name'],
       description: data.description
-        ? (data.description as MenuCategory['description'])
+        ? (data.description as unknown as MenuCategory['description'])
         : undefined,
       sort_order: data.sortOrder,
       isDeleted: data.isDeleted,

@@ -18,6 +18,7 @@ export class MenuCategoryService {
     restaurantId: string,
     dto: CreateMenuCategoryDto,
   ): Promise<MenuCategory> {
+    // Vérification que le restaurant existe en BDD
     const exists =
       await this.menuCategoryRepository.restaurantExists(restaurantId);
     if (!exists) {

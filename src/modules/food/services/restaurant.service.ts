@@ -28,11 +28,11 @@ export class RestaurantService {
 
     return {
       ...restaurant,
-      averageRating: restaurant.rating ?? 0,
-      openingHours: restaurant.openingHours ?? [],
-      deliveryZones: restaurant.deliveryZones ?? [],
-      status: restaurant.isActive ? 'ACTIVE' : 'INACTIVE',
-    };
+      averageRating: restaurant?.rating ?? 0,
+      openingHours: restaurant?.openingHours ?? [],
+      deliveryZones: restaurant?.deliveryZones ?? [],
+      status: restaurant?.isActive ? 'ACTIVE' : 'INACTIVE',
+    } as const;
   }
 
   async update(id: string, dto: UpdateRestaurantDto): Promise<unknown> {

@@ -30,5 +30,14 @@ import { MenuItemService } from './services/menu-item.service';
     MenuCategoryRepository,
     MenuItemRepository,
   ],
+  exports: [
+    PrismaService,
+    FoodService,
+    MenuCategoryService,
+    MenuItemService,
+    FoodRepository,
+    MenuCategoryRepository,
+    MenuItemRepository,
+  ],
 })
 export class FoodModule {}

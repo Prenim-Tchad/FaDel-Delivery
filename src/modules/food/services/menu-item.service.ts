@@ -16,6 +16,7 @@ export class MenuItemService {
     menuCategoryId: string,
     dto: CreateMenuItemDto,
   ): Promise<MenuItem> {
+    // Vérification que la catégorie existe en BDD
     const exists =
       await this.menuItemRepository.menuCategoryExists(menuCategoryId);
     if (!exists) {

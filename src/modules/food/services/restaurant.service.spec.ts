@@ -46,8 +46,6 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
     expect(result).toBeDefined();
   });
 
-it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-  mockRepository.findProfileById.mockResolvedValueOnce(null);
   it('should update delivery zones with radius', async () => {
     const restaurantId = 'cuid-123';
     const dto = {
@@ -70,7 +68,7 @@ it('should throw NotFoundException if restaurant does not exist when setting hou
   });
 
   it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-    mockRepository.findById.mockResolvedValueOnce(null);
+    mockRepository.findProfileById.mockResolvedValueOnce(null);
 
     await expect(
       service.updateOpeningHours('cuid-123', {

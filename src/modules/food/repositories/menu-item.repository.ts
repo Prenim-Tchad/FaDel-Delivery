@@ -89,8 +89,11 @@ export class MenuItemRepository {
     return item ? this.mapToEntity(item) : null;
   }
 
+  /**
+   * Modifie un article existant
+   */
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem | null> {
-    const item = await this.db.menuItem.update({
+    const item = await this.prisma.menuItem.update({
       where: { id },
       data: {
         ...(dto.name !== undefined && { name: dto.name }),
