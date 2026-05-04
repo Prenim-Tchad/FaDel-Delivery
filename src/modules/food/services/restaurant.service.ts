@@ -17,11 +17,18 @@ export class RestaurantService {
   }
 
   async findOne(id: string) {
-    const restaurant = await this.restaurantRepository.findById(id);
+    const restaurant = await this.restaurantRepository.findProfileById(id);
     if (!restaurant) {
       throw new NotFoundException(`Le restaurant avec l'ID ${id} n'existe pas.`);
     }
-    return restaurant;
+
+    return {
+      ...restaurant,
+      averageRating: restaurant.rating ?? 0,
+      openingHours: restaurant.openingHours ?? [],
+      deliveryZones: restaurant.deliveryZones ?? [],
+      status: restaurant.isActive ? 'ACTIVE' : 'INACTIVE',
+    };
   }
 
   async update(id: string, dto: UpdateRestaurantDto) {

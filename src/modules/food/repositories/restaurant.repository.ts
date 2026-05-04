@@ -43,6 +43,16 @@ export class RestaurantRepository {
     });
   }
 
+  async findProfileById(id: string) {
+    return this.prisma.restaurant.findUnique({
+      where: { id },
+      include: {
+        openingHours: true,
+        deliveryZones: true,
+      },
+    });
+  }
+
   async update(id: string, data: UpdateRestaurantDto) {
     return this.prisma.restaurant.update({
       where: { id },

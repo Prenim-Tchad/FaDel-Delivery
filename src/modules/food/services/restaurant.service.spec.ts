@@ -8,6 +8,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
 
   const mockRepository = {
     findById: jest.fn(),
+    findProfileById: jest.fn(),
     updateOpeningHours: jest.fn(),
   };
 
@@ -32,7 +33,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       ],
     };
 
-    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.findProfileById.mockResolvedValue({ id: restaurantId });
     mockRepository.updateOpeningHours.mockResolvedValue({ count: 1 });
 
     const result = await service.updateOpeningHours(restaurantId, dto);
@@ -42,7 +43,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   });
 
 it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-  mockRepository.findById.mockResolvedValueOnce(null);
+  mockRepository.findProfileById.mockResolvedValueOnce(null);
 
   await expect(
     service.updateOpeningHours('cuid-123', {
