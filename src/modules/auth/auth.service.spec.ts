@@ -5,6 +5,8 @@ import { Server } from 'http';
 import { AppModule } from '../../app.module';
 import { RedisService } from '../redis/redis.service';
 import { PrismaService } from '../../prisma.service';
+import { MenuCategoryRepository } from '../food/repositories/menu-category.repository';
+import { MenuItemRepository } from '../food/repositories/menu-item.repository';
 import { SUPABASE_CLIENT } from './auth.constants';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
@@ -16,28 +18,33 @@ const mockRedisService = {
   onModuleDestroy: jest.fn(),
 };
 
-// 🆕 Mock PrismaService pour éviter la connexion BDD en tests
+// 🆕 Mock PrismaService
 const mockPrismaService = {
-  profile: {
-    findUnique: jest.fn(),
-    create: jest.fn(),
-    update: jest.fn(),
-  },
-  menuCategory: {
-    create: jest.fn(),
-    findFirst: jest.fn(),
-    update: jest.fn(),
-  },
-  menuItem: {
-    create: jest.fn(),
-    findFirst: jest.fn(),
-  },
-  restaurant: {
-    findUnique: jest.fn(),
-  },
+  profile: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+  menuCategory: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+  menuItem: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+  restaurant: { findUnique: jest.fn() },
   $connect: jest.fn(),
   $disconnect: jest.fn(),
   onModuleInit: jest.fn(),
+};
+
+// 🆕 Mock MenuCategoryRepository
+const mockMenuCategoryRepository = {
+  create: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  softDelete: jest.fn(),
+  restaurantExists: jest.fn(),
+};
+
+// 🆕 Mock MenuItemRepository
+const mockMenuItemRepository = {
+  create: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  softDelete: jest.fn(),
+  menuCategoryExists: jest.fn(),
 };
 
 const fakeUser = {
@@ -109,8 +116,12 @@ describe('AuthController (e2e)', () => {
       .useValue(mockSupabaseClient)
       .overrideProvider(RedisService)
       .useValue(mockRedisService)
-      .overrideProvider(PrismaService) // 🆕 mock PrismaService
+      .overrideProvider(PrismaService)
       .useValue(mockPrismaService)
+      .overrideProvider(MenuCategoryRepository)
+      .useValue(mockMenuCategoryRepository)
+      .overrideProvider(MenuItemRepository)
+      .useValue(mockMenuItemRepository)
       .compile();
 
     app = moduleFixture.createNestApplication();
