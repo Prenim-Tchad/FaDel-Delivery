@@ -1,47 +1,81 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'; // 1. Import manquant ajouté
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
-export class R2StorageService {
-  private s3Client: S3Client;
+export class R2StorageService implements OnModuleInit {
+  private readonly logger = new Logger(R2StorageService.name);
+  private readonly uploadRoot = path.join(process.cwd(), 'uploads');
 
-  constructor(private readonly configService: ConfigService) {
-    this.s3Client = new S3Client({
-      region: 'auto',
-      endpoint: this.configService.get<string>('R2_ENDPOINT')!,
-      credentials: {
-        accessKeyId: this.configService.get<string>('R2_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get<string>(
-          'R2_SECRET_ACCESS_KEY',
-        )!,
-      },
-    });
+  constructor(private configService: ConfigService) {}
+
+  onModuleInit() {
+    // Création automatique du dossier /uploads s'il n'existe pas
+    if (!fs.existsSync(this.uploadRoot)) {
+      fs.mkdirSync(this.uploadRoot, { recursive: true });
+      this.logger.log('Dossier racine /uploads initialisé localement.');
+    }
   }
 
-  async upload(file: Express.Multer.File): Promise<string> {
-    const key = `food-media/${Date.now()}-${file.originalname}`;
-    const bucketName = this.configService.get<string>('R2_BUCKET_NAME');
-    const publicUrl = this.configService.get<string>('R2_PUBLIC_URL');
+  /**
+   * Sauvegarde le fichier localement.
+   * Note : Le mot-clé async est retiré car fs.writeFileSync est bloquant (synchrone).
+   * Cela règle l'erreur "@typescript-eslint/require-await".
+   */
+  uploadFile(file: Express.Multer.File, folder: string = 'food-media'): string {
+    const targetFolder = path.join(this.uploadRoot, folder);
+
+    if (!fs.existsSync(targetFolder)) {
+      fs.mkdirSync(targetFolder, { recursive: true });
+    }
+
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new Error(
+        'Type de fichier non supporté. Utilisez JPG, PNG ou WEBP.',
+      );
+    }
+
+    const fileName = `${Date.now()}-${file.originalname.replace(/\s/g, '_')}`;
+    const filePath = path.join(targetFolder, fileName);
 
     try {
-      // 2. Utilisation d'une commande typée pour éviter 'no-unsafe-call'
-      const command = new PutObjectCommand({
-        Bucket: bucketName,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      });
-
-      await this.s3Client.send(command);
-
-      return `${publicUrl}/${key}`;
+      fs.writeFileSync(filePath, file.buffer);
+      this.logger.log(`Fichier sauvegardé localement: ${folder}/${fileName}`);
+      return `${folder}/${fileName}`;
     } catch (error: unknown) {
-      // 3. Gestion sécurisée de l'erreur pour le Lint
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      console.error(`Erreur d'upload R2: ${errorMessage}`);
-      throw new Error(`Échec du stockage de l'image: ${errorMessage}`);
+      // Sécurisation du message d'erreur pour régler "@typescript-eslint/no-unsafe-member-access"
+      const message =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      this.logger.error(`Erreur d'écriture locale: ${message}`);
+      throw new Error(message);
     }
+  }
+
+  /**
+   * Supprime le fichier du disque local.
+   */
+  deleteFile(fileKey: string): void {
+    try {
+      const filePath = path.join(this.uploadRoot, fileKey);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        this.logger.log(`Fichier local supprimé: ${fileKey}`);
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      this.logger.error(`Erreur de suppression locale: ${message}`);
+    }
+  }
+
+  /**
+   * Génère l'URL locale pour le frontend (React/Flutter)
+   */
+  getFileUrl(fileKey: string): string {
+    const serverUrl =
+      this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+    return `${serverUrl}/uploads/${fileKey}`;
   }
 }

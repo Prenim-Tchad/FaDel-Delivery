@@ -1,8 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { RedisService } from '../redis/redis.service';
 
-// 1. Définition des interfaces pour typer la réponse Google Maps (évite l'erreur 'any')
+// 1. Définition des interfaces pour typer la réponse Google Maps
 interface GoogleMapsElement {
   status: string;
   duration: { text: string };
@@ -20,11 +21,32 @@ interface GoogleMapsResponse {
 @Injectable()
 export class DeliveryService {
   private readonly EARTH_RADIUS_KM = 6371;
+  private readonly logger = new Logger(DeliveryService.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly redisService: RedisService,
+    private readonly httpService: HttpService,
+  ) {}
 
   /**
-   * Méthode synchrone pour le calcul mathématique simple
+   * Enregistre la position du livreur dans le cache Redis (TTL 30s)
+   */
+  async trackDriver(driverId: string, lat: number, lng: number): Promise<void> {
+    try {
+      await this.redisService.setJson(
+        `driver_loc:${driverId}`,
+        { lat, lng },
+        30,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erreur tracking Redis: ${error instanceof Error ? error.message : 'Unknown'}`,
+      );
+    }
+  }
+
+  /**
+   * Méthode synchrone pour le calcul mathématique simple (Haversine)
    */
   calculateDistance(
     lat1: number,
@@ -39,7 +61,7 @@ export class DeliveryService {
   }
 
   /**
-   * Méthode asynchrone complète avec Google Maps
+   * Méthode asynchrone complète avec Google Maps pour FaDel
    */
   async getTravelEstimation(
     lat1: number,
@@ -51,16 +73,16 @@ export class DeliveryService {
     let duration: string | null = null;
 
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
     if (apiKey) {
       try {
         const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat1},${lon1}&destinations=${lat2},${lon2}&key=${apiKey}`;
 
-        // 2. Typage explicite de la réponse HTTP
+        // Typage explicite de la réponse HTTP
         const response = await firstValueFrom(
           this.httpService.get<GoogleMapsResponse>(url),
         );
 
-        // 3. Accès sécurisé aux données typées (règle l'erreur .rows access)
         const firstRow = response.data.rows[0];
         const firstElement = firstRow?.elements[0];
 
@@ -68,9 +90,8 @@ export class DeliveryService {
           duration = firstElement.duration.text;
         }
       } catch (error: unknown) {
-        // 4. Gestion sécurisée du type error pour le Lint
         const msg = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Google Maps API Error', msg);
+        this.logger.error(`Google Maps API Error: ${msg}`);
       }
     }
 
@@ -81,6 +102,9 @@ export class DeliveryService {
     };
   }
 
+  /**
+   * Logique interne Haversine
+   */
   private calculateHaversine(
     lat1: number,
     lon1: number,
@@ -97,6 +121,9 @@ export class DeliveryService {
     return parseFloat((this.EARTH_RADIUS_KM * c).toFixed(2));
   }
 
+  /**
+   * Validation des coordonnées GPS
+   */
   private isValid(lat: number, lon: number): boolean {
     return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
   }

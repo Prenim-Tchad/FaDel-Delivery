@@ -3,35 +3,46 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
-  ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
-  Get,
+  Delete,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { R2StorageService } from './r2-storage.service';
 
+@ApiTags('upload')
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly r2Service: R2StorageService) {}
+  constructor(private readonly r2StorageService: R2StorageService) {}
 
-  @Post('food')
-  @UseInterceptors(FileInterceptor('file')) // 'file' est le nom du champ envoyé par Flutter
-  async uploadFoodImage(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 2097152 }),
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg|webp)' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
-    const url = await this.r2Service.upload(file);
+  /**
+   * Upload d'une image pour un restaurant ou un plat
+   */
+  @ApiOperation({ summary: 'Uploader une image (JPG, PNG, WEBP)' })
+  @Post('restaurant-media')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadRestaurantMedia(@UploadedFile() file: Express.Multer.File) {
+    // Appel synchrone au service de stockage local
+    const fileKey = this.r2StorageService.uploadFile(file, 'food-media');
+
     return {
-      message: 'Image uploadée avec succès',
-      url: url,
+      success: true,
+      fileKey: fileKey,
+      url: this.r2StorageService.getFileUrl(fileKey),
+    };
+  }
+
+  /**
+   * Suppression d'un média local via sa clé (ex: food-media/nom-du-fichier.jpg)
+   */
+  @ApiOperation({ summary: 'Supprimer un fichier via sa clé' })
+  @Delete('remove')
+  removeMedia(@Body('fileKey') fileKey: string) {
+    this.r2StorageService.deleteFile(fileKey);
+
+    return {
+      success: true,
+      message: 'Média supprimé avec succès',
     };
   }
 }

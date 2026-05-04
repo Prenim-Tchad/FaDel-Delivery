@@ -16,7 +16,8 @@ describe('NotificationService', () => {
   }
 
   // Mock strictement typé — zéro any
-  const mockCreate = jest.fn<Promise<TwilioResponse>, [TwilioMessageParams]>()
+  const mockCreate = jest
+    .fn<Promise<TwilioResponse>, [TwilioMessageParams]>()
     .mockResolvedValue({ sid: 'SM12345' });
 
   const mockTwilioClient = {
@@ -32,12 +33,11 @@ describe('NotificationService', () => {
           useValue: {
             get: jest.fn((key: string): string | null => {
               const config: Record<string, string> = {
-                 TWILIO_ACCOUNT_SID:     'ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-                 TWILIO_AUTH_TOKEN:      'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                TWILIO_ACCOUNT_SID: 'ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                TWILIO_AUTH_TOKEN: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
                 TWILIO_WHATSAPP_NUMBER: '+14155238886',
-                };
-             
- 
+              };
+
               return config[key] ?? null;
             }),
           },
@@ -48,7 +48,8 @@ describe('NotificationService', () => {
     service = module.get<NotificationService>(NotificationService);
 
     // Cast sécurisé sans any
-    (service as unknown as { client: typeof mockTwilioClient }).client = mockTwilioClient;
+    (service as unknown as { client: typeof mockTwilioClient }).client =
+      mockTwilioClient;
   });
 
   afterEach(() => {
@@ -56,9 +57,9 @@ describe('NotificationService', () => {
   });
 
   it('devrait formater correctement le message de confirmation de commande', async () => {
-    const phone        = '+23568383778';
-    const orderId      = '1001';
-    const amount       = 1500;
+    const phone = '+23568383778';
+    const orderId = '1001';
+    const amount = 1500;
     const neighborhood = 'Chagoua';
 
     await service.sendOrderConfirmation(phone, orderId, amount, neighborhood);
@@ -75,10 +76,10 @@ describe('NotificationService', () => {
   });
 
   it('devrait envoyer une alerte correcte au livreur', async () => {
-    const phone    = '+23599001122';
+    const phone = '+23599001122';
     const distance = '2.5 km';
-    const price    = 500;
-    const pickup   = 'Boutique Total';
+    const price = 500;
+    const pickup = 'Boutique Total';
 
     await service.sendDriverAlert(phone, distance, price, pickup);
 
