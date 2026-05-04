@@ -9,6 +9,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   const mockRepository = {
     findById: jest.fn(),
     updateOpeningHours: jest.fn(),
+    updateDeliveryZones: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -37,21 +38,45 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
 
     const result = await service.updateOpeningHours(restaurantId, dto);
 
-    expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(restaurantId, dto.hours);
+    expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(
+      restaurantId,
+      dto.hours,
+    );
     expect(result).toBeDefined();
   });
 
-it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-  mockRepository.findById.mockResolvedValueOnce(null);
+  it('should update delivery zones with radius', async () => {
+    const restaurantId = 'cuid-123';
+    const dto = {
+      zones: [
+        { name: 'Zone Proche', radius: 5, deliveryFee: 500 },
+        { name: 'Zone Large', radius: 15, deliveryFee: 1500 },
+      ],
+    };
 
-  await expect(
-    service.updateOpeningHours('cuid-123', {
-      hours: [
-        { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
+    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.updateDeliveryZones.mockResolvedValue({ count: 2 });
+
+    const result = await service.updateDeliveryZones(restaurantId, dto);
+
+    expect(mockRepository.updateDeliveryZones).toHaveBeenCalledWith(
+      restaurantId,
+      dto.zones,
+    );
+    expect(result.count).toBe(2);
+  });
+
+  it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
+    mockRepository.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      service.updateOpeningHours('cuid-123', {
+        hours: [
+          { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
         ],
-    }),
-  ).rejects.toThrow(NotFoundException);
+      }),
+    ).rejects.toThrow(NotFoundException);
 
-  expect(mockRepository.updateOpeningHours).not.toHaveBeenCalled();
-});
+    expect(mockRepository.updateOpeningHours).not.toHaveBeenCalled();
+  });
 });
