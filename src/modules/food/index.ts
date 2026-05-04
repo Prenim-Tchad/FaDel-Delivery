@@ -53,5 +53,4 @@ export { MenuItem } from './entities/menu-item.entity';
 // DTO
 export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
 // DTOs
-export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
 export { UpdateMenuItemDto } from './dtos/update-menu-item.dto';
