@@ -76,6 +76,14 @@ export class RestaurantService {
     return this.restaurantRepository.updateDeliveryZones(id, dto.zones);
   }
 
+  async findNearby(
+    latitude: number,
+    longitude: number,
+    radiusKm: number,
+  ): Promise<unknown[]> {
+    return this.restaurantRepository.findNearby(latitude, longitude, radiusKm);
+  }
+
   async remove(id: string): Promise<unknown> {
     // On vérifie d'abord l'existence
     await this.findOne(id);

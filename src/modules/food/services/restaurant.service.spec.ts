@@ -9,6 +9,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   const mockRepository = {
     findById: jest.fn(),
     findProfileById: jest.fn(),
+    findNearby: jest.fn(),
     updateOpeningHours: jest.fn(),
     updateDeliveryZones: jest.fn(),
   };
@@ -65,6 +66,28 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       dto.zones,
     );
     expect(result.count).toBe(2);
+  });
+
+  it('should return nearby restaurants sorted by distance', async () => {
+    const latitude = 12.34;
+    const longitude = 56.78;
+    const radiusKm = 10;
+
+    const nearbyRestaurants = [
+      { id: 'r2', distance: 1.2 },
+      { id: 'r1', distance: 0.8 },
+    ];
+
+    mockRepository.findNearby.mockResolvedValue(nearbyRestaurants);
+
+    const result = await service.findNearby(latitude, longitude, radiusKm);
+
+    expect(mockRepository.findNearby).toHaveBeenCalledWith(
+      latitude,
+      longitude,
+      radiusKm,
+    );
+    expect(result).toEqual(nearbyRestaurants);
   });
 
   it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
