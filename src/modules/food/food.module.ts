@@ -34,27 +34,27 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
     FoodRepository, // ✅ lead
     MenuCategoryRepository, // ✅ saleh
     MenuItemRepository, // ✅ saleh
-    FoodController,             // ✅ lead
-    MenuCategoryController,     // ✅ saleh - tâches #31 #32
-    MenuItemController,         // ✅ saleh - tâche #33
+    FoodController, // ✅ lead
+    MenuCategoryController, // ✅ saleh - tâches #31 #32
+    MenuItemController, // ✅ saleh - tâche #33
   ],
   providers: [
-    PrismaService,              // 🆕 nécessaire pour les repositories Prisma
-    FoodService,                // ✅ lead
-    MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // ✅ saleh
-    FoodRepository,             // ✅ lead
-    MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // ✅ saleh
+    PrismaService, // 🆕 nécessaire pour les repositories Prisma
+    FoodService, // ✅ lead
+    MenuCategoryService, // ✅ saleh
+    MenuItemService, // ✅ saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // ✅ saleh
+    MenuItemRepository, // ✅ saleh
   ],
   exports: [
-    PrismaService,              // 🆕 exporté pour autres modules
-    FoodService,                // ✅ lead
-    MenuCategoryService,        // ✅ saleh
-    MenuItemService,            // ✅ saleh
-    FoodRepository,             // ✅ lead
-    MenuCategoryRepository,     // ✅ saleh
-    MenuItemRepository,         // ✅ saleh
+    PrismaService, // 🆕 exporté pour autres modules
+    FoodService, // ✅ lead
+    MenuCategoryService, // ✅ saleh
+    MenuItemService, // ✅ saleh
+    FoodRepository, // ✅ lead
+    MenuCategoryRepository, // ✅ saleh
+    MenuItemRepository, // ✅ saleh
   ],
 })
 export class FoodModule {}

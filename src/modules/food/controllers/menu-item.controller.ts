@@ -42,7 +42,8 @@ export class MenuItemController {
   @Post('menu-categories/:id/items')
   @ApiOperation({
     summary: 'Créer un article dans une catégorie de menu',
-    description: 'Crée un article avec nom, prix FCFA, description, disponibilité et popularité.',
+    description:
+      'Crée un article avec nom, prix FCFA, description, disponibilité et popularité.',
   })
   @ApiParam({
     name: 'id',
@@ -55,8 +56,14 @@ export class MenuItemController {
     description: 'Article créé avec succès',
     type: MenuItem,
   })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Données invalides',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Catégorie introuvable',
+  })
   create(
     @Param('id') menuCategoryId: string,
     @Body() createMenuItemDto: CreateMenuItemDto,
@@ -71,11 +78,12 @@ export class MenuItemController {
   @Put('menu-items/:id')
   @ApiOperation({
     summary: 'Modifier un article de menu',
-    description: 'Modifie les informations d\'un article (nom, prix, description, disponibilité, etc.).',
+    description:
+      "Modifie les informations d'un article (nom, prix, description, disponibilité, etc.).",
   })
   @ApiParam({
     name: 'id',
-    description: 'ID de l\'article',
+    description: "ID de l'article",
     example: 'clxxx123',
   })
   @ApiResponse({
@@ -89,8 +97,14 @@ export class MenuItemController {
     description: 'Article modifié avec succès',
     type: MenuItem,
   })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Données invalides',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article introuvable',
+  })
   update(
     @Param('id') id: string,
     @Body() updateMenuItemDto: UpdateMenuItemDto,
@@ -106,11 +120,12 @@ export class MenuItemController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Supprimer un article de menu (soft-delete)',
-    description: 'Marque l\'article comme supprimé sans le supprimer réellement de la base.',
+    description:
+      "Marque l'article comme supprimé sans le supprimer réellement de la base.",
   })
   @ApiParam({
     name: 'id',
-    description: 'ID de l\'article',
+    description: "ID de l'article",
     example: 'clxxx123',
   })
   @ApiResponse({
@@ -118,10 +133,11 @@ export class MenuItemController {
     description: 'Article supprimé avec succès',
     type: MenuItem,
   })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
-  remove(
-    @Param('id') id: string,
-  ): Promise<MenuItem> {
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article introuvable',
+  })
+  remove(@Param('id') id: string): Promise<MenuItem> {
     return this.menuItemService.remove(id);
   }
 }

@@ -1,50 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { MenuItem as PrismaMenuItem } from '@prisma/client';
 import { PrismaService } from '../../../prisma.service';
-import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
+import { MenuItem } from '../entities/menu-item.entity';
 
-/**
- * Repository MenuItem — gère l'accès aux données via Prisma
- */
+type MenuItemRecord = {
+  id: string;
+  menuCategoryId: string;
+  name: string;
+  description: string | null;
+  price: number;
+  imageUrl: string | null;
+  isAvailable: boolean;
+  isPopular: boolean;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isGlutenFree: boolean;
+  isHalal: boolean;
+  isKosher: boolean;
+  preparationTime: number | null;
+  calories: number | null;
+  allergens: string[];
+  ingredients: string[];
+  sortOrder: number;
+  isDeleted: boolean;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type MenuItemDelegate = {
+  create(args: object): Promise<MenuItemRecord>;
+  findFirst(args: object): Promise<MenuItemRecord | null>;
+  update(args: object): Promise<MenuItemRecord>;
+};
+
+type MenuItemPrismaClient = {
+  menuItem: MenuItemDelegate;
+  menuCategory: {
+    findFirst(args: object): Promise<object | null>;
+  };
+};
+
 @Injectable()
 export class MenuItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Crée un nouvel article dans une catégorie de menu
-   */
-  create(menuCategoryId: string, dto: CreateMenuItemDto): MenuItem {
-    const item: MenuItem = {
-      id: this.generateId(),
-      menuCategoryId, // ID de la catégorie parente
-      name: dto.name,
-      description: dto.description,
-      price: dto.price,
-      imageUrl: dto.imageUrl,
-      isAvailable: dto.isAvailable ?? true, // true par défaut
-      isPopular: dto.isPopular ?? false, // false par défaut
-      isVegetarian: dto.isVegetarian ?? false,
-      isVegan: dto.isVegan ?? false,
-      isGlutenFree: dto.isGlutenFree ?? false,
-      isHalal: dto.isHalal ?? false,
-      isKosher: dto.isKosher ?? false,
-      preparationTime: dto.preparationTime,
-      calories: dto.calories,
-      allergens: dto.allergens,
-      ingredients: dto.ingredients,
-      sortOrder: dto.sortOrder,
-      isDeleted: false, // non supprimé par défaut
-      deletedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  private get db(): MenuItemPrismaClient {
+    return this.prisma;
+  }
+
   async create(
     menuCategoryId: string,
     dto: CreateMenuItemDto,
   ): Promise<MenuItem> {
-    const item = await this.prisma.menuItem.create({
+    const item = await this.db.menuItem.create({
       data: {
         menuCategoryId,
         name: dto.name,
@@ -71,26 +81,16 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
-  /**
-   * Trouve un article par ID (exclut les soft-deleted)
-   */
   async findOne(id: string): Promise<MenuItem | null> {
-    const item = await this.prisma.menuItem.findFirst({
+    const item = await this.db.menuItem.findFirst({
       where: { id, isDeleted: false },
     });
 
-    if (!item) return null;
-    return this.mapToEntity(item);
+    return item ? this.mapToEntity(item) : null;
   }
 
-  /**
-   * Modifie un article existant
-   */
-  async update(
-    id: string,
-    dto: UpdateMenuItemDto,
-  ): Promise<MenuItem | null> {
-    const item = await this.prisma.menuItem.update({
+  async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem | null> {
+    const item = await this.db.menuItem.update({
       where: { id },
       data: {
         ...(dto.name !== undefined && { name: dto.name }),
@@ -99,12 +99,18 @@ export class MenuItemRepository {
         ...(dto.imageUrl !== undefined && { imageUrl: dto.imageUrl }),
         ...(dto.isAvailable !== undefined && { isAvailable: dto.isAvailable }),
         ...(dto.isPopular !== undefined && { isPopular: dto.isPopular }),
-        ...(dto.isVegetarian !== undefined && { isVegetarian: dto.isVegetarian }),
+        ...(dto.isVegetarian !== undefined && {
+          isVegetarian: dto.isVegetarian,
+        }),
         ...(dto.isVegan !== undefined && { isVegan: dto.isVegan }),
-        ...(dto.isGlutenFree !== undefined && { isGlutenFree: dto.isGlutenFree }),
+        ...(dto.isGlutenFree !== undefined && {
+          isGlutenFree: dto.isGlutenFree,
+        }),
         ...(dto.isHalal !== undefined && { isHalal: dto.isHalal }),
         ...(dto.isKosher !== undefined && { isKosher: dto.isKosher }),
-        ...(dto.preparationTime !== undefined && { preparationTime: dto.preparationTime }),
+        ...(dto.preparationTime !== undefined && {
+          preparationTime: dto.preparationTime,
+        }),
         ...(dto.calories !== undefined && { calories: dto.calories }),
         ...(dto.allergens !== undefined && { allergens: dto.allergens }),
         ...(dto.ingredients !== undefined && { ingredients: dto.ingredients }),
@@ -115,11 +121,8 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
-  /**
-   * Soft-delete : marque l'article comme supprimé
-   */
   async softDelete(id: string): Promise<MenuItem | null> {
-    const item = await this.prisma.menuItem.update({
+    const item = await this.db.menuItem.update({
       where: { id },
       data: {
         isDeleted: true,
@@ -130,20 +133,15 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
-  /**
-   * Vérifie si une catégorie de menu existe en BDD
-   */
   async menuCategoryExists(menuCategoryId: string): Promise<boolean> {
-    const category = await this.prisma.menuCategory.findFirst({
+    const category = await this.db.menuCategory.findFirst({
       where: { id: menuCategoryId, isDeleted: false },
     });
-    return !!category;
+
+    return category !== null;
   }
 
-  /**
-   * Convertit un objet Prisma en entité MenuItem
-   */
-  private mapToEntity(data: PrismaMenuItem): MenuItem {
+  private mapToEntity(data: MenuItemRecord): MenuItem {
     return {
       id: data.id,
       menuCategoryId: data.menuCategoryId,
@@ -160,9 +158,9 @@ export class MenuItemRepository {
       isKosher: data.isKosher,
       preparationTime: data.preparationTime ?? undefined,
       calories: data.calories ?? undefined,
-      allergens: data.allergens ?? [],
-      ingredients: data.ingredients ?? [],
-      sortOrder: data.sortOrder ?? undefined,
+      allergens: data.allergens,
+      ingredients: data.ingredients,
+      sortOrder: data.sortOrder,
       isDeleted: data.isDeleted,
       deletedAt: data.deletedAt ?? undefined,
       createdAt: data.createdAt,
