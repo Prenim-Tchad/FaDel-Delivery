@@ -45,10 +45,13 @@ export class MenuCategoryRepository {
     const category = await this.prisma.menuCategory.create({
       data: {
         restaurantId,
-        name: dto.name as Prisma.JsonValue,
-        description: dto.description
-          ? (dto.description as Prisma.JsonValue)
-          : Prisma.JsonNull,
+        name: dto.name as unknown as Prisma.InputJsonValue,
+        description:
+          dto.description === undefined
+            ? undefined
+            : dto.description
+            ? ((dto.description as unknown) as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
         sortOrder: dto.sort_order,
         isDeleted: false,
         deletedAt: null,
@@ -76,11 +79,16 @@ export class MenuCategoryRepository {
     const category = await this.prisma.menuCategory.update({
       where: { id },
       data: {
-        ...(dto.name !== undefined && { name: dto.name as Prisma.JsonValue }),
+        ...(dto.name !== undefined && {
+          name: (dto.name as unknown) as Prisma.InputJsonValue,
+        }),
         ...(dto.description !== undefined && {
-          description: dto.description
-            ? (dto.description as Prisma.JsonValue)
-            : Prisma.JsonNull,
+          description:
+            dto.description === undefined
+              ? undefined
+              : dto.description
+              ? ((dto.description as unknown) as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
         }),
         ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
       },
