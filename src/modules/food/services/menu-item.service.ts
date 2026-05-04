@@ -14,9 +14,7 @@ import { MenuItem } from '../entities/menu-item.entity';
  */
 @Injectable()
 export class MenuItemService {
-  constructor(
-    private readonly menuItemRepository: MenuItemRepository,
-  ) {}
+  constructor(private readonly menuItemRepository: MenuItemRepository) {}
 
   /**
    * Crée un article dans une catégorie de menu
@@ -25,10 +23,7 @@ export class MenuItemService {
    * @param menuCategoryId - ID de la catégorie (vient du param :id)
    * @param dto - Données validées par CreateMenuItemDto
    */
-  create(
-    menuCategoryId: string,
-    dto: CreateMenuItemDto,
-  ): MenuItem {
+  create(menuCategoryId: string, dto: CreateMenuItemDto): MenuItem {
     // Règle métier 1 : vérifier que la catégorie existe
     const exists = this.menuItemRepository.menuCategoryExists();
     if (!exists) {
@@ -39,9 +34,7 @@ export class MenuItemService {
 
     // Règle métier 2 : le prix doit être positif
     if (dto.price < 0) {
-      throw new BadRequestException(
-        'Le prix ne peut pas être négatif',
-      );
+      throw new BadRequestException('Le prix ne peut pas être négatif');
     }
 
     // Règle métier 3 : le temps de préparation doit être positif

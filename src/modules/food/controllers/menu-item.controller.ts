@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Param,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Post, Body, Param, HttpStatus } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -26,9 +20,7 @@ import { MenuItem } from '../entities/menu-item.entity';
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class MenuItemController {
-  constructor(
-    private readonly menuItemService: MenuItemService,
-  ) {}
+  constructor(private readonly menuItemService: MenuItemService) {}
 
   /**
    * POST /food/menu-categories/:id/items
@@ -46,16 +38,16 @@ export class MenuItemController {
     example: 'menucat_1_1640995200000',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,          // 201
+    status: HttpStatus.CREATED, // 201
     description: 'Article créé avec succès',
     type: MenuItem,
   })
   @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,      // 400
+    status: HttpStatus.BAD_REQUEST, // 400
     description: 'Données invalides',
   })
   @ApiResponse({
-    status: HttpStatus.NOT_FOUND,        // 404
+    status: HttpStatus.NOT_FOUND, // 404
     description: 'Catégorie de menu introuvable',
   })
   create(

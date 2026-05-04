@@ -37,21 +37,24 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
 
     const result = await service.updateOpeningHours(restaurantId, dto);
 
-    expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(restaurantId, dto.hours);
+    expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(
+      restaurantId,
+      dto.hours,
+    );
     expect(result).toBeDefined();
   });
 
-it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-  mockRepository.findById.mockResolvedValueOnce(null);
+  it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
+    mockRepository.findById.mockResolvedValueOnce(null);
 
-  await expect(
-    service.updateOpeningHours('cuid-123', {
-      hours: [
-        { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
+    await expect(
+      service.updateOpeningHours('cuid-123', {
+        hours: [
+          { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
         ],
-    }),
-  ).rejects.toThrow(NotFoundException);
+      }),
+    ).rejects.toThrow(NotFoundException);
 
-  expect(mockRepository.updateOpeningHours).not.toHaveBeenCalled();
-});
+    expect(mockRepository.updateOpeningHours).not.toHaveBeenCalled();
+  });
 });

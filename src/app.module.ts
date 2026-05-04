@@ -5,9 +5,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { FoodModule } from './modules/food/food.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
 
 @Module({
-  imports: [AuthModule, ProfileModule, FoodModule, RedisModule],
+  imports: [AuthModule, ProfileModule, FoodModule, RedisModule, DeliveryModule],
   controllers: [AppController],
   providers: [AppService],
 })

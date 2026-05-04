@@ -25,8 +25,8 @@ export class MenuCategoryRepository {
       name: dto.name,
       description: dto.description,
       sort_order: dto.sort_order,
-      isDeleted: false,   // par défaut non supprimé
-      deletedAt: null,    // par défaut pas de date de suppression
+      isDeleted: false, // par défaut non supprimé
+      deletedAt: null, // par défaut pas de date de suppression
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -39,18 +39,18 @@ export class MenuCategoryRepository {
    * Trouve une catégorie par ID (exclut les soft-deleted)
    */
   findOne(id: string): MenuCategory | null {
-    return this.categories.find(
-      (c) => c.id === id && !c.isDeleted  // exclut les supprimés
-    ) ?? null;
+    return (
+      this.categories.find(
+        (c) => c.id === id && !c.isDeleted, // exclut les supprimés
+      ) ?? null
+    );
   }
 
   /**
    * Modifie une catégorie existante
    */
   update(id: string, dto: UpdateMenuCategoryDto): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
+    const index = this.categories.findIndex((c) => c.id === id && !c.isDeleted);
 
     if (index === -1) return null;
 
@@ -69,17 +69,15 @@ export class MenuCategoryRepository {
    * sans la supprimer réellement de la base de données
    */
   softDelete(id: string): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
+    const index = this.categories.findIndex((c) => c.id === id && !c.isDeleted);
 
     if (index === -1) return null;
 
     // On marque comme supprimé au lieu de supprimer
     this.categories[index] = {
       ...this.categories[index],
-      isDeleted: true,        // marqué comme supprimé
-      deletedAt: new Date(),  // date de suppression
+      isDeleted: true, // marqué comme supprimé
+      deletedAt: new Date(), // date de suppression
       updatedAt: new Date(),
     };
 

@@ -27,7 +27,10 @@
     "db:validate": "prisma db push --preview-feature"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1039.0",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
@@ -37,15 +40,18 @@
     "@prisma/config": "^7.8.0",
     "@supabase/supabase-js": "^2.104.1",
     "@types/ioredis": "^4.28.10",
+    "axios": "^1.15.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "firebase-admin": "^13.8.0",
     "ioredis": "^5.10.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "prisma": "^7.8.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "twilio": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -55,6 +61,7 @@
     "@nestjs/testing": "^11.1.19",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.0.0",
+    "@types/multer": "^2.1.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^7.0.0",
