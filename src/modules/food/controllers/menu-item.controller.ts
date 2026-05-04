@@ -37,31 +37,24 @@ export class MenuItemController {
   @Post('menu-categories/:id/items')
   @ApiOperation({
     summary: 'Créer un article dans une catégorie de menu',
-    description:
-      'Crée un article avec nom, prix FCFA, description, disponibilité et popularité.',
+    description: 'Crée un article avec nom, prix FCFA, description, disponibilité et popularité.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID de la catégorie de menu',
-    example: 'menucat_1_1640995200000',
+    example: 'clxxx123',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,          // 201
+    status: HttpStatus.CREATED,
     description: 'Article créé avec succès',
     type: MenuItem,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,      // 400
-    description: 'Données invalides',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,        // 404
-    description: 'Catégorie de menu introuvable',
-  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Catégorie introuvable' })
   create(
-    @Param('id') menuCategoryId: string, // ID de la catégorie depuis :id
-    @Body() createMenuItemDto: CreateMenuItemDto,
-  ): MenuItem {
-    return this.menuItemService.create(menuCategoryId, createMenuItemDto);
-  }
+  @Param('id') menuCategoryId: string,
+  @Body() createMenuItemDto: CreateMenuItemDto,
+): Promise<MenuItem> {
+  return this.menuItemService.create(menuCategoryId, createMenuItemDto);
+}
 }
