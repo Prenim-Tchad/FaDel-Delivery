@@ -38,10 +38,10 @@ export class RestaurantRepository {
     return (await this.prisma.restaurant.findMany()) as unknown[];
   }
 
-  async findById(id: string): Promise<unknown | null> {
-    return this.prisma.restaurant.findUnique({
+  async findById(id: string): Promise<object | null> {
+    return (await this.prisma.restaurant.findUnique({
       where: { id },
-    }) as unknown;
+    })) as object | null;
   }
 
   async update(id: string, data: UpdateRestaurantDto): Promise<unknown> {
@@ -63,12 +63,13 @@ export class RestaurantRepository {
       await tx.deliveryZone.deleteMany({
         where: { restaurantId },
       });
-      return tx.deliveryZone.createMany({
+      const createResult: unknown = await tx.deliveryZone.createMany({
         data: zones.map((z) => ({
           ...z,
           restaurantId,
         })),
       });
+      return createResult;
     });
   }
 
@@ -80,12 +81,13 @@ export class RestaurantRepository {
       await tx.openingHours.deleteMany({
         where: { restaurantId },
       });
-      return (await tx.openingHours.createMany({
+      const createResult: unknown = await tx.openingHours.createMany({
         data: hours.map((h) => ({
           ...h,
           restaurantId,
         })),
-      })) as unknown;
+      });
+      return createResult;
     }) as unknown;
   }
   async delete(id: string): Promise<unknown> {
