@@ -8,13 +8,24 @@ import type { DeliveryZoneItemDto } from '../dtos/create-delivery-zone.dto';
 export type BatchPayloadResult = {
   count: number;
 };
+type CreateManyDelegate = {
+  deleteMany(args: object): Promise<unknown>;
+  createMany(args: object): Promise<BatchPayloadResult>;
+};
+type RestaurantTransactionClient = {
+  deliveryZone: CreateManyDelegate;
+  openingHours: CreateManyDelegate;
+};
+type TransactionRunner = <T>(
+  callback: (tx: RestaurantTransactionClient) => Promise<T>,
+) => Promise<T>;
 
 @Injectable()
 export class RestaurantRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateRestaurantDto): Promise<unknown> {
-    return this.prisma.restaurant.create({
+    return (await this.prisma.restaurant.create({
       data: {
         name: data.name,
         address: data.address,
@@ -35,7 +46,7 @@ export class RestaurantRepository {
           connect: { id: data.cuisineCategoryId },
         },
       },
-    }) as unknown;
+    })) as unknown;
   }
 
   async findAll(): Promise<unknown[]> {
@@ -49,62 +60,64 @@ export class RestaurantRepository {
   }
 
   async update(id: string, data: UpdateRestaurantDto): Promise<unknown> {
-    return this.prisma.restaurant.update({
+    return (await this.prisma.restaurant.update({
       where: { id },
       data: {
         name: data.name,
         address: data.address,
         phone: data.phone,
       },
-    }) as unknown;
+    })) as unknown;
   }
 
   async updateDeliveryZones(
     restaurantId: string,
     zones: DeliveryZoneItemDto[],
   ): Promise<BatchPayloadResult> {
-    const transactionResult: unknown = await this.prisma.$transaction(
-      async (tx) => {
-        await tx.deliveryZone.deleteMany({
-          where: { restaurantId },
-        });
-        const createResult: unknown = await tx.deliveryZone.createMany({
-          data: zones.map((zone, index) => ({
-            name: zone.name ?? `Zone ${index + 1}`,
-            radius: zone.radius,
-            deliveryFee: zone.deliveryFee,
-            restaurantId,
-          })),
-        });
-        return createResult as BatchPayloadResult;
-      },
-    );
-    return transactionResult as BatchPayloadResult;
+    const transaction = this.prisma.$transaction.bind(
+      this.prisma,
+    ) as unknown as TransactionRunner;
+    const transactionResult = await transaction(async (tx) => {
+      await tx.deliveryZone.deleteMany({
+        where: { restaurantId },
+      });
+      const createResult = await tx.deliveryZone.createMany({
+        data: zones.map((zone, index) => ({
+          name: zone.name ?? `Zone ${index + 1}`,
+          radius: zone.radius,
+          deliveryFee: zone.deliveryFee,
+          restaurantId,
+        })),
+      });
+      return createResult;
+    });
+    return transactionResult;
   }
 
   async updateOpeningHours(
     restaurantId: string,
     hours: OpeningHourItemDto[],
   ): Promise<BatchPayloadResult> {
-    const transactionResult: unknown = await this.prisma.$transaction(
-      async (tx) => {
-        await tx.openingHours.deleteMany({
-          where: { restaurantId },
-        });
-        const createResult: unknown = await tx.openingHours.createMany({
-          data: hours.map((h) => ({
-            ...h,
-            restaurantId,
-          })),
-        });
-        return createResult as BatchPayloadResult;
-      },
-    );
-    return transactionResult as BatchPayloadResult;
+    const transaction = this.prisma.$transaction.bind(
+      this.prisma,
+    ) as unknown as TransactionRunner;
+    const transactionResult = await transaction(async (tx) => {
+      await tx.openingHours.deleteMany({
+        where: { restaurantId },
+      });
+      const createResult = await tx.openingHours.createMany({
+        data: hours.map((h) => ({
+          ...h,
+          restaurantId,
+        })),
+      });
+      return createResult;
+    });
+    return transactionResult;
   }
   async delete(id: string): Promise<unknown> {
-    return this.prisma.restaurant.delete({
+    return (await this.prisma.restaurant.delete({
       where: { id },
-    }) as unknown;
+    })) as unknown;
   }
 }
