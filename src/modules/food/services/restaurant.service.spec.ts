@@ -8,6 +8,8 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
 
   const mockRepository = {
     findById: jest.fn(),
+    findProfileById: jest.fn(),
+    findNearby: jest.fn(),
     updateOpeningHours: jest.fn(),
     updateDeliveryZones: jest.fn(),
   };
@@ -33,7 +35,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       ],
     };
 
-    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.findProfileById.mockResolvedValue({ id: restaurantId });
     mockRepository.updateOpeningHours.mockResolvedValue({ count: 1 });
 
     const result = await service.updateOpeningHours(restaurantId, dto);
@@ -54,7 +56,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       ],
     };
 
-    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.findProfileById.mockResolvedValue({ id: restaurantId });
     mockRepository.updateDeliveryZones.mockResolvedValue({ count: 2 });
 
     const result = await service.updateDeliveryZones(restaurantId, dto);
@@ -66,8 +68,30 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
     expect(result.count).toBe(2);
   });
 
+  it('should return nearby restaurants sorted by distance', async () => {
+    const latitude = 12.34;
+    const longitude = 56.78;
+    const radiusKm = 10;
+
+    const nearbyRestaurants = [
+      { id: 'r2', distance: 1.2 },
+      { id: 'r1', distance: 0.8 },
+    ];
+
+    mockRepository.findNearby.mockResolvedValue(nearbyRestaurants);
+
+    const result = await service.findNearby(latitude, longitude, radiusKm);
+
+    expect(mockRepository.findNearby).toHaveBeenCalledWith(
+      latitude,
+      longitude,
+      radiusKm,
+    );
+    expect(result).toEqual(nearbyRestaurants);
+  });
+
   it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
-    mockRepository.findById.mockResolvedValueOnce(null);
+    mockRepository.findProfileById.mockResolvedValueOnce(null);
 
     await expect(
       service.updateOpeningHours('cuid-123', {
