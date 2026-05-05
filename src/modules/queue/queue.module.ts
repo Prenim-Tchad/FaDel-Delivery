@@ -7,6 +7,7 @@ import { OrderTimeoutProcessor } from './processors/order-timeout.processor';
 import { DriverAssignmentProcessor } from './processors/driver-assignment.processor';
 import { NotificationDispatchProcessor } from './processors/notification-dispatch.processor';
 import { QueueService } from './queue.service';
+import { PrismaService } from '../../prisma.service';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { QueueService } from './queue.service';
     }),
   ],
   providers: [
+    PrismaService,
     QueueService,
     OrderProcessingProcessor,
     OrderTimeoutProcessor,
