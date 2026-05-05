@@ -8,6 +8,7 @@ import { PrismaService } from '../../prisma.service';
 import { MenuCategoryRepository } from '../food/repositories/menu-category.repository';
 import { MenuItemRepository } from '../food/repositories/menu-item.repository';
 import { SUPABASE_CLIENT } from './auth.constants';
+import { R2UploadService } from '../food/services/r2-upload.service';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 const mockRedisService = {
@@ -94,6 +95,11 @@ const mockSupabaseClient = {
   },
 };
 
+// Ajoute ce mock avec les autres
+const mockR2UploadService = {
+  uploadMenuItemPhoto: jest.fn(),
+};
+
 // ── Tests ──────────────────────────────────────────────────────────────────
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -120,8 +126,10 @@ describe('AuthController (e2e)', () => {
       .useValue(mockPrismaService)
       .overrideProvider(MenuCategoryRepository)
       .useValue(mockMenuCategoryRepository)
-      .overrideProvider(MenuItemRepository)
+      .overrideProvider(MenuItemRepository)     
       .useValue(mockMenuItemRepository)
+      .overrideProvider(R2UploadService)
+      .useValue(mockR2UploadService)
       .compile();
 
     app = moduleFixture.createNestApplication();
