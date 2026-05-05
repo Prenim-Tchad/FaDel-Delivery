@@ -28,7 +28,9 @@ export class MenuCategoryController {
 
   @Post('restaurants/:id/menu-categories')
   @ApiOperation({
-    summary: 'Creer une categorie de menu pour un restaurant',
+    summary: 'Créer une catégorie de menu pour un restaurant',
+    description:
+      'Crée une catégorie avec nom multilingue (FR/EN/AR/ES), description et ordre.',
   })
   @ApiParam({
     name: 'id',
@@ -56,7 +58,10 @@ export class MenuCategoryController {
   }
 
   @Put('menu-categories/:id')
-  @ApiOperation({ summary: 'Modifier une categorie de menu' })
+  @ApiOperation({
+    summary: 'Modifier une catégorie de menu',
+    description: "Modifie le nom, la description ou l'ordre d'une catégorie.",
+  })
   @ApiParam({
     name: 'id',
     description: 'ID de la categorie',
@@ -83,8 +88,12 @@ export class MenuCategoryController {
   }
 
   @Delete('menu-categories/:id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Supprimer une categorie de menu (soft-delete)' })
+  @HttpCode(HttpStatus.OK) // 200 car on retourne la catégorie supprimée
+  @ApiOperation({
+    summary: 'Supprimer une catégorie de menu (soft-delete)',
+    description:
+      'Marque la catégorie comme supprimée sans la supprimer réellement de la base.',
+  })
   @ApiParam({
     name: 'id',
     description: 'ID de la categorie',

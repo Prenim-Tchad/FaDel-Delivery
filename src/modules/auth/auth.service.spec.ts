@@ -8,6 +8,7 @@ import { PrismaService } from '../../prisma.service';
 import { MenuCategoryRepository } from '../food/repositories/menu-category.repository';
 import { MenuItemRepository } from '../food/repositories/menu-item.repository';
 import { SUPABASE_CLIENT } from './auth.constants';
+import { MediaService } from '../food/services/media.service'; // ✅ ajout
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 const mockRedisService = {
@@ -27,6 +28,17 @@ const mockPrismaService = {
   $connect: jest.fn(),
   $disconnect: jest.fn(),
   onModuleInit: jest.fn(),
+};
+
+// ✅ Mock MediaService — plus de jest.mock()
+const mockMediaService = {
+  upload: jest.fn(),
+  delete: jest.fn(),
+  getPublicUrl: jest.fn(),
+  getSignedUrl: jest.fn(),
+  replace: jest.fn(),
+  extractKeyFromUrl: jest.fn(),
+  isAllowedMimeType: jest.fn(),
 };
 
 // 🆕 Mock MenuCategoryRepository
@@ -122,6 +134,8 @@ describe('AuthController (e2e)', () => {
       .useValue(mockMenuCategoryRepository)
       .overrideProvider(MenuItemRepository)
       .useValue(mockMenuItemRepository)
+      .overrideProvider(MediaService) // ✅ ajout
+      .useValue(mockMediaService) // ✅ ajout
       .compile();
 
     app = moduleFixture.createNestApplication();
