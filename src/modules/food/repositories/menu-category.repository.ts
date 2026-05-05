@@ -50,8 +50,8 @@ export class MenuCategoryRepository {
           dto.description === undefined
             ? undefined
             : dto.description
-            ? ((dto.description as unknown) as Prisma.InputJsonValue)
-            : Prisma.JsonNull,
+              ? (dto.description as unknown as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
         sortOrder: dto.sort_order,
         isDeleted: false,
         deletedAt: null,
@@ -80,15 +80,15 @@ export class MenuCategoryRepository {
       where: { id },
       data: {
         ...(dto.name !== undefined && {
-          name: (dto.name as unknown) as Prisma.InputJsonValue,
+          name: dto.name as unknown as Prisma.InputJsonValue,
         }),
         ...(dto.description !== undefined && {
           description:
             dto.description === undefined
               ? undefined
               : dto.description
-              ? ((dto.description as unknown) as Prisma.InputJsonValue)
-              : Prisma.JsonNull,
+                ? (dto.description as unknown as Prisma.InputJsonValue)
+                : Prisma.JsonNull,
         }),
         ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
       },

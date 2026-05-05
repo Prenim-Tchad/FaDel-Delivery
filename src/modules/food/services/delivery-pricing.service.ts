@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GeoService } from './geo.service';
-import { VehicleType, VEHICLE_RATES, PRICING_CONFIG } from './delivery-pricing.constants';
+import {
+  VehicleType,
+  VEHICLE_RATES,
+  PRICING_CONFIG,
+} from '../services/delivery-pricing.constants';
 
 @Injectable()
 export class DeliveryPricingService {
@@ -15,16 +19,19 @@ export class DeliveryPricingService {
    * @param vehicleType Type de véhicule choisi par l'utilisateur
    * @returns Objet contenant la distance, le prix final et le véhicule
    */
-  async estimateDeliveryCost(
+  estimateDeliveryCost(
+    // Suppression de "async" car pas de "await" nécessaire
     origin: { lat: number; lng: number },
     destination: { lat: number; lng: number },
-    vehicleType: VehicleType
+    vehicleType: VehicleType,
   ) {
     try {
       // 1. Calcul de la distance via le GeoService (Haversine par défaut)
       const distanceKm = this.geoService.calculateHaversineDistance(
-        origin.lat, origin.lng,
-        destination.lat, destination.lng
+        origin.lat,
+        origin.lng,
+        destination.lat,
+        destination.lng,
       );
 
       // 2. Récupération du tarif au KM selon le véhicule
@@ -38,7 +45,9 @@ export class DeliveryPricingService {
         finalPrice = PRICING_CONFIG.MINIMUM_FARE;
       }
 
-      this.logger.log(`Estimation : ${distanceKm.toFixed(2)}km en ${vehicleType} = ${Math.round(finalPrice)} FCFA`);
+      this.logger.log(
+        `Estimation : ${distanceKm.toFixed(2)}km en ${vehicleType} = ${Math.round(finalPrice)} FCFA`,
+      );
 
       return {
         distance: parseFloat(distanceKm.toFixed(2)),
@@ -46,10 +55,12 @@ export class DeliveryPricingService {
         totalPrice: Math.round(finalPrice),
         currency: 'FCFA',
         vehicle: vehicleType,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-    } catch (error) {
-      this.logger.error(`Erreur lors du calcul du prix: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Erreur : ${errorMessage}`);
       throw error;
     }
   }

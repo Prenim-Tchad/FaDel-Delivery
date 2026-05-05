@@ -43,14 +43,20 @@ export class RestaurantController {
     const longitude = Number(lng);
     const radiusKm = Number(radius);
 
-    if (Number.isNaN(latitude) || Number.isNaN(longitude) || Number.isNaN(radiusKm)) {
+    if (
+      Number.isNaN(latitude) ||
+      Number.isNaN(longitude) ||
+      Number.isNaN(radiusKm)
+    ) {
       throw new BadRequestException(
         'Les paramètres lat, lng et radius doivent être des nombres valides.',
       );
     }
 
     if (radiusKm <= 0) {
-      throw new BadRequestException('Le paramètre radius doit être supérieur à 0.');
+      throw new BadRequestException(
+        'Le paramètre radius doit être supérieur à 0.',
+      );
     }
 
     return this.restaurantService.findNearby(latitude, longitude, radiusKm);
