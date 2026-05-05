@@ -20,10 +20,12 @@ import {
   ApiParam,
   ApiQuery,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { FoodService } from '../services/food.service';
 import type { File as MulterFile } from 'multer'; // ✅ type explicite
-import { MediaService } from '../services/media.service'; // ✅ import
+import { MediaService, UploadResult } from '../services/media.service';
 import { CreateFoodDto } from '../dtos/create-food.dto';
 import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
@@ -35,7 +37,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class FoodController {
-  constructor(private readonly foodService: FoodService) {}
+  constructor(
+    private readonly foodService: FoodService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new food item' })
@@ -236,9 +241,9 @@ export class FoodController {
     status: HttpStatus.CREATED,
     description: 'Image uploaded successfully',
   })
-  async uploadImage(
-    @UploadedFile() file: MulterFile, // ✅ type explicite
+  uploadImage(
+    @UploadedFile() file: unknown, // ✅ type explicite
   ): Promise<UploadResult> {
-    return this.mediaService.upload(file, 'foods'); // ✅ await implicite via return
+    return this.mediaService.upload(file as MulterFile, 'foods');
   }
 }

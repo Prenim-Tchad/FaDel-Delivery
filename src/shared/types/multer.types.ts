@@ -1,3 +1,4 @@
+// ✅ Interface définie manuellement — pas d'import depuis multer
 export interface MulterFile {
   fieldname: string;
   originalname: string;
