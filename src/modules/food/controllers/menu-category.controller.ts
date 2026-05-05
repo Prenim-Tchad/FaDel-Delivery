@@ -108,7 +108,7 @@ export class MenuCategoryController {
     status: HttpStatus.NOT_FOUND,
     description: 'Catégorie introuvable',
   })
-  remove(@Param('id') id: string): MenuCategory {
+  async remove(@Param('id') id: string): Promise<MenuCategory> {
     return this.menuCategoryService.remove(id);
   }
 }

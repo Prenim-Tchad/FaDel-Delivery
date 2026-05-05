@@ -24,7 +24,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { FoodService } from '../services/food.service';
-import type { File as MulterFile } from 'multer'; // ✅ type explicite
+import { MulterFile } from '../../../shared/types/multer.types';
 import { MediaService, UploadResult } from '../services/media.service';
 import { CreateFoodDto } from '../dtos/create-food.dto';
 import { UpdateFoodDto } from '../dtos/update-food.dto';
