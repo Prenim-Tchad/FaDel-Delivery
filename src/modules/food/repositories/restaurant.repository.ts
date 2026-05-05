@@ -36,8 +36,6 @@ export class RestaurantRepository {
         coverImageUrl: data.coverImageUrl,
         latitude: data.latitude,
         longitude: data.longitude,
-        rccm: data.rccm,
-        slug: data.slug,
         city: "N'Djamena",
         owner: {
           connect: { id: data.ownerId },
@@ -187,3 +185,5 @@ export class RestaurantRepository {
     });
   }
 }
+
+
