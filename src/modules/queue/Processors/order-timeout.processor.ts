@@ -5,7 +5,9 @@ import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
 
 interface OrderTimeoutJobData {
   orderId: string;
+  orderNumber: string;
   customerId: string;
+  customerPhone: string;
 }
 
 @Processor(QUEUE_NAMES.ORDER_TIMEOUT)
@@ -15,7 +17,13 @@ export class OrderTimeoutProcessor extends WorkerHost {
   async process(job: Job<OrderTimeoutJobData>): Promise<void> {
     if (job.name !== JOB_NAMES.ORDER_TIMEOUT_CHECK) return;
 
-    this.logger.warn(`⏱ Timeout commande: orderId=${job.data.orderId}`);
-    // TODO: annuler commande si toujours en attente, notifier client
+    const { orderId, orderNumber, customerId, customerPhone } = job.data;
+    this.logger.warn(`⏱ Timeout commande #${orderNumber} | orderId=${orderId}`);
+
+    // TODO:
+    // 1. Vérifier si la commande est toujours PENDING dans Prisma
+    // 2. Si oui → statut CANCELLED
+    // 3. Notifier client via SMS (customerPhone) et push (customerId)
+    // 4. Si paiement effectué → déclencher remboursement
   }
 }
