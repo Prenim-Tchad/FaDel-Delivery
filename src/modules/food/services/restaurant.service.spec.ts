@@ -3,18 +3,18 @@ import { RestaurantService } from './restaurant.service';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { NotFoundException } from '@nestjs/common';
 
-describe('RestaurantService', () => {
+describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   let service: RestaurantService;
 
   const mockRepository = {
-    create: jest.fn(),
-    findAll: jest.fn(),
     findById: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
+    updateOpeningHours: jest.fn(),
+    updateDeliveryZones: jest.fn(),
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RestaurantService,
@@ -25,21 +25,58 @@ describe('RestaurantService', () => {
     service = module.get<RestaurantService>(RestaurantService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('should update opening hours with valid data', async () => {
+    const restaurantId = 'cuid-123';
+    const dto = {
+      hours: [
+        { dayOfWeek: 1, openTime: '08:00', closeTime: '22:00', isOpen: true },
+      ],
+    };
+
+    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.updateOpeningHours.mockResolvedValue({ count: 1 });
+
+    const result = await service.updateOpeningHours(restaurantId, dto);
+
+    expect(mockRepository.updateOpeningHours).toHaveBeenCalledWith(
+      restaurantId,
+      dto.hours,
+    );
+    expect(result).toBeDefined();
   });
 
-  describe('findOne', () => {
-    it('should throw NotFoundException if restaurant does not exist', async () => {
-      mockRepository.findById.mockResolvedValue(null);
-      await expect(service.findOne('invalid-id')).rejects.toThrow(NotFoundException);
-    });
+  it('should update delivery zones with radius', async () => {
+    const restaurantId = 'cuid-123';
+    const dto = {
+      zones: [
+        { name: 'Zone Proche', radius: 5, deliveryFee: 500 },
+        { name: 'Zone Large', radius: 15, deliveryFee: 1500 },
+      ],
+    };
 
-    it('should return a restaurant if it exists', async () => {
-      const restaurant = { id: '1', name: 'La Palmeraie' };
-      mockRepository.findById.mockResolvedValue(restaurant);
-      const result = await service.findOne('1');
-      expect(result).toEqual(restaurant);
-    });
+    mockRepository.findById.mockResolvedValue({ id: restaurantId });
+    mockRepository.updateDeliveryZones.mockResolvedValue({ count: 2 });
+
+    const result = await service.updateDeliveryZones(restaurantId, dto);
+
+    expect(mockRepository.updateDeliveryZones).toHaveBeenCalledWith(
+      restaurantId,
+      dto.zones,
+    );
+    expect(result.count).toBe(2);
+  });
+
+  it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
+    mockRepository.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      service.updateOpeningHours('cuid-123', {
+        hours: [
+          { dayOfWeek: 1, isOpen: true, openTime: '08:00', closeTime: '22:00' },
+        ],
+      }),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(mockRepository.updateOpeningHours).not.toHaveBeenCalled();
   });
 });

@@ -128,14 +128,14 @@ export class CreateMenuItemDto {
   ingredients?: string[];
 
   @ApiProperty({
-  description: 'Indique si l\'article est populaire',
-  example: false,
-  default: false,
-  required: false,
-})
-@IsOptional()
-@IsBoolean()
-isPopular?: boolean;
+    description: "Indique si l'article est populaire",
+    example: false,
+    default: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isPopular?: boolean;
 
   @ApiProperty({
     description: 'Ordre de tri dans le menu',
