@@ -9,6 +9,8 @@ import { MenuItemRepository } from './repositories/menu-item.repository';
 import { FoodService } from './services/food.service';
 import { MenuCategoryService } from './services/menu-category.service';
 import { MenuItemService } from './services/menu-item.service';
+import { OptionGroupService } from './services/option-group.service';
+import { OptionGroupRepository } from './repositories/option-group.repository';
 
 @Module({
   controllers: [FoodController, MenuCategoryController, MenuItemController],
@@ -20,6 +22,8 @@ import { MenuItemService } from './services/menu-item.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
   ],
   exports: [
     PrismaService,
@@ -29,6 +33,8 @@ import { MenuItemService } from './services/menu-item.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
   ],
 })
 export class FoodModule {}

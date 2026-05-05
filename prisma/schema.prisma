@@ -55,8 +55,6 @@ model Restaurant {
   phone         String
   email         String? @unique
   website       String?
-  slug          String? @unique
-  rccm          String? @unique
   logoUrl       String? @map("logo_url")
   coverImageUrl String? @map("cover_image_url")
 
@@ -123,7 +121,6 @@ model DeliveryZone {
   name         String
   description  String?
   coordinates  Json?
-  radius       Float      // Modification par Ernest (Tâche #16)
   deliveryFee  Float    @default(0) @map("delivery_fee")
   minimumOrder Float    @default(0) @map("minimum_order")
   isActive     Boolean  @default(true) @map("is_active")
@@ -225,6 +222,7 @@ model MenuModifierGroup {
   menuItemId    String   @map("menu_item_id")
   name          String
   description   String?
+  selectionType SelectionType @default(SINGLE) @map("selection_type")
   isRequired    Boolean  @default(false) @map("is_required")
   minSelections Int      @default(0) @map("min_selections")
   maxSelections Int?     @map("max_selections")
@@ -255,6 +253,11 @@ model MenuModifierOption {
 
   @@index([modifierGroupId, isAvailable, sortOrder])
   @@map("menu_modifier_options")
+}
+
+enum SelectionType {
+  SINGLE
+  MULTIPLE
 }
 
 enum OrderStatus {
@@ -305,8 +308,7 @@ model FoodOrder {
   deliveryLongitude Float?  @map("delivery_longitude")
   deliveryNotes     String? @map("delivery_notes")
 
-  customerPhone String @map("customer_phone")
-  customerName  String @map("customer_name")
+  customerPhone String @map("customer_phone")  
 
   subtotal       Float
   deliveryFee    Float @default(0) @map("delivery_fee")
