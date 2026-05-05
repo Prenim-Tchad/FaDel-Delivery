@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 import { MenuCategory } from '../entities/menu-category.entity';
@@ -31,77 +32,66 @@ type MenuCategoryPrismaClient = {
 
 @Injectable()
 export class MenuCategoryRepository {
-  // Stockage en mémoire (sera remplacé par Prisma + PostgreSQL)
-  private categories: MenuCategory[] = [];
-  private nextId = 1;
+  constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Crée une nouvelle catégorie de menu
-   */
-  create(restaurantId: string, dto: CreateMenuCategoryDto): MenuCategory {
-    const category: MenuCategory = {
-      id: this.generateId(),
-      restaurantId,
-      name: dto.name,
-      description: dto.description,
-      sort_order: dto.sort_order,
-      isDeleted: false,   // par défaut non supprimé
-      deletedAt: null,    // par défaut pas de date de suppression
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.categories.push(category);
-    return category;
+  private get db(): MenuCategoryPrismaClient {
+    return this.prisma;
   }
 
-  /**
-   * Trouve une catégorie par ID (exclut les soft-deleted)
-   */
-  findOne(id: string): MenuCategory | null {
-    return this.categories.find(
-      (c) => c.id === id && !c.isDeleted  // exclut les supprimés
-    ) ?? null;
-  }
-
-  /**
-   * Modifie une catégorie existante
-   */
-  update(id: string, dto: UpdateMenuCategoryDto): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
-
-    if (index === -1) return null;
-
-    // On fusionne les anciennes données avec les nouvelles
-    this.categories[index] = {
-      ...this.categories[index],
-      ...dto,
-      updatedAt: new Date(), // mise à jour de la date
-    };
+  async create(
+    restaurantId: string,
+    dto: CreateMenuCategoryDto,
+  ): Promise<MenuCategory> {
+    const category = await this.db.menuCategory.create({
+      data: {
+        restaurantId,
+        name: dto.name,
+        description: dto.description ?? null,
+        sortOrder: dto.sort_order,
+        isDeleted: false,
+        deletedAt: null,
+      },
+    });
 
     return this.mapToEntity(category);
   }
 
-  /**
-   * Soft-delete : marque la catégorie comme supprimée
-   * sans la supprimer réellement de la base de données
-   */
-  softDelete(id: string): MenuCategory | null {
-    const index = this.categories.findIndex(
-      (c) => c.id === id && !c.isDeleted
-    );
+  async findOne(id: string): Promise<MenuCategory | null> {
+    const category = await this.db.menuCategory.findFirst({
+      where: { id, isDeleted: false },
+    });
 
-    if (index === -1) return null;
+    return category ? this.mapToEntity(category) : null;
+  }
 
-    // On marque comme supprimé au lieu de supprimer
-    this.categories[index] = {
-      ...this.categories[index],
-      isDeleted: true,        // marqué comme supprimé
-      deletedAt: new Date(),  // date de suppression
-      updatedAt: new Date(),
-    };
+  async update(
+    id: string,
+    dto: UpdateMenuCategoryDto,
+  ): Promise<MenuCategory | null> {
+    const category = await this.db.menuCategory.update({
+      where: { id },
+      data: {
+        ...(dto.name !== undefined && {
+          name: dto.name,
+        }),
+        ...(dto.description !== undefined && {
+          description: dto.description ?? null,
+        }),
+        ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
+      },
+    });
+
+    return this.mapToEntity(category);
+  }
+
+  async softDelete(id: string): Promise<MenuCategory | null> {
+    const category = await this.db.menuCategory.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
 
     return this.mapToEntity(category);
   }
@@ -114,10 +104,16 @@ export class MenuCategoryRepository {
     return restaurant !== null;
   }
 
-  private mapToEntity(data: MenuCategoryRecord): MenuCategory {
+  /**
+   * Convertit un objet Prisma en entité MenuCategory
+   * Utilise le type Prisma généré pour éviter les erreurs any
+   */
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+  private mapToEntity(data: any): MenuCategory {
     return {
       id: data.id,
       restaurantId: data.restaurantId,
+      // Double cast : Json Prisma → unknown → MultiLangField
       name: data.name as MenuCategory['name'],
       description: data.description
         ? (data.description as MenuCategory['description'])
@@ -129,4 +125,5 @@ export class MenuCategoryRepository {
       updatedAt: data.updatedAt,
     };
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 }

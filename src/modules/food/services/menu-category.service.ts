@@ -21,9 +21,9 @@ export class MenuCategoryService {
   create(
     restaurantId: string,
     dto: CreateMenuCategoryDto,
-  ): MenuCategory {
-    // Vérification que le restaurant existe
-    const exists = this.menuCategoryRepository.restaurantExists();
+  ): Promise<MenuCategory> {
+    const exists =
+      await this.menuCategoryRepository.restaurantExists(restaurantId);
     if (!exists) {
       throw new NotFoundException(
         `Restaurant avec l'ID ${restaurantId} introuvable`,

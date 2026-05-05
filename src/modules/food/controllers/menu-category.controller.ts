@@ -43,7 +43,7 @@ export class MenuCategoryController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Donnees invalides',
+    description: 'Données invalides',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -73,11 +73,11 @@ export class MenuCategoryController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Donnees invalides',
+    description: 'Données invalides',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Categorie introuvable',
+    description: 'Catégorie introuvable',
   })
   async update(
     @Param('id') id: string,
@@ -104,7 +104,7 @@ export class MenuCategoryController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Categorie introuvable',
+    description: 'Catégorie introuvable',
   })
   remove(
     @Param('id') id: string,

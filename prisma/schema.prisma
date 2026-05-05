@@ -117,13 +117,14 @@ model OpeningHours {
   @@map("opening_hours")
 }
 
+// Ajout du champ radius (Ernest) - Tâche #16
 model DeliveryZone {
   id           String   @id @default(cuid())
   restaurantId String   @map("restaurant_id")
   name         String
   description  String?
   coordinates  Json?
-  radius       Float      // Modification par Ernest (Tâche #16)
+  radius       Float
   deliveryFee  Float    @default(0) @map("delivery_fee")
   minimumOrder Float    @default(0) @map("minimum_order")
   isActive     Boolean  @default(true) @map("is_active")
