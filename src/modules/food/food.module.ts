@@ -11,8 +11,11 @@ import { RestaurantRepository } from './repositories/restaurant.repository';
 import { FoodService } from './services/food.service';
 import { MenuCategoryService } from './services/menu-category.service';
 import { MenuItemService } from './services/menu-item.service';
+import { OptionGroupService } from './services/option-group.service';
+import { OptionGroupRepository } from './repositories/option-group.repository';
 import { RestaurantService } from './services/restaurant.service';
 import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
+import { MediaService } from './services/media.service';
 
 @Module({
   controllers: [
@@ -30,8 +33,11 @@ import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
     RestaurantRepository,
     RestaurantOwnerGuard,
+    MediaService,
   ],
   exports: [
     PrismaService,
@@ -42,7 +48,10 @@ import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
     RestaurantRepository,
+    MediaService,
   ],
 })
 export class FoodModule {}

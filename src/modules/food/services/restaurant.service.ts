@@ -1,14 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
+import { RestaurantStatus } from '../../../shared/types';
 
 type RestaurantEntity = {
   id: string;
   rating?: number | null;
+  status?: RestaurantStatus | null;
   openingHours?: Array<{
     dayOfWeek: number;
     openTime: string;
@@ -51,7 +57,9 @@ export class RestaurantService {
       averageRating: restaurant.rating ?? 0,
       openingHours: restaurant.openingHours ?? [],
       deliveryZones: restaurant.deliveryZones ?? [],
-      status: restaurant.isActive ? 'ACTIVE' : 'INACTIVE',
+      status:
+        (restaurant.status as RestaurantStatus) ??
+        (restaurant.isActive ? RestaurantStatus.ACTIVE : RestaurantStatus.INACTIVE),
     } as const;
   }
 
@@ -82,6 +90,45 @@ export class RestaurantService {
     radiusKm: number,
   ): Promise<unknown[]> {
     return this.restaurantRepository.findNearby(latitude, longitude, radiusKm);
+  }
+
+  async updateStatus(id: string, status: RestaurantStatus): Promise<unknown> {
+    const restaurant = (await this.restaurantRepository.findById(
+      id,
+    )) as RestaurantEntity | null;
+
+    if (!restaurant) {
+      throw new NotFoundException(`Le restaurant avec l'ID ${id} n'existe pas.`);
+    }
+
+    const currentStatus =
+      (restaurant.status as RestaurantStatus) ??
+      (restaurant.isActive ? RestaurantStatus.ACTIVE : RestaurantStatus.INACTIVE);
+
+    if (!this.isStatusTransitionAllowed(currentStatus, status)) {
+      throw new BadRequestException(
+        `Transition de statut invalide : ${currentStatus} -> ${status}`,
+      );
+    }
+
+    return this.restaurantRepository.updateStatus(id, status);
+  }
+
+  private isStatusTransitionAllowed(
+    currentStatus: RestaurantStatus,
+    nextStatus: RestaurantStatus,
+  ): boolean {
+    const transitions: Record<RestaurantStatus, RestaurantStatus[]> = {
+      [RestaurantStatus.PENDING]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+      [RestaurantStatus.ACTIVE]: [RestaurantStatus.SUSPENDED, RestaurantStatus.CLOSED],
+      [RestaurantStatus.SUSPENDED]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+      [RestaurantStatus.CLOSED]: [],
+      [RestaurantStatus.INACTIVE]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+      [RestaurantStatus.MAINTENANCE]: [RestaurantStatus.ACTIVE, RestaurantStatus.SUSPENDED, RestaurantStatus.CLOSED],
+      [RestaurantStatus.TEMPORARILY_CLOSED]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+    };
+
+    return transitions[currentStatus]?.includes(nextStatus) ?? false;
   }
 
   async remove(id: string): Promise<unknown> {

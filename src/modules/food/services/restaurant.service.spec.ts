@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { RestaurantStatus } from '../../../shared/types';
 
 describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   let service: RestaurantService;
@@ -12,6 +13,7 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
     findNearby: jest.fn(),
     updateOpeningHours: jest.fn(),
     updateDeliveryZones: jest.fn(),
+    updateStatus: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -88,6 +90,45 @@ describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
       radiusKm,
     );
     expect(result).toEqual(nearbyRestaurants);
+  });
+
+  it('should update restaurant status when transition is valid', async () => {
+    const restaurantId = 'cuid-123';
+    mockRepository.findById.mockResolvedValueOnce({
+      id: restaurantId,
+      status: RestaurantStatus.PENDING,
+    });
+    mockRepository.updateStatus.mockResolvedValue({
+      id: restaurantId,
+      status: RestaurantStatus.ACTIVE,
+    });
+
+    const result = await service.updateStatus(
+      restaurantId,
+      RestaurantStatus.ACTIVE,
+    );
+
+    expect(mockRepository.updateStatus).toHaveBeenCalledWith(
+      restaurantId,
+      RestaurantStatus.ACTIVE,
+    );
+    expect(result).toEqual({
+      id: restaurantId,
+      status: RestaurantStatus.ACTIVE,
+    });
+  });
+
+  it('should reject invalid restaurant status transition', async () => {
+    const restaurantId = 'cuid-123';
+    mockRepository.findById.mockResolvedValueOnce({
+      id: restaurantId,
+      status: RestaurantStatus.CLOSED,
+    });
+
+    await expect(
+      service.updateStatus(restaurantId, RestaurantStatus.ACTIVE),
+    ).rejects.toThrow(BadRequestException);
+    expect(mockRepository.updateStatus).not.toHaveBeenCalled();
   });
 
   it('should throw NotFoundException if restaurant does not exist when setting hours', async () => {
