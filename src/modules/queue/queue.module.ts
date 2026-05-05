@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { QUEUE_NAMES, QUEUE_CONFIG } from './queue.constants';
-import { OrderProcessingProcessor } from './processors/order-processing.processor';
-import { OrderTimeoutProcessor } from './processors/order-timeout.processor';
-import { DriverAssignmentProcessor } from './processors/driver-assignment.processor';
-import { NotificationDispatchProcessor } from './processors/notification-dispatch.processor';
+import { OrderProcessingProcessor } from './Processors/order-processing.processor';
+import { OrderTimeoutProcessor } from './Processors/order-timeout.processor';
+import { DriverAssignmentProcessor } from './Processors/driver-assignment.processor';
+import { NotificationDispatchProcessor } from './Processors/notification-dispatch.processor';
 import { QueueService } from './queue.service';
 import { PrismaService } from '../../prisma.service';
 
