@@ -13,6 +13,7 @@ import { MenuCategoryService } from './services/menu-category.service';
 import { MenuItemService } from './services/menu-item.service';
 import { RestaurantService } from './services/restaurant.service';
 import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
+import { MediaService } from './services/media.service';
 
 @Module({
   controllers: [
@@ -32,6 +33,7 @@ import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
     MenuItemRepository,
     RestaurantRepository,
     RestaurantOwnerGuard,
+    MediaService,
   ],
   exports: [
     PrismaService,
@@ -43,6 +45,7 @@ import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
     MenuCategoryRepository,
     MenuItemRepository,
     RestaurantRepository,
+    MediaService,
   ],
 })
 export class FoodModule {}

@@ -10,6 +10,8 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   HttpCode,
+  UseInterceptors,
+  UploadedFile
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -25,6 +27,7 @@ import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
 import { Food } from '../entities/food.entity';
 import { FoodStatus } from '../enums/food.enums';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('food')
 @ApiBearerAuth('JWT-auth')
@@ -212,5 +215,11 @@ export class FoodController {
   })
   async remove(@Param('id') id: string): Promise<void> {
     return this.foodService.remove(id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return this.mediaService.upload(file, 'foods');
   }
 }

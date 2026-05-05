@@ -1,78 +1,195 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
+
+// ── Types MIME autorisés ──────────────────────────────────────────────────
+const ALLOWED_MIME_TYPES: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+export interface UploadResult {
+  key: string;
+  url: string;
+  mimetype: string;
+  size: number;
+}
 
 @Injectable()
 export class MediaService {
-  private s3Client: S3Client;
-  private bucketName: string;
+  private readonly s3: S3Client;
+  private readonly bucket: string;
+  private readonly publicUrl: string;
+  private readonly accountId: string;
 
-  constructor(private configService: ConfigService) {
-    this.bucketName = this.configService.get<string>('R2_BUCKET_NAME');
+  constructor(private readonly configService: ConfigService) {
+    const accountId = this.configService.get<string>('R2_ACCOUNT_ID');
+    const accessKeyId = this.configService.get<string>('R2_ACCESS_KEY_ID');
+    const secretAccessKey = this.configService.get<string>('R2_SECRET_ACCESS_KEY');
 
-    this.s3Client = new S3Client({
+    if (!accountId || !accessKeyId || !secretAccessKey) {
+      throw new InternalServerErrorException(
+        'Configuration Cloudflare R2 manquante (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)',
+      );
+    }
+
+    this.accountId = accountId;
+    this.bucket = this.configService.get<string>('R2_BUCKET_NAME') ?? 'food-media';
+    this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
+
+    this.s3 = new S3Client({
       region: 'auto',
-      endpoint: `https://${this.configService.get('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: this.configService.get('R2_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get('R2_SECRET_ACCESS_KEY'),
-      },
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+      credentials: { accessKeyId, secretAccessKey },
     });
   }
 
-  /**
-   * Upload un fichier vers R2 avec gestion du type MIME
-   */
-  async uploadFile(
+  // ── Upload ────────────────────────────────────────────────────────────────
+  async upload(
     file: Express.Multer.File,
-    folder: string = 'uploads',
-  ): Promise<string> {
-    const fileName = `${folder}/${Date.now()}-${file.originalname}`;
+    folder = 'foods',
+  ): Promise<UploadResult> {
+    // Validation type MIME
+    const ext = ALLOWED_MIME_TYPES[file.mimetype];
+    if (!ext) {
+      throw new BadRequestException(
+        `Type de fichier non autorisé: ${file.mimetype}. ` +
+          `Types acceptés: ${Object.keys(ALLOWED_MIME_TYPES).join(', ')}`,
+      );
+    }
+
+    // Validation taille
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      throw new BadRequestException(
+        `Fichier trop volumineux. Maximum: ${MAX_FILE_SIZE_BYTES / 1024 / 1024} MB`,
+      );
+    }
+
+    const key = `${folder}/${randomUUID()}${ext}`;
 
     try {
-      await this.s3Client.send(
+      await this.s3.send(
         new PutObjectCommand({
-          Bucket: this.bucketName,
-          Key: fileName,
+          Bucket: this.bucket,
+          Key: key,
           Body: file.buffer,
-          ContentType: file.mimetype, // Gestion cruciale du type MIME ici
+          ContentType: file.mimetype,
+          ContentLength: file.size,
+          Metadata: {
+            originalName: Buffer.from(file.originalname).toString('base64'),
+          },
         }),
       );
-      return fileName; // On stocke la clé (path) en DB, pas l'URL complète
     } catch (error) {
-      throw new InternalServerErrorException("Erreur lors de l'upload vers R2");
+      throw new InternalServerErrorException(
+        `Erreur upload R2: ${error instanceof Error ? error.message : 'Inconnue'}`,
+      );
     }
+
+    return {
+      key,
+      url: this.getPublicUrl(key),
+      mimetype: file.mimetype,
+      size: file.size,
+    };
   }
 
-  /**
-   * Génère une URL de consultation (Publique ou Signée)
-   */
-  async getUrl(key: string): Promise<string> {
-    // Si ton bucket est public :
-    const publicUrl = this.configService.get('R2_PUBLIC_URL');
-    return `${publicUrl}/${key}`;
-  }
+  // ── Delete ────────────────────────────────────────────────────────────────
+  async delete(key: string): Promise<void> {
+    if (!key || key.trim() === '') {
+      throw new BadRequestException('Clé de fichier invalide');
+    }
 
-  /**
-   * Supprime un fichier du bucket
-   */
-  async deleteFile(key: string): Promise<void> {
     try {
-      await this.s3Client.send(
+      await this.s3.send(
         new DeleteObjectCommand({
-          Bucket: this.bucketName,
+          Bucket: this.bucket,
           Key: key,
         }),
       );
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erreur lors de la suppression sur R2',
+        `Erreur suppression R2: ${error instanceof Error ? error.message : 'Inconnue'}`,
       );
     }
+  }
+
+  // ── URL publique ──────────────────────────────────────────────────────────
+  getPublicUrl(key: string): string {
+    if (this.publicUrl) {
+      return `${this.publicUrl}/${key}`;
+    }
+    // Fallback URL R2 directe
+    return `https://${this.accountId}.r2.cloudflarestorage.com/${this.bucket}/${key}`;
+  }
+
+  // ── URL signée (accès temporaire) ─────────────────────────────────────────
+  async getSignedUrl(key: string, expiresInSeconds = 3600): Promise<string> {
+    if (!key || key.trim() === '') {
+      throw new BadRequestException('Clé de fichier invalide');
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+    });
+
+    try {
+      return await getSignedUrl(this.s3, command, {
+        expiresIn: expiresInSeconds,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Erreur génération URL signée: ${error instanceof Error ? error.message : 'Inconnue'}`,
+      );
+    }
+  }
+
+  // ── Extraire la clé depuis une URL ────────────────────────────────────────
+  extractKeyFromUrl(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.pathname.replace(/^\//, '');
+    } catch {
+      throw new BadRequestException(`URL invalide: ${url}`);
+    }
+  }
+
+  // ── Vérifier si un type MIME est autorisé ─────────────────────────────────
+  isAllowedMimeType(mimetype: string): boolean {
+    return mimetype in ALLOWED_MIME_TYPES;
+  }
+
+  // ── Remplacer un fichier existant ─────────────────────────────────────────
+  async replace(
+    oldKey: string,
+    newFile: Express.Multer.File,
+    folder = 'foods',
+  ): Promise<UploadResult> {
+    // Upload d'abord, puis suppression si succès
+    const result = await this.upload(newFile, folder);
+
+    try {
+      await this.delete(oldKey);
+    } catch {
+      // On ne fait pas échouer si l'ancien fichier n'existe plus
+    }
+
+    return result;
   }
 }
