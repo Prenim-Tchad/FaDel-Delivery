@@ -12,7 +12,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
-import type { File as MulterFile } from 'multer'; // ✅ import explicite
+import { MulterFile } from '../../../shared/types/multer.types';
 
 // ── Types MIME autorisés ──────────────────────────────────────────────────
 const ALLOWED_MIME_TYPES: Record<string, string> = {
@@ -56,7 +56,7 @@ export class MediaService {
     this.accountId = accountId;
     this.bucket =
       this.configService.get<string>('R2_BUCKET_NAME') ?? 'food-media';
-    this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
+      this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
 
     this.s3 = new S3Client({
       region: 'auto',
@@ -66,8 +66,10 @@ export class MediaService {
   }
 
   // ── Upload ────────────────────────────────────────────────────────────────
-  async upload(file: MulterFile, folder = 'foods'): Promise<UploadResult> {
-    // ✅ Propriétés extraites avec types explicites
+  async upload(
+    file: MulterFile, // ✅ type explicite
+    folder = 'foods',
+  ): Promise<UploadResult> {
     const mimetype: string = file.mimetype;
     const size: number = file.size;
     const buffer: Buffer = file.buffer;

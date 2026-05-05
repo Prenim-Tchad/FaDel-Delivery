@@ -22,6 +22,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FoodService } from '../services/food.service';
+import type { File as MulterFile } from 'multer'; // ✅ type explicite
+import { MediaService } from '../services/media.service'; // ✅ import
 import { CreateFoodDto } from '../dtos/create-food.dto';
 import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
@@ -217,9 +219,26 @@ export class FoodController {
     return this.foodService.remove(id);
   }
 
+  // ── Upload image ──────────────────────────────────────────────────────────
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
-    return this.mediaService.upload(file, 'foods');
+  @ApiOperation({ summary: 'Upload a food image to Cloudflare R2' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Image uploaded successfully',
+  })
+  async uploadImage(
+    @UploadedFile() file: MulterFile, // ✅ type explicite
+  ): Promise<UploadResult> {
+    return this.mediaService.upload(file, 'foods'); // ✅ await implicite via return
   }
 }
