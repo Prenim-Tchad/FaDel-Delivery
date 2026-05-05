@@ -14,23 +14,12 @@ import { MenuItem } from '../entities/menu-item.entity';
  */
 @Injectable()
 export class MenuItemService {
-  constructor(
-    private readonly menuItemRepository: MenuItemRepository,
-  ) {}
+  constructor(private readonly menuItemRepository: MenuItemRepository) {}
 
-  /**
-   * Crée un article dans une catégorie de menu
-   * POST /food/menu-categories/:id/items
-   */
-  async create(
-    menuCategoryId: string,
-    dto: CreateMenuItemDto,
-  ): Promise<MenuItem> {
+  async create(menuCategoryId: string, dto: CreateMenuItemDto): Promise<MenuItem> {
     const exists = await this.menuItemRepository.menuCategoryExists(menuCategoryId);
     if (!exists) {
-      throw new NotFoundException(
-        `Catégorie de menu avec l'ID ${menuCategoryId} introuvable`,
-      );
+      throw new NotFoundException(`Catégorie de menu avec l'ID ${menuCategoryId} introuvable`);
     }
     if (dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
@@ -41,29 +30,18 @@ export class MenuItemService {
     return this.menuItemRepository.create(menuCategoryId, dto);
   }
 
-  /**
-   * Trouve un article par ID
-   */
   async findOne(id: string): Promise<MenuItem> {
     const item = await this.menuItemRepository.findOne(id);
     if (!item) {
-      throw new NotFoundException(
-        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
-      );
+      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
     }
     return item;
   }
 
-  /**
-   * Modifie un article existant
-   * PUT /food/menu-items/:id
-   */
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
     const existing = await this.menuItemRepository.findOne(id);
     if (!existing) {
-      throw new NotFoundException(
-        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
-      );
+      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
     }
     if (dto.price !== undefined && dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
@@ -78,16 +56,10 @@ export class MenuItemService {
     return updated;
   }
 
-  /**
-   * Supprime un article (soft-delete)
-   * DELETE /food/menu-items/:id
-   */
   async remove(id: string): Promise<MenuItem> {
     const existing = await this.menuItemRepository.findOne(id);
     if (!existing) {
-      throw new NotFoundException(
-        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
-      );
+      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
     }
     const deleted = await this.menuItemRepository.softDelete(id);
     if (!deleted) {

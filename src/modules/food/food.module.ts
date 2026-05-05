@@ -24,19 +24,19 @@ import { RestaurantRepository } from './repositories/restaurant.repository';
     RestaurantController,         // ✅ lead
     MenuCategoryController,       // ✅ saleh - tâches #31 #32
     MenuItemController,           // ✅ saleh - tâches #33 #34
-    MenuItemUploadController,     // 🆕 saleh - tâche #35
+    MenuItemUploadController,     // ✅ saleh - tâche #35
   ],
   providers: [
-    PrismaService,                // BDD Prisma
-    FoodService,                  // ✅ lead
-    RestaurantService,            // ✅ lead
-    MenuCategoryService,          // ✅ saleh
-    MenuItemService,              // ✅ saleh
-    R2UploadService,              // 🆕 saleh - tâche #35
-    FoodRepository,               // ✅ lead
-    MenuCategoryRepository,       // ✅ saleh
-    MenuItemRepository,           // ✅ saleh
-    RestaurantRepository,         // ✅ lead
+    PrismaService,
+    FoodService,
+    RestaurantService,
+    MenuCategoryService,
+    MenuItemService,
+    R2UploadService,              // ✅ saleh - tâche #35
+    FoodRepository,
+    MenuCategoryRepository,
+    MenuItemRepository,
+    RestaurantRepository,
   ],
   exports: [
     PrismaService,

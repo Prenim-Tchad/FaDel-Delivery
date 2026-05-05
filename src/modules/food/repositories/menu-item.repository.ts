@@ -5,9 +5,6 @@ import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 
-/**
- * Repository MenuItem — gère l'accès aux données via Prisma
- */
 @Injectable()
 export class MenuItemRepository {
   constructor(private readonly prisma: PrismaService) {}
