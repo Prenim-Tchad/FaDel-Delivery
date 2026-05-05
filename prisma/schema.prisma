@@ -65,6 +65,7 @@ model Restaurant {
 
   isActive     Boolean @default(true) @map("is_active")
   isVerified   Boolean @default(false) @map("is_verified")
+  status       String  @default("pending")
   rating       Float   @default(0)
   totalReviews Int     @default(0) @map("total_reviews")
 
