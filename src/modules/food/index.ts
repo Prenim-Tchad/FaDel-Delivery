@@ -30,7 +30,10 @@ export { MenuCategoryRepository } from './repositories/menu-category.repository'
 // Entity
 export { MenuCategory, MultiLangField } from './entities/menu-category.entity';
 // DTOs
-export { CreateMenuCategoryDto, MultiLangFieldDto } from './dtos/create-menu-category.dto';
+export {
+  CreateMenuCategoryDto,
+  MultiLangFieldDto,
+} from './dtos/create-menu-category.dto';
 export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
 
 // ============================================

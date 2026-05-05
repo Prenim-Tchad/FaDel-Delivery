@@ -29,14 +29,15 @@ export class MenuCategoryController {
   @Post('restaurants/:id/menu-categories')
   @ApiOperation({
     summary: 'Créer une catégorie de menu pour un restaurant',
-    description: 'Crée une catégorie avec nom multilingue (FR/EN/AR/ES), description et ordre.',
+    description:
+      'Crée une catégorie avec nom multilingue (FR/EN/AR/ES), description et ordre.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID du restaurant',
     example: 'clxxx123',
   })
-  @ApiResponse({      
+  @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Categorie creee avec succes',
     type: MenuCategory,
@@ -59,7 +60,7 @@ export class MenuCategoryController {
   @Put('menu-categories/:id')
   @ApiOperation({
     summary: 'Modifier une catégorie de menu',
-    description: 'Modifie le nom, la description ou l\'ordre d\'une catégorie.',
+    description: "Modifie le nom, la description ou l'ordre d'une catégorie.",
   })
   @ApiParam({
     name: 'id',
@@ -90,7 +91,8 @@ export class MenuCategoryController {
   @HttpCode(HttpStatus.OK) // 200 car on retourne la catégorie supprimée
   @ApiOperation({
     summary: 'Supprimer une catégorie de menu (soft-delete)',
-    description: 'Marque la catégorie comme supprimée sans la supprimer réellement de la base.',
+    description:
+      'Marque la catégorie comme supprimée sans la supprimer réellement de la base.',
   })
   @ApiParam({
     name: 'id',
@@ -106,9 +108,7 @@ export class MenuCategoryController {
     status: HttpStatus.NOT_FOUND,
     description: 'Catégorie introuvable',
   })
-  remove(
-    @Param('id') id: string,
-  ): MenuCategory {
+  remove(@Param('id') id: string): MenuCategory {
     return this.menuCategoryService.remove(id);
   }
 }

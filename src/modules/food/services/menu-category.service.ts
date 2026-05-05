@@ -55,9 +55,7 @@ export class MenuCategoryService {
 
     const updated = await this.menuCategoryRepository.update(id, dto);
     if (!updated) {
-      throw new BadRequestException(
-        'Échec de la modification de la catégorie',
-      );
+      throw new BadRequestException('Échec de la modification de la catégorie');
     }
 
     return updated;
@@ -73,9 +71,7 @@ export class MenuCategoryService {
 
     const deleted = await this.menuCategoryRepository.softDelete(id);
     if (!deleted) {
-      throw new BadRequestException(
-        'Échec de la suppression de la catégorie',
-      );
+      throw new BadRequestException('Échec de la suppression de la catégorie');
     }
 
     return deleted;

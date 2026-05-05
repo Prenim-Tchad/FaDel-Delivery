@@ -1,5 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ConfigService } from '@nestjs/config';
 
@@ -10,7 +14,7 @@ export class MediaService {
 
   constructor(private configService: ConfigService) {
     this.bucketName = this.configService.get<string>('R2_BUCKET_NAME');
-    
+
     this.s3Client = new S3Client({
       region: 'auto',
       endpoint: `https://${this.configService.get('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
@@ -24,9 +28,12 @@ export class MediaService {
   /**
    * Upload un fichier vers R2 avec gestion du type MIME
    */
-  async uploadFile(file: Express.Multer.File, folder: string = 'uploads'): Promise<string> {
+  async uploadFile(
+    file: Express.Multer.File,
+    folder: string = 'uploads',
+  ): Promise<string> {
     const fileName = `${folder}/${Date.now()}-${file.originalname}`;
-    
+
     try {
       await this.s3Client.send(
         new PutObjectCommand({
@@ -63,7 +70,9 @@ export class MediaService {
         }),
       );
     } catch (error) {
-      throw new InternalServerErrorException("Erreur lors de la suppression sur R2");
+      throw new InternalServerErrorException(
+        'Erreur lors de la suppression sur R2',
+      );
     }
   }
 }

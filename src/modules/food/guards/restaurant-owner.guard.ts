@@ -1,4 +1,8 @@
-import { Injectable, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { Request } from 'express';
@@ -31,7 +35,7 @@ export class RestaurantOwnerGuard extends JwtAuthGuard {
 
     if (user.role !== UserRole.RESTAURANT_OWNER) {
       throw new ForbiddenException(
-        "Accès réservé aux propriétaires de restaurant.",
+        'Accès réservé aux propriétaires de restaurant.',
       );
     }
 
@@ -39,10 +43,7 @@ export class RestaurantOwnerGuard extends JwtAuthGuard {
     const restaurantId = request.params?.id;
 
     if (method === 'POST' && !restaurantId) {
-      if (
-        request.body?.ownerId &&
-        request.body.ownerId !== user.sub
-      ) {
+      if (request.body?.ownerId && request.body.ownerId !== user.sub) {
         throw new ForbiddenException(
           'Vous ne pouvez créer un restaurant que pour votre propre compte.',
         );
