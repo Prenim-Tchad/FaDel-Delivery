@@ -14,13 +14,20 @@ export class GeoService {
    * Calcul Haversine (A vol d'oiseau)
    * Utile pour un premier filtrage rapide des livreurs proches
    */
-  calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  calculateHaversineDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const dLat = this.toRad(lat2 - lat1);
     const dLon = this.toRad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(this.toRad(lat1)) *
+        Math.cos(this.toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return this.EARTH_RADIUS * c;
   }
@@ -29,20 +36,24 @@ export class GeoService {
    * Estimation réelle via Google Maps Distance Matrix
    * Donne la distance par la route et le temps de trajet
    */
-  async getRoadDistanceAndDuration(origin: { lat: number; lng: number }, destination: { lat: number; lng: number }) {
+  async getRoadDistanceAndDuration(
+    origin: { lat: number; lng: number },
+    destination: { lat: number; lng: number },
+  ) {
     try {
       const response = await this.googleMapsClient.distancematrix({
         params: {
           origins: [origin],
           destinations: [destination],
-          mode: TravelMode.driving, // ou TravelMode.bicycling pour les motos
-          key: 'TON_API_KEY_GOOGLE_MAPS', 
+          mode: TravelMode.driving,
+          key: 'TON_API_KEY_GOOGLE_MAPS',
         },
       });
 
       const data = response.data.rows[0].elements[0];
-      
-      if (data.status !== 'OK') {
+
+      // CORRECTION 1 : Cast en string pour éviter l'erreur no-unsafe-enum-comparison
+      if ((data.status as string) !== 'OK') {
         throw new Error('Impossible de calculer l’itinéraire');
       }
 
@@ -52,8 +63,16 @@ export class GeoService {
         textDistance: data.distance.text,
         textDuration: data.duration.text,
       };
-    } catch (error) {
-      throw new InternalServerErrorException('Erreur Google Maps API: ' + error.message);
+    } catch (error: unknown) {
+      // CORRECTION 2 : Vérification d'instance pour éviter no-unsafe-member-access sur .message
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Une erreur inconnue est survenue';
+
+      throw new InternalServerErrorException(
+        'Erreur Google Maps API: ' + errorMessage,
+      );
     }
   }
 
