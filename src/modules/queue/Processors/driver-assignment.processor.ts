@@ -27,7 +27,7 @@ export class DriverAssignmentProcessor extends WorkerHost {
       `Tentative #${attempt}/${QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS} | #${orderNumber}`,
     );
 
-    const rider = await this.findAvailableRider(job.data);
+    const rider = await this.findAvailableRider();
 
     if (!rider) {
       if (job.attemptsMade >= QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS - 1) {
@@ -64,9 +64,7 @@ export class DriverAssignmentProcessor extends WorkerHost {
     this.logger.log(`✅ Chauffeur ${rider.id} assigné | #${orderNumber}`);
   }
 
-  private async findAvailableRider(
-    data: DriverAssignmentJobData,
-  ): Promise<{ id: string } | null> {
+  private async findAvailableRider(): Promise<{ id: string } | null> {
     // Chercher un rider disponible (isRider=true, isActive=true)
     // sans commande OUT_FOR_DELIVERY en cours
     const rider = await this.prisma.profile.findFirst({

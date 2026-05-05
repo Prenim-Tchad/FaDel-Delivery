@@ -1,7 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
+import { QUEUE_NAMES } from '../queue.constants';
 import { NotificationJobData } from '../queue.service';
 
 @Processor(QUEUE_NAMES.NOTIFICATION_DISPATCH)
