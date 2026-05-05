@@ -13,7 +13,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 import { MulterFile } from '../../../shared/types/multer.types';
-
+import { MediaService, UploadResult } from '../services/media.service';
 // ── Types MIME autorisés ──────────────────────────────────────────────────
 const ALLOWED_MIME_TYPES: Record<string, string> = {
   'image/jpeg': '.jpg',
@@ -56,7 +56,7 @@ export class MediaService {
     this.accountId = accountId;
     this.bucket =
       this.configService.get<string>('R2_BUCKET_NAME') ?? 'food-media';
-      this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
+    this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
 
     this.s3 = new S3Client({
       region: 'auto',

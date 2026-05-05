@@ -14,10 +14,8 @@ import { MenuItemService } from './services/menu-item.service';
 import { RestaurantService } from './services/restaurant.service';
 import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
 import { MediaService } from './services/media.service';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ConfigModule],
   controllers: [
     FoodController,
     MenuCategoryController,
