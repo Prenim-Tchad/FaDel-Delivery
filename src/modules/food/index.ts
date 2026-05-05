@@ -45,3 +45,9 @@ export { MenuItemRepository } from './repositories/menu-item.repository';
 export { MenuItem } from './entities/menu-item.entity';
 // DTO
 export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
+// ============================================
+// Upload Photo — Saleh (tâche #35)
+// ============================================
+export { MenuItemUploadController } from './controllers/menu-item-upload.controller';
+export { R2UploadService } from './services/r2-upload.service';
+export { UploadPhotoResponseDto } from './dtos/upload-photo.dto';
