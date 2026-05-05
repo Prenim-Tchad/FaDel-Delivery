@@ -10,7 +10,9 @@ export class NotificationDispatchProcessor extends WorkerHost {
 
   async process(job: Job<NotificationJobData>): Promise<void> {
     const { type, recipientId, title, body } = job.data;
-    this.logger.log(`Envoi notification: type=${type} | recipient=${recipientId}`);
+    this.logger.log(
+      `Envoi notification: type=${type} | recipient=${recipientId}`,
+    );
 
     switch (type) {
       case 'push':
@@ -33,12 +35,16 @@ export class NotificationDispatchProcessor extends WorkerHost {
   }
 
   private async sendSms(data: NotificationJobData): Promise<void> {
-    this.logger.log(`SMS → ${data.recipientPhone ?? data.recipientId}: ${data.body}`);
+    this.logger.log(
+      `SMS → ${data.recipientPhone ?? data.recipientId}: ${data.body}`,
+    );
     // TODO: intégrer Twilio ou Africa's Talking
   }
 
   private async sendEmail(data: NotificationJobData): Promise<void> {
-    this.logger.log(`Email → ${data.recipientEmail ?? data.recipientId}: ${data.title}`);
+    this.logger.log(
+      `Email → ${data.recipientEmail ?? data.recipientId}: ${data.title}`,
+    );
     // TODO: intégrer SendGrid ou Resend
   }
 }

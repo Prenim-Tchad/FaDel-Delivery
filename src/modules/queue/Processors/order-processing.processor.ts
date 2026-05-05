@@ -9,7 +9,9 @@ export class OrderProcessingProcessor extends WorkerHost {
   private readonly logger = new Logger(OrderProcessingProcessor.name);
 
   async process(job: Job<OrderJobData>): Promise<void> {
-    this.logger.log(`Traitement job: ${job.name} | orderId=${job.data.orderId}`);
+    this.logger.log(
+      `Traitement job: ${job.name} | orderId=${job.data.orderId}`,
+    );
 
     switch (job.name) {
       case JOB_NAMES.PROCESS_NEW_ORDER:

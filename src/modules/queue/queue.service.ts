@@ -2,11 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QUEUE_NAMES, JOB_NAMES, QUEUE_CONFIG } from './queue.constants';
-import {
-  OrderStatus,
-  OrderType,
-  PaymentMethod,
-} from '@prisma/client';
+import { OrderStatus, OrderType, PaymentMethod } from '@prisma/client';
 
 // ── Types alignés sur le schéma Prisma ───────────────────────────────────
 export interface OrderJobData {
@@ -82,12 +78,12 @@ export class QueueService {
 
   // ── Order Processing ──────────────────────────────────────────────────────
   async addOrderProcessingJob(data: OrderJobData): Promise<void> {
-    await this.orderProcessingQueue.add(
-      JOB_NAMES.PROCESS_NEW_ORDER,
-      data,
-      { priority: 1 },
+    await this.orderProcessingQueue.add(JOB_NAMES.PROCESS_NEW_ORDER, data, {
+      priority: 1,
+    });
+    this.logger.log(
+      `Job order-processing ajouté: orderId=${data.orderId} | orderNumber=${data.orderNumber}`,
     );
-    this.logger.log(`Job order-processing ajouté: orderId=${data.orderId} | orderNumber=${data.orderNumber}`);
   }
 
   async confirmOrder(data: OrderJobData): Promise<void> {
@@ -115,7 +111,9 @@ export class QueueService {
         jobId: `timeout-${orderId}`, // ✅ un seul timeout par commande
       },
     );
-    this.logger.log(`Timeout schedulé: orderId=${orderId} | orderNumber=${orderNumber} dans 5 min`);
+    this.logger.log(
+      `Timeout schedulé: orderId=${orderId} | orderNumber=${orderNumber} dans 5 min`,
+    );
   }
 
   async cancelOrderTimeout(orderId: string): Promise<void> {
@@ -128,43 +126,65 @@ export class QueueService {
 
   // ── Driver Assignment Retry 3× 60s ───────────────────────────────────────
   async addDriverAssignmentJob(data: DriverAssignmentJobData): Promise<void> {
-    await this.driverAssignmentQueue.add(
-      JOB_NAMES.ASSIGN_DRIVER,
-      data,
-      {
-        attempts: QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS,
-        backoff: {
-          type: 'fixed',
-          delay: QUEUE_CONFIG.DRIVER_RETRY_DELAY_MS,
-        },
-        jobId: `driver-${data.orderId}`, // ✅ un seul job par commande
+    await this.driverAssignmentQueue.add(JOB_NAMES.ASSIGN_DRIVER, data, {
+      attempts: QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS,
+      backoff: {
+        type: 'fixed',
+        delay: QUEUE_CONFIG.DRIVER_RETRY_DELAY_MS,
       },
-    );
+      jobId: `driver-${data.orderId}`, // ✅ un seul job par commande
+    });
     this.logger.log(`Job driver-assignment ajouté: orderId=${data.orderId}`);
   }
 
   // ── Notifications ─────────────────────────────────────────────────────────
   async sendNotification(data: NotificationJobData): Promise<void> {
-    await this.notificationQueue.add(
-      JOB_NAMES.SEND_PUSH_NOTIFICATION,
-      data,
+    await this.notificationQueue.add(JOB_NAMES.SEND_PUSH_NOTIFICATION, data);
+    this.logger.log(
+      `Notification ajoutée: type=${data.type} | recipient=${data.recipientId}`,
     );
-    this.logger.log(`Notification ajoutée: type=${data.type} | recipient=${data.recipientId}`);
   }
 
   // ✅ Notifications dédiées aux événements commandes
   async notifyOrderStatus(
-    order: Pick<OrderJobData, 'orderId' | 'orderNumber' | 'customerId' | 'customerPhone' | 'status'>,
+    order: Pick<
+      OrderJobData,
+      'orderId' | 'orderNumber' | 'customerId' | 'customerPhone' | 'status'
+    >,
   ): Promise<void> {
     const messages: Record<OrderStatus, { title: string; body: string }> = {
-      PENDING:          { title: 'Commande reçue', body: `Votre commande #${order.orderNumber} est en attente de confirmation.` },
-      CONFIRMED:        { title: 'Commande confirmée', body: `Votre commande #${order.orderNumber} a été confirmée par le restaurant.` },
-      PREPARING:        { title: 'En préparation', body: `Votre commande #${order.orderNumber} est en cours de préparation.` },
-      READY:            { title: 'Commande prête', body: `Votre commande #${order.orderNumber} est prête pour la livraison.` },
-      OUT_FOR_DELIVERY: { title: 'En route !', body: `Votre commande #${order.orderNumber} est en cours de livraison.` },
-      DELIVERED:        { title: 'Commande livrée', body: `Votre commande #${order.orderNumber} a été livrée. Bon appétit !` },
-      CANCELLED:        { title: 'Commande annulée', body: `Votre commande #${order.orderNumber} a été annulée.` },
-      REFUNDED:         { title: 'Remboursement', body: `Le remboursement de votre commande #${order.orderNumber} est en cours.` },
+      PENDING: {
+        title: 'Commande reçue',
+        body: `Votre commande #${order.orderNumber} est en attente de confirmation.`,
+      },
+      CONFIRMED: {
+        title: 'Commande confirmée',
+        body: `Votre commande #${order.orderNumber} a été confirmée par le restaurant.`,
+      },
+      PREPARING: {
+        title: 'En préparation',
+        body: `Votre commande #${order.orderNumber} est en cours de préparation.`,
+      },
+      READY: {
+        title: 'Commande prête',
+        body: `Votre commande #${order.orderNumber} est prête pour la livraison.`,
+      },
+      OUT_FOR_DELIVERY: {
+        title: 'En route !',
+        body: `Votre commande #${order.orderNumber} est en cours de livraison.`,
+      },
+      DELIVERED: {
+        title: 'Commande livrée',
+        body: `Votre commande #${order.orderNumber} a été livrée. Bon appétit !`,
+      },
+      CANCELLED: {
+        title: 'Commande annulée',
+        body: `Votre commande #${order.orderNumber} a été annulée.`,
+      },
+      REFUNDED: {
+        title: 'Remboursement',
+        body: `Le remboursement de votre commande #${order.orderNumber} est en cours.`,
+      },
     };
 
     const message = messages[order.status];
@@ -182,7 +202,9 @@ export class QueueService {
     });
   }
 
-  async sendBulkNotifications(notifications: NotificationJobData[]): Promise<void> {
+  async sendBulkNotifications(
+    notifications: NotificationJobData[],
+  ): Promise<void> {
     const jobs = notifications.map((data) => ({
       name: JOB_NAMES.SEND_PUSH_NOTIFICATION,
       data,
