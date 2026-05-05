@@ -12,6 +12,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
+import type { File as MulterFile } from 'multer'; // ✅ import explicite
 
 // ── Types MIME autorisés ──────────────────────────────────────────────────
 const ALLOWED_MIME_TYPES: Record<string, string> = {
@@ -38,9 +39,13 @@ export class MediaService {
   private readonly accountId: string;
 
   constructor(private readonly configService: ConfigService) {
-    const accountId = this.configService.get<string>('R2_ACCOUNT_ID');
-    const accessKeyId = this.configService.get<string>('R2_ACCESS_KEY_ID');
-    const secretAccessKey = this.configService.get<string>('R2_SECRET_ACCESS_KEY');
+    // ✅ Types explicites string avec valeur par défaut
+    const accountId: string =
+      this.configService.get<string>('R2_ACCOUNT_ID') ?? '';
+    const accessKeyId: string =
+      this.configService.get<string>('R2_ACCESS_KEY_ID') ?? '';
+    const secretAccessKey: string =
+      this.configService.get<string>('R2_SECRET_ACCESS_KEY') ?? '';
 
     if (!accountId || !accessKeyId || !secretAccessKey) {
       throw new InternalServerErrorException(
@@ -49,7 +54,8 @@ export class MediaService {
     }
 
     this.accountId = accountId;
-    this.bucket = this.configService.get<string>('R2_BUCKET_NAME') ?? 'food-media';
+    this.bucket =
+      this.configService.get<string>('R2_BUCKET_NAME') ?? 'food-media';
     this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') ?? '';
 
     this.s3 = new S3Client({
@@ -60,21 +66,24 @@ export class MediaService {
   }
 
   // ── Upload ────────────────────────────────────────────────────────────────
-  async upload(
-    file: Express.Multer.File,
-    folder = 'foods',
-  ): Promise<UploadResult> {
+  async upload(file: MulterFile, folder = 'foods'): Promise<UploadResult> {
+    // ✅ Propriétés extraites avec types explicites
+    const mimetype: string = file.mimetype;
+    const size: number = file.size;
+    const buffer: Buffer = file.buffer;
+    const originalname: string = file.originalname;
+
     // Validation type MIME
-    const ext = ALLOWED_MIME_TYPES[file.mimetype];
+    const ext: string | undefined = ALLOWED_MIME_TYPES[mimetype];
     if (!ext) {
       throw new BadRequestException(
-        `Type de fichier non autorisé: ${file.mimetype}. ` +
+        `Type de fichier non autorisé: ${mimetype}. ` +
           `Types acceptés: ${Object.keys(ALLOWED_MIME_TYPES).join(', ')}`,
       );
     }
 
     // Validation taille
-    if (file.size > MAX_FILE_SIZE_BYTES) {
+    if (size > MAX_FILE_SIZE_BYTES) {
       throw new BadRequestException(
         `Fichier trop volumineux. Maximum: ${MAX_FILE_SIZE_BYTES / 1024 / 1024} MB`,
       );
@@ -87,11 +96,11 @@ export class MediaService {
         new PutObjectCommand({
           Bucket: this.bucket,
           Key: key,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-          ContentLength: file.size,
+          Body: buffer,
+          ContentType: mimetype,
+          ContentLength: size,
           Metadata: {
-            originalName: Buffer.from(file.originalname).toString('base64'),
+            originalName: Buffer.from(originalname).toString('base64'),
           },
         }),
       );
@@ -104,8 +113,8 @@ export class MediaService {
     return {
       key,
       url: this.getPublicUrl(key),
-      mimetype: file.mimetype,
-      size: file.size,
+      mimetype,
+      size,
     };
   }
 
@@ -134,7 +143,6 @@ export class MediaService {
     if (this.publicUrl) {
       return `${this.publicUrl}/${key}`;
     }
-    // Fallback URL R2 directe
     return `https://${this.accountId}.r2.cloudflarestorage.com/${this.bucket}/${key}`;
   }
 
@@ -178,18 +186,15 @@ export class MediaService {
   // ── Remplacer un fichier existant ─────────────────────────────────────────
   async replace(
     oldKey: string,
-    newFile: Express.Multer.File,
+    newFile: MulterFile,
     folder = 'foods',
   ): Promise<UploadResult> {
-    // Upload d'abord, puis suppression si succès
     const result = await this.upload(newFile, folder);
-
     try {
       await this.delete(oldKey);
     } catch {
       // On ne fait pas échouer si l'ancien fichier n'existe plus
     }
-
     return result;
   }
 }

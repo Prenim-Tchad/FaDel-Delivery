@@ -11,7 +11,7 @@ import {
   HttpStatus,
   HttpCode,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiTags,
