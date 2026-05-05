@@ -43,7 +43,9 @@ export class OrderTimeoutProcessor extends WorkerHost {
 
     // 2. Si toujours PENDING → annuler automatiquement
     if (order.status !== OrderStatus.PENDING) {
-      this.logger.log(`Commande #${orderNumber} déjà traitée (${order.status}) — timeout ignoré`);
+      this.logger.log(
+        `Commande #${orderNumber} déjà traitée (${order.status}) — timeout ignoré`,
+      );
       return;
     }
 

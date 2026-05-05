@@ -23,13 +23,17 @@ export class DriverAssignmentProcessor extends WorkerHost {
     const { orderId, orderNumber } = job.data;
     const attempt = job.attemptsMade + 1;
 
-    this.logger.log(`Tentative #${attempt}/${QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS} | #${orderNumber}`);
+    this.logger.log(
+      `Tentative #${attempt}/${QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS} | #${orderNumber}`,
+    );
 
     const rider = await this.findAvailableRider(job.data);
 
     if (!rider) {
       if (job.attemptsMade >= QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS - 1) {
-        this.logger.error(`❌ Aucun chauffeur après ${QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS} tentatives | #${orderNumber}`);
+        this.logger.error(
+          `❌ Aucun chauffeur après ${QUEUE_CONFIG.DRIVER_RETRY_ATTEMPTS} tentatives | #${orderNumber}`,
+        );
         // Notifier admin
         await this.queueService.sendNotification({
           type: 'push',
@@ -42,7 +46,9 @@ export class DriverAssignmentProcessor extends WorkerHost {
         throw new UnrecoverableError('Aucun chauffeur disponible');
       }
 
-      this.logger.warn(`Chauffeur non disponible — retry dans 60s | #${orderNumber}`);
+      this.logger.warn(
+        `Chauffeur non disponible — retry dans 60s | #${orderNumber}`,
+      );
       throw new Error('Chauffeur non disponible');
     }
 

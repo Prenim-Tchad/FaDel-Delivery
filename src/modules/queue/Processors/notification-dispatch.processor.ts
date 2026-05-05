@@ -41,7 +41,9 @@ export class NotificationDispatchProcessor extends WorkerHost {
   }
 
   private async sendSms(data: NotificationJobData): Promise<void> {
-    this.logger.log(`📱 SMS → ${data.recipientPhone ?? data.recipientId} | ${data.body}`);
+    this.logger.log(
+      `📱 SMS → ${data.recipientPhone ?? data.recipientId} | ${data.body}`,
+    );
     // TODO: intégrer Africa's Talking (adapté Tchad)
     // await africasTalking.sms.send({
     //   to: data.recipientPhone,
@@ -51,7 +53,9 @@ export class NotificationDispatchProcessor extends WorkerHost {
   }
 
   private async sendEmail(data: NotificationJobData): Promise<void> {
-    this.logger.log(`📧 Email → ${data.recipientEmail ?? data.recipientId} | ${data.title}`);
+    this.logger.log(
+      `📧 Email → ${data.recipientEmail ?? data.recipientId} | ${data.title}`,
+    );
     // TODO: intégrer Resend ou SendGrid
     // await resend.emails.send({
     //   to: data.recipientEmail,
