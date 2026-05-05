@@ -14,6 +14,10 @@ export class MenuCategoryService {
     private readonly menuCategoryRepository: MenuCategoryRepository,
   ) {}
 
+  /**
+   * Crée une catégorie de menu pour un restaurant donné
+   * POST /food/restaurants/:id/menu-categories
+   */
   async create(
     restaurantId: string,
     dto: CreateMenuCategoryDto,
@@ -51,7 +55,7 @@ export class MenuCategoryService {
 
     const updated = await this.menuCategoryRepository.update(id, dto);
     if (!updated) {
-      throw new BadRequestException('Echec de la modification de la categorie');
+      throw new BadRequestException('Échec de la modification de la catégorie');
     }
 
     return updated;
@@ -67,7 +71,7 @@ export class MenuCategoryService {
 
     const deleted = await this.menuCategoryRepository.softDelete(id);
     if (!deleted) {
-      throw new BadRequestException('Echec de la suppression de la categorie');
+      throw new BadRequestException('Échec de la suppression de la catégorie');
     }
 
     return deleted;

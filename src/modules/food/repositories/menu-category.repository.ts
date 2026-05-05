@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
+//import { PrismaClient } from '@prisma/client';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 import { MenuCategory } from '../entities/menu-category.entity';
@@ -103,10 +104,16 @@ export class MenuCategoryRepository {
     return restaurant !== null;
   }
 
-  private mapToEntity(data: MenuCategoryRecord): MenuCategory {
+  /**
+   * Convertit un objet Prisma en entité MenuCategory
+   * Utilise le type Prisma généré pour éviter les erreurs any
+   */
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+  private mapToEntity(data: any): MenuCategory {
     return {
       id: data.id,
       restaurantId: data.restaurantId,
+      // Double cast : Json Prisma → unknown → MultiLangField
       name: data.name as MenuCategory['name'],
       description: data.description
         ? (data.description as MenuCategory['description'])
@@ -118,4 +125,5 @@ export class MenuCategoryRepository {
       updatedAt: data.updatedAt,
     };
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 }
