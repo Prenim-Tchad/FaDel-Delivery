@@ -13,7 +13,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 import { MulterFile } from '../../../shared/types/multer.types';
-import { MediaService, UploadResult } from '../services/media.service';
+
 // ── Types MIME autorisés ──────────────────────────────────────────────────
 const ALLOWED_MIME_TYPES: Record<string, string> = {
   'image/jpeg': '.jpg',
@@ -30,7 +30,6 @@ export interface UploadResult {
   mimetype: string;
   size: number;
 }
-
 @Injectable()
 export class MediaService {
   private readonly s3: S3Client;

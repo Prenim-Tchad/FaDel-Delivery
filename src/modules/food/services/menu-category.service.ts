@@ -18,7 +18,7 @@ export class MenuCategoryService {
    * Crée une catégorie de menu pour un restaurant donné
    * POST /food/restaurants/:id/menu-categories
    */
-  create(
+  async create(
     restaurantId: string,
     dto: CreateMenuCategoryDto,
   ): Promise<MenuCategory> {
