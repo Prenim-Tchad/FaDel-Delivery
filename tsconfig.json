@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",          // ✅ commonjs pour NestJS
-    "moduleResolution": "node",    // ✅ node au lieu de nodenext
+    "moduleResolution": "node",
+    "module": "commonjs",          // ✅ commonjs pour NestJS    // ✅ node au lieu de nodenext
     "esModuleInterop": true,
     "isolatedModules": true,
     "declaration": true,
