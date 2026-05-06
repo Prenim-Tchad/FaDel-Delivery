@@ -379,11 +379,6 @@ model TableReservation {
   @@map("table_reservations")
 }
 
-enum SelectionType {
-  SINGLE
-  MULTIPLE
-}
-
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -413,4 +408,9 @@ enum PaymentMethod {
   CARD
   MOBILE_MONEY
   BANK_TRANSFER
+}
+
+enum SelectionType {
+  SINGLE
+  MULTIPLE
 }
