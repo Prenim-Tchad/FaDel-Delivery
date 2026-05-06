@@ -7,7 +7,7 @@ import {
   IsNumber,
   IsPhoneNumber,
   ValidateNested,
-  ArrayMinSize,
+  ArrayNotEmpty,
   Min,
   IsLatitude,
   IsLongitude,
@@ -48,7 +48,7 @@ export class CreateOrderDto {
 
   @ApiProperty({ type: [OrderItemDto] })
   @IsArray()
-  @ArrayMinSize(1, {
+  @ArrayNotEmpty({
     message: 'La commande doit contenir au moins un article.',
   })
   @ValidateNested({ each: true })
