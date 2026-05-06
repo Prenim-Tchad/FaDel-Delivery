@@ -228,7 +228,7 @@ describe('Seed - 10 Restaurants N\'Djaména (e2e)', () => {
       };
 
       restaurants.forEach((r) => {
-        for (const [quartier, _] of Object.entries(quartiers)) {
+        for (const quartier of Object.keys(quartiers)) {
           if (r.address.includes(quartier)) {
             quartiers[quartier] = true;
           }
