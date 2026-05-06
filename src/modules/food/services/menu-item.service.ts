@@ -16,16 +16,24 @@ import { MenuItem } from '../entities/menu-item.entity';
 export class MenuItemService {
   constructor(private readonly menuItemRepository: MenuItemRepository) {}
 
-  async create(menuCategoryId: string, dto: CreateMenuItemDto): Promise<MenuItem> {
-    const exists = await this.menuItemRepository.menuCategoryExists(menuCategoryId);
+  async create(
+    menuCategoryId: string,
+    dto: CreateMenuItemDto,
+  ): Promise<MenuItem> {
+    const exists =
+      await this.menuItemRepository.menuCategoryExists(menuCategoryId);
     if (!exists) {
-      throw new NotFoundException(`Catégorie de menu avec l'ID ${menuCategoryId} introuvable`);
+      throw new NotFoundException(
+        `Catégorie de menu avec l'ID ${menuCategoryId} introuvable`,
+      );
     }
     if (dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
     }
     if (dto.preparationTime !== undefined && dto.preparationTime < 0) {
-      throw new BadRequestException('Le temps de préparation ne peut pas être négatif');
+      throw new BadRequestException(
+        'Le temps de préparation ne peut pas être négatif',
+      );
     }
     return this.menuItemRepository.create(menuCategoryId, dto);
   }
@@ -33,7 +41,9 @@ export class MenuItemService {
   async findOne(id: string): Promise<MenuItem> {
     const item = await this.menuItemRepository.findOne(id);
     if (!item) {
-      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
     }
     return item;
   }
@@ -41,13 +51,17 @@ export class MenuItemService {
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
     const existing = await this.menuItemRepository.findOne(id);
     if (!existing) {
-      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
     }
     if (dto.price !== undefined && dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
     }
     if (dto.preparationTime !== undefined && dto.preparationTime < 0) {
-      throw new BadRequestException('Le temps de préparation ne peut pas être négatif');
+      throw new BadRequestException(
+        'Le temps de préparation ne peut pas être négatif',
+      );
     }
     const updated = await this.menuItemRepository.update(id, dto);
     if (!updated) {
@@ -59,7 +73,9 @@ export class MenuItemService {
   async remove(id: string): Promise<MenuItem> {
     const existing = await this.menuItemRepository.findOne(id);
     if (!existing) {
-      throw new NotFoundException(`Article avec l'ID ${id} introuvable ou déjà supprimé`);
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
     }
     const deleted = await this.menuItemRepository.softDelete(id);
     if (!deleted) {

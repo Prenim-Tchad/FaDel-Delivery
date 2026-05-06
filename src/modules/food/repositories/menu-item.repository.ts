@@ -9,7 +9,10 @@ import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 export class MenuItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(menuCategoryId: string, dto: CreateMenuItemDto): Promise<MenuItem> {
+  async create(
+    menuCategoryId: string,
+    dto: CreateMenuItemDto,
+  ): Promise<MenuItem> {
     const item = await this.prisma.menuItem.create({
       data: {
         menuCategoryId,
@@ -57,12 +60,18 @@ export class MenuItemRepository {
         ...(dto.imageUrl !== undefined && { imageUrl: dto.imageUrl }),
         ...(dto.isAvailable !== undefined && { isAvailable: dto.isAvailable }),
         ...(dto.isPopular !== undefined && { isPopular: dto.isPopular }),
-        ...(dto.isVegetarian !== undefined && { isVegetarian: dto.isVegetarian }),
+        ...(dto.isVegetarian !== undefined && {
+          isVegetarian: dto.isVegetarian,
+        }),
         ...(dto.isVegan !== undefined && { isVegan: dto.isVegan }),
-        ...(dto.isGlutenFree !== undefined && { isGlutenFree: dto.isGlutenFree }),
+        ...(dto.isGlutenFree !== undefined && {
+          isGlutenFree: dto.isGlutenFree,
+        }),
         ...(dto.isHalal !== undefined && { isHalal: dto.isHalal }),
         ...(dto.isKosher !== undefined && { isKosher: dto.isKosher }),
-        ...(dto.preparationTime !== undefined && { preparationTime: dto.preparationTime }),
+        ...(dto.preparationTime !== undefined && {
+          preparationTime: dto.preparationTime,
+        }),
         ...(dto.calories !== undefined && { calories: dto.calories }),
         ...(dto.allergens !== undefined && { allergens: dto.allergens }),
         ...(dto.ingredients !== undefined && { ingredients: dto.ingredients }),
