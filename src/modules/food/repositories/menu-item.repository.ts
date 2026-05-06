@@ -44,6 +44,9 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
+  /**
+   * Modifie un article existant
+   */
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem | null> {
     const item = await this.prisma.menuItem.update({
       where: { id },

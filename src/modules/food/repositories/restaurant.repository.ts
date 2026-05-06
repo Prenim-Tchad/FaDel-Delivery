@@ -25,7 +25,7 @@ export class RestaurantRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateRestaurantDto): Promise<unknown> {
-    return (await this.prisma.restaurant.create({
+    return await this.prisma.restaurant.create({
       data: {
         name: data.name,
         address: data.address,
@@ -36,9 +36,8 @@ export class RestaurantRepository {
         coverImageUrl: data.coverImageUrl,
         latitude: data.latitude,
         longitude: data.longitude,
-        rccm: data.rccm,
-        slug: data.slug,
         city: "N'Djamena",
+        status: 'pending',
         owner: {
           connect: { id: data.ownerId },
         },
@@ -46,28 +45,103 @@ export class RestaurantRepository {
           connect: { id: data.cuisineCategoryId },
         },
       },
-    })) as unknown;
+    });
   }
 
   async findAll(): Promise<unknown[]> {
-    return (await this.prisma.restaurant.findMany()) as unknown[];
+    return await this.prisma.restaurant.findMany();
   }
 
   async findById(id: string): Promise<object | null> {
-    return (await this.prisma.restaurant.findUnique({
+    return await this.prisma.restaurant.findUnique({
       where: { id },
-    })) as object | null;
+    });
+  }
+
+  async findProfileById(id: string) {
+    return this.prisma.restaurant.findUnique({
+      where: { id },
+      include: {
+        openingHours: true,
+        deliveryZones: true,
+      },
+    });
+  }
+
+  private toRadians(value: number): number {
+    return (value * Math.PI) / 180;
+  }
+
+  private getHaversineDistance(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number,
+  ): number {
+    const earthRadiusKm = 6371;
+    const dLat = this.toRadians(lat2 - lat1);
+    const dLng = this.toRadians(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRadians(lat1)) *
+        Math.cos(this.toRadians(lat2)) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
+  }
+
+  async findNearby(
+    latitude: number,
+    longitude: number,
+    radiusKm: number,
+  ): Promise<unknown[]> {
+    const restaurants = await this.prisma.restaurant.findMany({
+      where: {
+        latitude: { not: null },
+        longitude: { not: null },
+      },
+      include: {
+        openingHours: true,
+        deliveryZones: true,
+      },
+    });
+
+    return restaurants
+      .map((restaurant) => {
+        const distance = this.getHaversineDistance(
+          latitude,
+          longitude,
+          restaurant.latitude as number,
+          restaurant.longitude as number,
+        );
+        return {
+          ...restaurant,
+          distance,
+        };
+      })
+      .filter((restaurant) => restaurant.distance <= radiusKm)
+      .sort((a, b) => a.distance - b.distance);
   }
 
   async update(id: string, data: UpdateRestaurantDto): Promise<unknown> {
-    return (await this.prisma.restaurant.update({
+    return await this.prisma.restaurant.update({
       where: { id },
       data: {
         name: data.name,
         address: data.address,
         phone: data.phone,
       },
-    })) as unknown;
+    });
+  }
+
+  async updateStatus(id: string, status: string): Promise<unknown> {
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: {
+        status,
+      },
+    });
   }
 
   async updateDeliveryZones(
@@ -116,8 +190,10 @@ export class RestaurantRepository {
     return transactionResult;
   }
   async delete(id: string): Promise<unknown> {
-    return (await this.prisma.restaurant.delete({
+    return await this.prisma.restaurant.delete({
       where: { id },
-    })) as unknown;
+    });
   }
 }
+
+

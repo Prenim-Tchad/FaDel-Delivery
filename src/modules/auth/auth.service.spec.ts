@@ -9,6 +9,7 @@ import { MenuCategoryRepository } from '../food/repositories/menu-category.repos
 import { MenuItemRepository } from '../food/repositories/menu-item.repository';
 import { SUPABASE_CLIENT } from './auth.constants';
 import { R2UploadService } from '../food/services/r2-upload.service';
+import { MediaService } from '../food/services/media.service'; // ✅ ajout
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 const mockRedisService = {
@@ -28,6 +29,17 @@ const mockPrismaService = {
   $connect: jest.fn(),
   $disconnect: jest.fn(),
   onModuleInit: jest.fn(),
+};
+
+// ✅ Mock MediaService — plus de jest.mock()
+const mockMediaService = {
+  upload: jest.fn(),
+  delete: jest.fn(),
+  getPublicUrl: jest.fn(),
+  getSignedUrl: jest.fn(),
+  replace: jest.fn(),
+  extractKeyFromUrl: jest.fn(),
+  isAllowedMimeType: jest.fn(),
 };
 
 // 🆕 Mock MenuCategoryRepository
@@ -130,6 +142,8 @@ describe('AuthController (e2e)', () => {
       .useValue(mockMenuItemRepository)
       .overrideProvider(R2UploadService)
       .useValue(mockR2UploadService)
+      .overrideProvider(MediaService) // ✅ ajout
+      .useValue(mockMediaService) // ✅ ajout
       .compile();
 
     app = moduleFixture.createNestApplication();

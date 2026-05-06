@@ -16,6 +16,7 @@ export { FoodFiltersDto } from './dtos/food-filters.dto';
 export { FoodCategory, FoodStatus, FoodType } from './enums/food.enums';
 // Guards
 export { FoodPartnerGuard } from './guards/food-partner.guard';
+export { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
 
 // ============================================
 // Menu Categories — Saleh (tâches #31 #32)
@@ -30,6 +31,9 @@ export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
 // ============================================
 // Menu Items — Saleh (tâches #33 #34)
 // ============================================
+// Menu Items — Saleh (tâche #33)
+// ============================================
+// Controller
 export { MenuItemController } from './controllers/menu-item.controller';
 export { MenuItemService } from './services/menu-item.service';
 export { MenuItemRepository } from './repositories/menu-item.repository';

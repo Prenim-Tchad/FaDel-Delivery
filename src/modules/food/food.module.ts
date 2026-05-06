@@ -4,16 +4,20 @@ import { FoodController } from './controllers/food.controller';
 import { MenuCategoryController } from './controllers/menu-category.controller';
 import { MenuItemController } from './controllers/menu-item.controller';
 import { MenuItemUploadController } from './controllers/menu-item-upload.controller';
-import { RestaurantController } from './controllers/restaurant.controller';
-import { FoodService } from './services/food.service';
-import { MenuCategoryService } from './services/menu-category.service';
-import { MenuItemService } from './services/menu-item.service';
 import { R2UploadService } from './services/r2-upload.service';
-import { RestaurantService } from './services/restaurant.service';
+import { RestaurantController } from './controllers/restaurant.controller';
 import { FoodRepository } from './repositories/food.repository';
 import { MenuCategoryRepository } from './repositories/menu-category.repository';
 import { MenuItemRepository } from './repositories/menu-item.repository';
 import { RestaurantRepository } from './repositories/restaurant.repository';
+import { FoodService } from './services/food.service';
+import { MenuCategoryService } from './services/menu-category.service';
+import { MenuItemService } from './services/menu-item.service';
+import { OptionGroupService } from './services/option-group.service';
+import { OptionGroupRepository } from './repositories/option-group.repository';
+import { RestaurantService } from './services/restaurant.service';
+import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
+import { MediaService } from './services/media.service';
 
 /**
  * FoodModule — regroupe tout ce qui concerne la nourriture
@@ -37,6 +41,10 @@ import { RestaurantRepository } from './repositories/restaurant.repository';
     MenuCategoryRepository,
     MenuItemRepository,
     RestaurantRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
+    RestaurantOwnerGuard,
+    MediaService,
   ],
   exports: [
     PrismaService,
@@ -49,6 +57,9 @@ import { RestaurantRepository } from './repositories/restaurant.repository';
     MenuCategoryRepository,
     MenuItemRepository,
     RestaurantRepository,
+    OptionGroupService,       // 🆕
+    OptionGroupRepository,    // 🆕
+    MediaService,
   ],
 })
 export class FoodModule {}
