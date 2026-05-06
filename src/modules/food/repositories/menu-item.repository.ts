@@ -4,6 +4,7 @@ import { PrismaService } from '../../../prisma.service';
 import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
+import { AvailabilityStatus } from '@prisma/client';
 
 @Injectable()
 export class MenuItemRepository {
@@ -95,6 +96,14 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
+  async updateAvailability(id: string, availability: AvailabilityStatus): Promise<MenuItem | null> {
+  const item = await this.prisma.menuItem.update({
+    where: { id },
+    data: { availabilityStatus: availability },
+  });
+  return this.mapToEntity(item);
+}
+
   private mapToEntity(data: PrismaMenuItem): MenuItem {
     return {
       id: data.id,
@@ -119,6 +128,7 @@ export class MenuItemRepository {
       deletedAt: data.deletedAt ?? undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      availabilityStatus: data.availabilityStatus,
     };
   }
 }
