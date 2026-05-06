@@ -241,7 +241,7 @@ model FoodOrder {
   deliveryLongitude Float?         @map("delivery_longitude")
   deliveryNotes     String?        @map("delivery_notes")
   customerPhone     String         @map("customer_phone")
-  customerName  String @map("customer_name")
+  customerName      String         @map("customer_name")
   subtotal          Float
   deliveryFee       Float          @default(0) @map("delivery_fee")
   serviceFee        Float          @default(0) @map("service_fee")
