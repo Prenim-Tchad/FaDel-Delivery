@@ -192,6 +192,7 @@ model MenuModifierGroup {
   id            String               @id @default(cuid())
   menuItemId    String               @map("menu_item_id")
   name          String
+  type          String
   description   String?
   selectionType SelectionType        @default(SINGLE) @map("selection_type")
   isRequired    Boolean              @default(false) @map("is_required")
@@ -390,6 +391,7 @@ model TableReservation {
   @@index([status, reservationDate])
   @@map("table_reservations")
 }
+
 
 enum OrderStatus {
   PENDING

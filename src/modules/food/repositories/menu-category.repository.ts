@@ -4,6 +4,7 @@ import { PrismaService } from '../../../prisma.service';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 import { MenuCategory } from '../entities/menu-category.entity';
+import { Prisma } from '@prisma/client';
 
 type MenuCategoryRecord = {
   id: string;
@@ -45,8 +46,13 @@ export class MenuCategoryRepository {
     const category = await this.db.menuCategory.create({
       data: {
         restaurantId,
-        name: dto.name,
-        description: dto.description ?? null,
+        name: dto.name as unknown as Prisma.InputJsonValue,
+        description:
+          dto.description === undefined
+            ? undefined
+            : dto.description
+              ? (dto.description as unknown as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
         sortOrder: dto.sort_order,
         isDeleted: false,
         deletedAt: null,
