@@ -127,39 +127,46 @@ describe('AuthController (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SUPABASE_CLIENT)
-      .useValue(mockSupabaseClient)
-      .overrideProvider(RedisService)
-      .useValue(mockRedisService)
-      .overrideProvider(PrismaService)
-      .useValue(mockPrismaService)
-      .overrideProvider(MenuCategoryRepository)
-      .useValue(mockMenuCategoryRepository)
-      .overrideProvider(MenuItemRepository)
-      .useValue(mockMenuItemRepository)
-      .overrideProvider(R2UploadService)
-      .useValue(mockR2UploadService)
-      .overrideProvider(MediaService) // ✅ ajout
-      .useValue(mockMediaService) // ✅ ajout
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-    await app.init();
-    httpServer = app.getHttpServer() as Server;
+    try {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(SUPABASE_CLIENT)
+        .useValue(mockSupabaseClient)
+        .overrideProvider(RedisService)
+        .useValue(mockRedisService)
+        .overrideProvider(PrismaService)
+        .useValue(mockPrismaService)
+        .overrideProvider(MenuCategoryRepository)
+        .useValue(mockMenuCategoryRepository)
+        .overrideProvider(MenuItemRepository)
+        .useValue(mockMenuItemRepository)
+        .overrideProvider(R2UploadService)
+        .useValue(mockR2UploadService)
+        .overrideProvider(MediaService)
+        .useValue(mockMediaService)
+        .compile();
+      app = moduleFixture.createNestApplication();
+      app.useGlobalPipes(
+        new ValidationPipe({
+          whitelist: true,
+          forbidNonWhitelisted: true,
+          transform: true,
+        }),
+      );
+      await app.init();
+      httpServer = app.getHttpServer() as Server;
+    } catch (err) {
+      // ✅ Log the real cause so you can debug module compilation failures
+      console.error('beforeAll failed to initialize app:', err);
+      throw err;
+    }
   });
-
+  // ✅ Guard against app being undefined if beforeAll failed
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   // ── Register ──────────────────────────────────────────────────────────────
