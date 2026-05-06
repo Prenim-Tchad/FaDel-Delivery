@@ -10,6 +10,7 @@ import { MenuItem } from '../entities/menu-item.entity';
 
 /**
  * Service MenuItem — contient toute la logique métier pour FaDel-Delivery
+ * Flux : Controller → Service → Repository → Prisma → PostgreSQL
  */
 @Injectable()
 export class MenuItemService {
