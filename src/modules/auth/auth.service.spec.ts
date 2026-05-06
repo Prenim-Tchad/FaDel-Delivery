@@ -106,6 +106,11 @@ const mockSupabaseClient = {
   },
 };
 
+// Ajoute ce mock avec les autres
+const mockR2UploadService = {
+  uploadMenuItemPhoto: jest.fn(),
+};
+
 // ── Tests ──────────────────────────────────────────────────────────────────
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -134,6 +139,8 @@ describe('AuthController (e2e)', () => {
       .useValue(mockMenuCategoryRepository)
       .overrideProvider(MenuItemRepository)
       .useValue(mockMenuItemRepository)
+      .overrideProvider(R2UploadService)
+      .useValue(mockR2UploadService)
       .overrideProvider(MediaService) // ✅ ajout
       .useValue(mockMediaService) // ✅ ajout
       .compile();

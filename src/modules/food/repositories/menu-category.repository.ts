@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/client';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 import { MenuCategory } from '../entities/menu-category.entity';
+import { Prisma } from '@prisma/client';
 
 type MenuCategoryRecord = {
   id: string;
