@@ -242,7 +242,7 @@ model FoodOrder {
   deliveryLongitude Float?         @map("delivery_longitude")
   deliveryNotes     String?        @map("delivery_notes")
   customerPhone     String         @map("customer_phone")
-  customer_name     String
+  customerName      String         @map("customer_name")
   subtotal          Float
   deliveryFee       Float          @default(0) @map("delivery_fee")
   serviceFee        Float          @default(0) @map("service_fee")
@@ -317,7 +317,7 @@ model PromoCode {
   code                  String      @unique
   name                  String
   description           String?
-  discountType          String
+  discountType           DiscountType @default(PERCENTAGE)@map("discount_type")
   discountValue         Float       @map("discount_value")
   minimumOrder          Float       @default(0) @map("minimum_order")
   maximumDiscount       Float?      @map("maximum_discount")
@@ -422,4 +422,9 @@ enum PaymentMethod {
   CARD
   MOBILE_MONEY
   BANK_TRANSFER
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }

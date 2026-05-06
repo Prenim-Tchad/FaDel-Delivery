@@ -96,10 +96,26 @@ export class MenuItemRepository {
     return !!category;
   }
 
-  /**
-   * Mappage vers l'entité MenuItem
-   * Correction TS2741 : Ajout de availabilityStatus pour satisfaire l'entité (Tâche #38)
-   */
+  async updatePhoto(id: string, imageUrl: string): Promise<MenuItem | null> {
+    const item = await this.prisma.menuItem.update({
+      where: { id },
+      data: { imageUrl },
+    });
+    return this.mapToEntity(item);
+  }
+
+  async updateAvailability(
+    id: string,
+    availability: AvailabilityStatus,
+  ): Promise<MenuItem | null> {
+    const item: PrismaMenuItem = await this.prisma.menuItem.update({
+      // ✅ Fix line 143
+      where: { id },
+      data: { availabilityStatus: availability },
+    });
+    return this.mapToEntity(item);
+  }
+
   private mapToEntity(data: PrismaMenuItem): MenuItem {
     return {
       id: data.id,

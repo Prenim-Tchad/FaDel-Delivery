@@ -49,8 +49,12 @@ export class MenuItemService {
   }
 
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
-    await this.findOne(id);
-
+    const existing = await this.menuItemRepository.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
+    }
     if (dto.price !== undefined && dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
     }
@@ -67,19 +71,11 @@ export class MenuItemService {
     return updated;
   }
 
-  /**
-   * Met à jour la disponibilité d'un article
-   * Correction TS2322 : Gestion explicite du cas null pour garantir le retour d'un MenuItem
-   */
-  async updateAvailability(
-    id: string,
-    isAvailable: boolean,
-  ): Promise<MenuItem> {
-    await this.findOne(id); // Vérifie l'existence (jette une NotFoundException si absent)
-    const updated = await this.menuItemRepository.update(id, { isAvailable });
-    if (!updated) {
-      throw new BadRequestException(
-        "Impossible de mettre à jour la disponibilité de l'article",
+  async remove(id: string): Promise<MenuItem> {
+    const existing = await this.menuItemRepository.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
       );
     }
     return updated;
@@ -92,5 +88,27 @@ export class MenuItemService {
       throw new BadRequestException("Échec de la suppression de l'article");
     }
     return deleted;
+  }
+  // ✅ Fix errors 10, 11, 12 — missing method caused unsafe-return & unsafe-call in controller
+  async updateAvailability(
+    id: string,
+    availability: AvailabilityStatus,
+  ): Promise<MenuItem> {
+    const existing = await this.menuItemRepository.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
+    }
+    const updated = await this.menuItemRepository.updateAvailability(
+      id,
+      availability,
+    );
+    if (!updated) {
+      throw new BadRequestException(
+        'Échec de la mise à jour de la disponibilité',
+      );
+    }
+    return updated;
   }
 }
