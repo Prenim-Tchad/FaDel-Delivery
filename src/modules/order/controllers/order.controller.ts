@@ -17,7 +17,7 @@ import type { Request as ExpressRequest } from 'express';
 import { OrderService } from '../services/order.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { SupabaseAuthGuard } from '../../auth/guards/supabase-auth.guard';
-import { UserPayload } from '../../../shared/types/auth.types';;
+import { UserPayload } from '../../../shared/types/auth.types';
 
 interface AuthenticatedRequest extends ExpressRequest {
   user: UserPayload;

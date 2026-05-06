@@ -3,10 +3,37 @@ import { PrismaService } from '../../../prisma.service';
 import { QueueService } from '../../queue/queue.service';
 import { OrderValidationService } from './order-validation.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
-import { CreateOrderResponse } from '../dtos/order-response.dto';
+import { CreateOrderResponse, OrderItemResponse } from '../dtos/order-response.dto';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import { Prisma } from '@prisma/client';
+
+// ✅ Interface locale — évite les types any de Prisma
+interface PrismaOrderItem {
+  id: string;
+  menuItemId: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  specialInstructions: string | null;
+}
+
+interface PrismaOrder {
+  id: string;
+  orderNumber: string;
+  customerId: string;
+  restaurantId: string;
+  status: OrderStatus;
+  orderType: import('@prisma/client').OrderType;
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string | null;
+  paymentStatus: PaymentStatus;
+  paymentMethod: import('@prisma/client').PaymentMethod | null;
+  estimatedDelivery: Date | null;
+  createdAt: Date;
+  orderItems: PrismaOrderItem[];
+}
 
 @Injectable()
 export class OrderService {
@@ -22,16 +49,16 @@ export class OrderService {
     customerId: string,
     dto: CreateOrderDto,
   ): Promise<CreateOrderResponse> {
-    // ── Étape 1 : Valider le restaurant ────────────────────────────────────
+    // 1. Valider le restaurant
     await this.validationService.validateRestaurant(dto.restaurantId);
 
-    // ── Étape 2 : Valider les champs livraison ──────────────────────────────
+    // 2. Valider les champs livraison
     this.validationService.validateDeliveryFields(dto);
 
-    // ── Étape 3 : Valider la disponibilité des articles ─────────────────────
+    // 3. Valider la disponibilité des articles
     const validatedItems = await this.validationService.validateItems(dto);
 
-    // ── Étape 4 : Recalculer les frais côté serveur ─────────────────────────
+    // 4. Recalculer les frais côté serveur
     const { subtotal, deliveryFee, serviceFee } =
       await this.validationService.calculatePricing(
         dto.restaurantId,
@@ -41,7 +68,7 @@ export class OrderService {
         dto.deliveryLongitude,
       );
 
-    // ── Étape 5 : Vérifier le code promo (si fourni) ────────────────────────
+    // 5. Vérifier le code promo
     let discountAmount = 0;
     let promoCodeId: string | undefined;
     let promoCodeApplied: string | undefined;
@@ -51,7 +78,6 @@ export class OrderService {
         dto.promoCode,
         subtotal,
         dto.restaurantId,
-        customerId,
       );
       discountAmount = promo.discountAmount;
       promoCodeId = promo.promoCodeId;
@@ -60,9 +86,8 @@ export class OrderService {
 
     const totalAmount = subtotal + deliveryFee + serviceFee - discountAmount;
 
-    // ── Étape 6 : Créer la commande en DB (transaction) ─────────────────────
+    // 6. Créer la commande en DB (transaction)
     const order = await this.prisma.$transaction(async (tx) => {
-      // Créer la commande
       const newOrder = await tx.foodOrder.create({
         data: {
           orderNumber: this.generateOrderNumber(),
@@ -84,7 +109,7 @@ export class OrderService {
           paymentStatus: PaymentStatus.PENDING,
           paymentMethod: dto.paymentMethod,
           promoCodeId,
-          estimatedDelivery: new Date(Date.now() + 45 * 60 * 1000), // +45 min
+          estimatedDelivery: new Date(Date.now() + 45 * 60 * 1000),
           orderItems: {
             create: validatedItems.map((item) => ({
               menuItemId: item.menuItemId,
@@ -100,7 +125,6 @@ export class OrderService {
         include: { orderItems: true },
       });
 
-      // Incrémenter le compteur du code promo
       if (promoCodeId) {
         await tx.promoCode.update({
           where: { id: promoCodeId },
@@ -109,13 +133,13 @@ export class OrderService {
       }
 
       return newOrder;
-    });
+    }) as unknown as PrismaOrder; // ✅ cast vers notre interface typée
 
     this.logger.log(
       `Commande créée: #${order.orderNumber} | total=${totalAmount} FCFA | customer=${customerId}`,
     );
 
-    // ── Étape 7 : Envoyer dans la queue BullMQ ──────────────────────────────
+    // 7. Envoyer dans BullMQ
     await this.queueService.addOrderProcessingJob({
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -140,7 +164,19 @@ export class OrderService {
       })),
     });
 
-    // ── Réponse ─────────────────────────────────────────────────────────────
+    // ✅ Mapping typé via interface PrismaOrderItem
+    const items: OrderItemResponse[] = order.orderItems.map(
+      (item: PrismaOrderItem) => ({
+        id: item.id,
+        menuItemId: item.menuItemId,
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        specialInstructions: item.specialInstructions ?? undefined,
+      }),
+    );
+
     return {
       id: order.id,
       orderNumber: order.orderNumber,
@@ -151,15 +187,7 @@ export class OrderService {
       customerName: order.customerName,
       customerPhone: order.customerPhone,
       deliveryAddress: order.deliveryAddress ?? undefined,
-      items: order.orderItems.map((item) => ({
-        id: item.id,
-        menuItemId: item.menuItemId,
-        name: item.name,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice,
-        specialInstructions: item.specialInstructions ?? undefined,
-      })),
+      items,
       pricing: {
         subtotal,
         deliveryFee,
@@ -178,7 +206,6 @@ export class OrderService {
   private generateOrderNumber(): string {
     const date = new Date();
     const ymd = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
-    const rand = randomUUID().split('-')[0].toUpperCase();
-    return `FDL-${ymd}-${rand}`;
+    return `FDL-${ymd}-${randomUUID().split('-')[0].toUpperCase()}`;
   }
 }
