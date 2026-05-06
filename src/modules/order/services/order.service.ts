@@ -6,6 +6,7 @@ import { CreateOrderDto } from '../dtos/create-order.dto';
 import { CreateOrderResponse } from '../dtos/order-response.dto';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { randomUUID } from 'crypto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrderService {

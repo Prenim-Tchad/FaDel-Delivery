@@ -225,7 +225,6 @@ export class OrderValidationService {
     code: string,
     subtotal: number,
     restaurantId: string,
-    customerId: string,
   ): Promise<{ discountAmount: number; promoCodeId: string }> {
     const promo = await this.prisma.promoCode.findUnique({
       where: { code: code.toUpperCase() },
