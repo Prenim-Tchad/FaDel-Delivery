@@ -2,7 +2,9 @@ import {
   Controller,
   Post,
   Put,
+  Patch,
   Delete,
+  Get,
   Body,
   Param,
   HttpStatus,
@@ -19,6 +21,9 @@ import { MenuItemService } from '../services/menu-item.service';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
+import { OptionGroupService } from '../services/option-group.service';
+import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
+import { UpdateAvailabilityDto } from '../dtos/update-availability.dto';
 
 /**
  * Controller MenuItem — gère les requêtes HTTP des articles de menu
@@ -32,11 +37,14 @@ import { MenuItem } from '../entities/menu-item.entity';
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class MenuItemController {
-  constructor(private readonly menuItemService: MenuItemService) {}
+  // constructeur
+  constructor(
+    private readonly menuItemService: MenuItemService,
+    private readonly optionGroupService: OptionGroupService,
+  ) {}
 
   /**
    * POST /food/menu-categories/:id/items
-   * Crée un nouvel article dans une catégorie de menu
    */
   @Post('menu-categories/:id/items')
   @ApiOperation({
@@ -50,7 +58,7 @@ export class MenuItemController {
     example: 'clxxx123',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED, // 201
+    status: HttpStatus.CREATED,
     description: 'Article créé avec succès',
     type: MenuItem,
   })
@@ -71,7 +79,6 @@ export class MenuItemController {
 
   /**
    * PUT /food/menu-items/:id
-   * Modifie un article existant
    */
   @Put('menu-items/:id')
   @ApiOperation({
@@ -79,19 +86,7 @@ export class MenuItemController {
     description:
       "Modifie les informations d'un article (nom, prix, description, disponibilité, etc.).",
   })
-  @ApiParam({
-    name: 'id',
-    description: "ID de l'article",
-    example: 'clxxx123',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST, // 400
-    description: 'Données invalides',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND, // 404
-    description: 'Catégorie de menu introuvable',
-  })
+  @ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Article modifié avec succès',
@@ -105,7 +100,7 @@ export class MenuItemController {
     status: HttpStatus.NOT_FOUND,
     description: 'Article introuvable',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateMenuItemDto: UpdateMenuItemDto,
   ): Promise<MenuItem> {
@@ -114,7 +109,6 @@ export class MenuItemController {
 
   /**
    * DELETE /food/menu-items/:id
-   * Soft-delete d'un article (ne supprime pas réellement)
    */
   @Delete('menu-items/:id')
   @HttpCode(HttpStatus.OK)
@@ -123,11 +117,7 @@ export class MenuItemController {
     description:
       "Marque l'article comme supprimé sans le supprimer réellement de la base.",
   })
-  @ApiParam({
-    name: 'id',
-    description: "ID de l'article",
-    example: 'clxxx123',
-  })
+  @ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Article supprimé avec succès',
@@ -137,7 +127,66 @@ export class MenuItemController {
     status: HttpStatus.NOT_FOUND,
     description: 'Article introuvable',
   })
-  remove(@Param('id') id: string): Promise<MenuItem> {
+  async remove(@Param('id') id: string): Promise<MenuItem> {
     return this.menuItemService.remove(id);
   }
+
+  /**
+   * POST /food/menu-items/:id/option-groups
+   */
+  @Post('menu-items/:id/option-groups')
+  @ApiOperation({
+    summary: "Créer un groupe d'options pour un article",
+    description:
+      "Crée un groupe d'options (ex: Taille, Garnitures) en mode SINGLE ou MULTIPLE.",
+  })
+  @ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Groupe créé avec succès',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article introuvable',
+  })
+  async createOptionGroup(
+    @Param('id') menuItemId: string,
+    @Body() dto: CreateOptionGroupDto,
+  ) {
+    return this.optionGroupService.create(menuItemId, dto);
+  }
+
+  /**
+   * GET /food/menu-items/:id/option-groups
+   */
+  @Get('menu-items/:id/option-groups')
+  @ApiOperation({ summary: "Lister les groupes d'options d'un article" })
+  @ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Liste des groupes d'options",
+  })
+  async findOptionGroups(@Param('id') menuItemId: string) {
+    return this.optionGroupService.findAllByMenuItem(menuItemId);
+  }
+
+  /**
+ * PATCH /food/menu-items/:id/availability
+ */
+@Patch('menu-items/:id/availability')
+@HttpCode(HttpStatus.OK)
+@ApiOperation({
+  summary: "Mettre à jour la disponibilité d'un article",
+  description: "Change l'état : AVAILABLE, HIDDEN (masqué) ou OUT_OF_STOCK (grisé).",
+})
+@ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
+@ApiResponse({ status: HttpStatus.OK, description: 'Disponibilité mise à jour', type: MenuItem })
+@ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
+@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+async updateAvailability(
+  @Param('id') id: string,
+  @Body() dto: UpdateAvailabilityDto,
+): Promise<MenuItem> {
+  return this.menuItemService.updateAvailability(id, dto.availability);
+}
 }

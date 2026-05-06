@@ -36,9 +36,8 @@ export class RestaurantRepository {
         coverImageUrl: data.coverImageUrl,
         latitude: data.latitude,
         longitude: data.longitude,
-        rccm: data.rccm,
-        slug: data.slug,
         city: "N'Djamena",
+        status: 'pending',
         owner: {
           connect: { id: data.ownerId },
         },
@@ -132,6 +131,15 @@ export class RestaurantRepository {
         name: data.name,
         address: data.address,
         phone: data.phone,
+      },
+    });
+  }
+
+  async updateStatus(id: string, status: string): Promise<unknown> {
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: {
+        status,
       },
     });
   }

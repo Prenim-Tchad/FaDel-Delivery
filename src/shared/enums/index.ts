@@ -32,9 +32,11 @@ export enum PaymentMethod {
 }
 
 export enum RestaurantStatus {
+  PENDING = 'pending',
   ACTIVE = 'active',
-  INACTIVE = 'inactive',
+  SUSPENDED = 'suspended',
   CLOSED = 'closed',
+  INACTIVE = 'inactive',
   MAINTENANCE = 'maintenance',
   TEMPORARILY_CLOSED = 'temporarily_closed',
 }

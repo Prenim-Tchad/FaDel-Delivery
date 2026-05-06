@@ -1,60 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { MenuItem as PrismaMenuItem } from '@prisma/client';
 import { PrismaService } from '../../../prisma.service';
+import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
-import { MenuItem } from '../entities/menu-item.entity';
-
-type MenuItemRecord = {
-  id: string;
-  menuCategoryId: string;
-  name: string;
-  description: string | null;
-  price: number;
-  imageUrl: string | null;
-  isAvailable: boolean;
-  isPopular: boolean;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  isHalal: boolean;
-  isKosher: boolean;
-  preparationTime: number | null;
-  calories: number | null;
-  allergens: string[];
-  ingredients: string[];
-  sortOrder: number;
-  isDeleted: boolean;
-  deletedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-type MenuItemDelegate = {
-  create(args: object): Promise<MenuItemRecord>;
-  findFirst(args: object): Promise<MenuItemRecord | null>;
-  update(args: object): Promise<MenuItemRecord>;
-};
-
-type MenuItemPrismaClient = {
-  menuItem: MenuItemDelegate;
-  menuCategory: {
-    findFirst(args: object): Promise<object | null>;
-  };
-};
+import { AvailabilityStatus } from '@prisma/client';
 
 @Injectable()
 export class MenuItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private get db(): MenuItemPrismaClient {
-    return this.prisma;
-  }
-
-  async create(
-    menuCategoryId: string,
-    dto: CreateMenuItemDto,
-  ): Promise<MenuItem> {
-    const item = await this.db.menuItem.create({
+  async create(menuCategoryId: string, dto: CreateMenuItemDto): Promise<MenuItem> {
+    const item = await this.prisma.menuItem.create({
       data: {
         menuCategoryId,
         name: dto.name,
@@ -77,16 +34,15 @@ export class MenuItemRepository {
         deletedAt: null,
       },
     });
-
     return this.mapToEntity(item);
   }
 
   async findOne(id: string): Promise<MenuItem | null> {
-    const item = await this.db.menuItem.findFirst({
+    const item = await this.prisma.menuItem.findFirst({
       where: { id, isDeleted: false },
     });
-
-    return item ? this.mapToEntity(item) : null;
+    if (!item) return null;
+    return this.mapToEntity(item);
   }
 
   /**
@@ -102,49 +58,53 @@ export class MenuItemRepository {
         ...(dto.imageUrl !== undefined && { imageUrl: dto.imageUrl }),
         ...(dto.isAvailable !== undefined && { isAvailable: dto.isAvailable }),
         ...(dto.isPopular !== undefined && { isPopular: dto.isPopular }),
-        ...(dto.isVegetarian !== undefined && {
-          isVegetarian: dto.isVegetarian,
-        }),
+        ...(dto.isVegetarian !== undefined && { isVegetarian: dto.isVegetarian }),
         ...(dto.isVegan !== undefined && { isVegan: dto.isVegan }),
-        ...(dto.isGlutenFree !== undefined && {
-          isGlutenFree: dto.isGlutenFree,
-        }),
+        ...(dto.isGlutenFree !== undefined && { isGlutenFree: dto.isGlutenFree }),
         ...(dto.isHalal !== undefined && { isHalal: dto.isHalal }),
         ...(dto.isKosher !== undefined && { isKosher: dto.isKosher }),
-        ...(dto.preparationTime !== undefined && {
-          preparationTime: dto.preparationTime,
-        }),
+        ...(dto.preparationTime !== undefined && { preparationTime: dto.preparationTime }),
         ...(dto.calories !== undefined && { calories: dto.calories }),
         ...(dto.allergens !== undefined && { allergens: dto.allergens }),
         ...(dto.ingredients !== undefined && { ingredients: dto.ingredients }),
         ...(dto.sortOrder !== undefined && { sortOrder: dto.sortOrder }),
       },
     });
-
     return this.mapToEntity(item);
   }
 
   async softDelete(id: string): Promise<MenuItem | null> {
-    const item = await this.db.menuItem.update({
+    const item = await this.prisma.menuItem.update({
       where: { id },
-      data: {
-        isDeleted: true,
-        deletedAt: new Date(),
-      },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
-
     return this.mapToEntity(item);
   }
 
   async menuCategoryExists(menuCategoryId: string): Promise<boolean> {
-    const category = await this.db.menuCategory.findFirst({
+    const category = await this.prisma.menuCategory.findFirst({
       where: { id: menuCategoryId, isDeleted: false },
     });
-
-    return category !== null;
+    return !!category;
   }
 
-  private mapToEntity(data: MenuItemRecord): MenuItem {
+  async updatePhoto(id: string, imageUrl: string): Promise<MenuItem | null> {
+    const item = await this.prisma.menuItem.update({
+      where: { id },
+      data: { imageUrl },
+    });
+    return this.mapToEntity(item);
+  }
+
+  async updateAvailability(id: string, availability: AvailabilityStatus): Promise<MenuItem | null> {
+  const item = await this.prisma.menuItem.update({
+    where: { id },
+    data: { availabilityStatus: availability },
+  });
+  return this.mapToEntity(item);
+}
+
+  private mapToEntity(data: PrismaMenuItem): MenuItem {
     return {
       id: data.id,
       menuCategoryId: data.menuCategoryId,
@@ -161,13 +121,14 @@ export class MenuItemRepository {
       isKosher: data.isKosher,
       preparationTime: data.preparationTime ?? undefined,
       calories: data.calories ?? undefined,
-      allergens: data.allergens,
-      ingredients: data.ingredients,
-      sortOrder: data.sortOrder,
+      allergens: data.allergens ?? [],
+      ingredients: data.ingredients ?? [],
+      sortOrder: data.sortOrder ?? undefined,
       isDeleted: data.isDeleted,
       deletedAt: data.deletedAt ?? undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      availabilityStatus: data.availabilityStatus,
     };
   }
 }

@@ -7,6 +7,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { FoodModule } from './modules/food/food.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { PrismaService } from './prisma.service';
+import { QueueModule } from './modules/queue/queue.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PrismaService } from './prisma.service';
     ProfileModule,
     FoodModule,
     RedisModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
