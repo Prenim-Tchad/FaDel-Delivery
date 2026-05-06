@@ -48,7 +48,9 @@ export class CreateOrderDto {
 
   @ApiProperty({ type: [OrderItemDto] })
   @IsArray()
-  @ArrayMinSize(1, { message: 'La commande doit contenir au moins un article.' })
+  @ArrayMinSize(1, {
+    message: 'La commande doit contenir au moins un article.',
+  })
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
   items!: OrderItemDto[];
