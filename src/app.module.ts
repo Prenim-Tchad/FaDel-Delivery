@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -8,7 +9,16 @@ import { RedisModule } from './modules/redis/redis.module';
 import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [AuthModule, ProfileModule, FoodModule, RedisModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    AuthModule,
+    ProfileModule,
+    FoodModule,
+    RedisModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

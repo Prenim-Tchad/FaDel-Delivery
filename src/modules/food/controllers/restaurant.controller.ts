@@ -9,7 +9,11 @@ import {
   Query,
   UseGuards,
   BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { RestaurantService } from '../services/restaurant.service';
 import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
@@ -21,10 +25,14 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole, RestaurantStatus } from '../../../shared/types';
+import { FileUploadService } from '../../../shared/services/file-upload.service';
 
 @Controller('food/restaurants')
 export class RestaurantController {
-  constructor(private readonly restaurantService: RestaurantService) {}
+  constructor(
+    private readonly restaurantService: RestaurantService,
+    private readonly fileUploadService: FileUploadService,
+  ) {}
 
   @UseGuards(RestaurantOwnerGuard)
   @Post()
@@ -102,6 +110,40 @@ export class RestaurantController {
     @Body() dto: CreateDeliveryZonesDto,
   ): Promise<BatchPayloadResult> {
     return this.restaurantService.updateDeliveryZones(id, dto);
+  }
+
+  @UseGuards(RestaurantOwnerGuard)
+  @UseInterceptors(FileInterceptor('logo'))
+  @Post(':id/upload-logo')
+  async uploadLogo(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ logoUrl: string }> {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier logo fourni');
+    }
+
+    const logoUrl = await this.fileUploadService.uploadFile(file, 'restaurant-logos');
+    await this.restaurantService.updateLogo(id, logoUrl);
+
+    return { logoUrl };
+  }
+
+  @UseGuards(RestaurantOwnerGuard)
+  @UseInterceptors(FilesInterceptor('photos', 10)) // Max 10 photos
+  @Post(':id/upload-photos')
+  async uploadPhotos(
+    @Param('id') id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<{ photoUrls: string[] }> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('Aucun fichier photo fourni');
+    }
+
+    const photoUrls = await this.fileUploadService.uploadMultipleFiles(files, 'restaurant-photos');
+    await this.restaurantService.addPhotos(id, photoUrls);
+
+    return { photoUrls };
   }
 
   @UseGuards(RestaurantOwnerGuard)

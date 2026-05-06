@@ -131,6 +131,16 @@ export class RestaurantService {
     return transitions[currentStatus]?.includes(nextStatus) ?? false;
   }
 
+  async updateLogo(id: string, logoUrl: string): Promise<unknown> {
+    await this.findOne(id);
+    return this.restaurantRepository.updateLogo(id, logoUrl);
+  }
+
+  async addPhotos(id: string, photoUrls: string[]): Promise<unknown> {
+    await this.findOne(id);
+    return this.restaurantRepository.addPhotos(id, photoUrls);
+  }
+
   async remove(id: string): Promise<unknown> {
     // On vérifie d'abord l'existence
     await this.findOne(id);

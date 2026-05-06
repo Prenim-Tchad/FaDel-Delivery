@@ -191,6 +191,38 @@ export class RestaurantRepository {
     });
     return transactionResult;
   }
+
+  async updateLogo(id: string, logoUrl: string): Promise<unknown> {
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: {
+        logoUrl,
+      },
+    });
+  }
+
+  async addPhotos(id: string, photoUrls: string[]): Promise<unknown> {
+    // First get current photos
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: { id },
+      select: { photos: true },
+    });
+
+    if (!restaurant) {
+      throw new Error(`Restaurant with id ${id} not found`);
+    }
+
+    // Append new photos to existing ones
+    const updatedPhotos = [...(restaurant.photos || []), ...photoUrls];
+
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: {
+        photos: updatedPhotos,
+      },
+    });
+  }
+
   async delete(id: string): Promise<unknown> {
     return await this.prisma.restaurant.delete({
       where: { id },

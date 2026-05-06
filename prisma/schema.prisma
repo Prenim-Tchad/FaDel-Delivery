@@ -59,6 +59,7 @@ model Restaurant {
   rccm          String? @unique
   logoUrl       String? @map("logo_url")
   coverImageUrl String? @map("cover_image_url")
+  photos         String[] @default([])
 
   latitude  Float?
   longitude Float?
