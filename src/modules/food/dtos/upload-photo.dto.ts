@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class UploadPhotoResponseDto {
   @ApiProperty({
-    description: 'URL de l\'image originale sur Cloudflare R2',
+    description: "URL de l'image originale sur Cloudflare R2",
     example: 'https://pub-xxx.r2.dev/menu-items/clxxx123/original-uuid.jpg',
   })
   originalUrl!: string;

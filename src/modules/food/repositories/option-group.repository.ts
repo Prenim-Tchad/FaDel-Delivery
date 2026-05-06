@@ -13,8 +13,8 @@ export class OptionGroupRepository {
     return this.prisma.menuModifierGroup.create({
       data: {
         menuItemId,
-        name: dto.name,
-        selectionType: dto.selectionType ?? SelectionType.SINGLE,
+        name: dto.name, // ou ce que tu as déjà
+        type: dto.selectionType ?? SelectionType.SINGLE,
         minSelections: 0,
         maxSelections: dto.selectionType === SelectionType.SINGLE ? 1 : null,
         options: {

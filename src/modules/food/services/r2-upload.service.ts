@@ -54,9 +54,7 @@ export class R2UploadService {
     // Validation taille max 5 MB
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      throw new BadRequestException(
-        'Fichier trop volumineux. Maximum : 5 MB.',
-      );
+      throw new BadRequestException('Fichier trop volumineux. Maximum : 5 MB.');
     }
 
     // Noms de fichiers uniques

@@ -138,7 +138,7 @@ describe('AuthController (e2e)', () => {
       .useValue(mockPrismaService)
       .overrideProvider(MenuCategoryRepository)
       .useValue(mockMenuCategoryRepository)
-      .overrideProvider(MenuItemRepository)     
+      .overrideProvider(MenuItemRepository)
       .useValue(mockMenuItemRepository)
       .overrideProvider(R2UploadService)
       .useValue(mockR2UploadService)
