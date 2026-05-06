@@ -186,6 +186,7 @@ model MenuModifierGroup {
   menuItemId    String               @map("menu_item_id")
   name          String
   description   String?
+  selectionType SelectionType        @default(SINGLE) @map("selection_type")
   isRequired    Boolean              @default(false) @map("is_required")
   minSelections Int                  @default(0) @map("min_selections")
   maxSelections Int?                 @map("max_selections")
@@ -197,6 +198,11 @@ model MenuModifierGroup {
 
   @@index([menuItemId, sortOrder])
   @@map("menu_modifier_groups")
+}
+
+enum SelectionType {
+  SINGLE
+  MULTIPLE
 }
 
 model MenuModifierOption {
