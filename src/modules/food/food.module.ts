@@ -40,7 +40,7 @@ import { MediaService } from './services/media.service';
     RestaurantService,
     MenuCategoryService,
     MenuItemService,
-    R2UploadService,              // ✅ saleh - tâche #35
+    R2UploadService,
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
