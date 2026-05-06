@@ -1,5 +1,5 @@
 # 🚀 Implémentation Upload Logo & Photos Restaurant via Cloudflare R2
-
+ 
 ## 📋 Résumé
 
 Cette PR implémente la fonctionnalité d'upload de logo et photos de restaurant en utilisant Cloudflare R2 pour le stockage cloud. Les fichiers sont uploadés via multipart/form-data et des URLs publiques sont générées automatiquement.
