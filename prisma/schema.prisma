@@ -303,7 +303,7 @@ model PromoCode {
   code                  String      @unique
   name                  String
   description           String?
-  discountType          String
+  discountType           DiscountType @default(PERCENTAGE)@map("discount_type")
   discountValue         Float       @map("discount_value")
   minimumOrder          Float       @default(0) @map("minimum_order")
   maximumDiscount       Float?      @map("maximum_discount")
@@ -407,4 +407,9 @@ enum PaymentMethod {
   CARD
   MOBILE_MONEY
   BANK_TRANSFER
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }
