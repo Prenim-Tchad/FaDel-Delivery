@@ -3,11 +3,11 @@ import { ConfigModule } from '@nestjs/config'; // ✅ ajout
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { ProfileModule } from './modules/profile/profile.module';
 import { FoodModule } from './modules/food/food.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { PrismaService } from './prisma.service';
-import { QueueModule } from './modules/queue/queue.module';
 
 @Module({
   imports: [

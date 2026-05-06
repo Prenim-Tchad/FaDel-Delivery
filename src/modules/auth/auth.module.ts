@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { supabaseClientProvider } from './auth.constants';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtAuthService } from './jwt-auth.service';
-import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
+import { JwtAuthService } from './jwt-auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { supabaseClientProvider } from './auth.constants';
 
 @Module({
   imports: [

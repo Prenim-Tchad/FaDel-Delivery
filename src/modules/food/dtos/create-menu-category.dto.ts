@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNumber,
   IsObject,
@@ -7,7 +8,6 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 /**
  * Classe réutilisable pour les champs multilingues (FR/EN/AR/ES)

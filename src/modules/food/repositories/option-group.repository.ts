@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
-import { CreateOptionGroupDto, SelectionType } from '../dtos/create-option-group.dto';
+import {
+  CreateOptionGroupDto,
+  SelectionType,
+} from '../dtos/create-option-group.dto';
 
 @Injectable()
 export class OptionGroupRepository {

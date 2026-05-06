@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GeoService } from './geo.service';
 import {
-  VehicleType,
-  VEHICLE_RATES,
   PRICING_CONFIG,
+  VEHICLE_RATES,
+  VehicleType,
 } from '../services/delivery-pricing.constants';
+import { GeoService } from './geo.service';
 
 @Injectable()
 export class DeliveryPricingService {

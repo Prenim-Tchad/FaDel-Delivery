@@ -10,8 +10,8 @@ export { FoodRepository } from './repositories/food.repository';
 export { Food } from './entities/food.entity';
 // DTOs
 export { CreateFoodDto } from './dtos/create-food.dto';
-export { UpdateFoodDto } from './dtos/update-food.dto';
 export { FoodFiltersDto } from './dtos/food-filters.dto';
+export { UpdateFoodDto } from './dtos/update-food.dto';
 // Enums
 export { FoodCategory, FoodStatus, FoodType } from './enums/food.enums';
 // Guards

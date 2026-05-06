@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import { QUEUE_NAMES, JOB_NAMES, QUEUE_CONFIG } from './queue.constants';
+import { Injectable, Logger } from '@nestjs/common';
 import { OrderStatus, OrderType, PaymentMethod } from '@prisma/client';
+import { Queue } from 'bullmq';
+import { JOB_NAMES, QUEUE_CONFIG, QUEUE_NAMES } from './queue.constants';
 
 // ── Types alignés sur le schéma Prisma ───────────────────────────────────
 export interface OrderJobData {

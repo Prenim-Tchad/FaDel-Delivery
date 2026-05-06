@@ -8,16 +8,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
-import { ProfileService } from './profile.service';
+import type { Request as ExpressRequest } from 'express';
+import { UserPayload } from '../../shared/types/auth.types';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
-import { UserPayload } from '../../shared/types/auth.types';
-import type { Request as ExpressRequest } from 'express';
+import { ProfileService } from './profile.service';
 
 interface AuthenticatedRequest extends ExpressRequest {
   user: UserPayload;

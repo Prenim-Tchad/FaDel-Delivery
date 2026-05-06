@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
-  IsNumber,
   Min,
-  IsOptional,
-  IsArray,
   ValidateNested,
-  IsEnum,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { DeliveryMode } from '../../../shared/enums';
 
 class CreateOrderItemDto {

@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-  Min,
   IsArray,
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 
 export class CreateMenuItemDto {

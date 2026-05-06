@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
-  IsNumber,
-  IsEnum,
-  IsOptional,
   IsArray,
   IsBoolean,
+  IsEnum,
+  IsNumber,
   IsObject,
-  Min,
+  IsOptional,
+  IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 import { FoodCategory, FoodType } from '../enums/food.enums';
 

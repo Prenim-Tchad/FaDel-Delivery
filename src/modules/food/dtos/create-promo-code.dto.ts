@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
-  IsNumber,
-  Min,
-  IsOptional,
-  IsBoolean,
-  IsArray,
-  IsEnum,
-  IsDateString,
   ArrayNotEmpty,
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
 
 export enum DiscountType {

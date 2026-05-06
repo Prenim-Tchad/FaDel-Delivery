@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
   Client,
-  TravelMode,
   DistanceMatrixRowElement,
+  TravelMode,
 } from '@googlemaps/google-maps-services-js';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class GeoService {

@@ -1,26 +1,26 @@
 import {
-  Controller,
-  Post,
+  BadRequestException,
   Body,
-  Param,
-  Get,
-  Patch,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
   UseGuards,
-  BadRequestException,
 } from '@nestjs/common';
-import { RestaurantService } from '../services/restaurant.service';
-import type { BatchPayloadResult } from '../repositories/restaurant.repository';
-import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
-import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
-import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
-import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
-import { RestaurantOwnerGuard } from '../guards/restaurant-owner.guard';
+import { RestaurantStatus, UserRole } from '../../../shared/types';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { UserRole, RestaurantStatus } from '../../../shared/types';
+import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
+import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
+import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
+import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
+import { RestaurantOwnerGuard } from '../guards/restaurant-owner.guard';
+import type { BatchPayloadResult } from '../repositories/restaurant.repository';
+import { RestaurantService } from '../services/restaurant.service';
 
 @Controller('food/restaurants')
 export class RestaurantController {

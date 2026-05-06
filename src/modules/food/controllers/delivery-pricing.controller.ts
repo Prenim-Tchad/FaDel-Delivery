@@ -1,6 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { DeliveryPricingService } from '../services/delivery-pricing.service';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CreateEstimateDto } from '../dtos/create-estimate.dto';
+import { DeliveryPricingService } from '../services/delivery-pricing.service';
 
 @Controller('pricing')
 export class DeliveryPricingController {

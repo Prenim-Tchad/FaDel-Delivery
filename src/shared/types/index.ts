@@ -1,2 +1,2 @@
-export * from './auth.types';
 export * from '../enums';
+export * from './auth.types';

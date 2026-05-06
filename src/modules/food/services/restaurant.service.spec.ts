@@ -1,8 +1,8 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RestaurantService } from './restaurant.service';
-import { RestaurantRepository } from '../repositories/restaurant.repository';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { RestaurantStatus } from '../../../shared/types';
+import { RestaurantRepository } from '../repositories/restaurant.repository';
+import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService - Tâche 3 (Opening Hours)', () => {
   let service: RestaurantService;

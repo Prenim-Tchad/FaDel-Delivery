@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -9,7 +10,6 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum SelectionType {
   SINGLE = 'SINGLE',
@@ -17,12 +17,15 @@ export enum SelectionType {
 }
 
 export class CreateOptionItemDto {
-  @ApiProperty({ example: 'Grande', description: 'Nom de l\'option' })
+  @ApiProperty({ example: 'Grande', description: "Nom de l'option" })
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @ApiPropertyOptional({ example: 500, description: 'Prix supplémentaire en FCFA' })
+  @ApiPropertyOptional({
+    example: 500,
+    description: 'Prix supplémentaire en FCFA',
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -30,7 +33,7 @@ export class CreateOptionItemDto {
 }
 
 export class CreateOptionGroupDto {
-  @ApiProperty({ example: 'Taille', description: 'Nom du groupe d\'options' })
+  @ApiProperty({ example: 'Taille', description: "Nom du groupe d'options" })
   @IsString()
   @IsNotEmpty()
   name!: string;

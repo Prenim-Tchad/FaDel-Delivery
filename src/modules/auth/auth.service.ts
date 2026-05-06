@@ -1,24 +1,25 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
-  BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { SupabaseClient, User } from '@supabase/supabase-js';
+import { UserPayload, UserRole } from '../../shared/types';
 import { SUPABASE_CLIENT } from './auth.constants';
-import { JwtAuthService } from './jwt-auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-// import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UserRole, UserPayload } from '../../shared/types';
+import { JwtAuthService } from './jwt-auth.service';
 
-// Interface pour mapper ce que tu as configuré dans ton app Flutter/Web
+// Interface typée pour éviter les erreurs "Unsafe member access"
 interface FaDelUserMetadata {
   nom: string;
   prenom: string;
   phone: string;
   quartier: string;
+  role?: string;
 }
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -38,8 +39,10 @@ export class AuthService {
       },
     });
 
-    if (error) {
-      throw new BadRequestException(error.message);
+    if (error || !data.user) {
+      throw new BadRequestException(
+        error?.message || "Erreur lors de l'inscription",
+      );
     }
 
     return {
@@ -56,12 +59,10 @@ export class AuthService {
       password,
     });
 
-    if (error) {
-      throw new UnauthorizedException(error.message);
-    }
-
-    if (!data.session) {
-      throw new UnauthorizedException('Impossible de créer une session.');
+    if (error || !data.user || !data.session) {
+      throw new UnauthorizedException(
+        error?.message || 'Identifiants invalides',
+      );
     }
 
     return {
@@ -93,7 +94,7 @@ export class AuthService {
     return {
       id: data.user.id,
       email: data.user.email,
-      user_metadata: data.user.user_metadata,
+      user_metadata: data.user.user_metadata as FaDelUserMetadata,
       confirmedAt: data.user.confirmed_at,
     };
   }
@@ -103,7 +104,7 @@ export class AuthService {
       refresh_token: refreshToken,
     });
 
-    if (error || !data.session) {
+    if (error || !data.session || !data.user) {
       throw new UnauthorizedException('Impossible de rafraîchir le token.');
     }
 
@@ -116,6 +117,7 @@ export class AuthService {
   }
 
   async signOut(accessToken: string) {
+    // Utilisation de la méthode globale signOut si possible, ou admin
     const { error } = await this.supabaseClient.auth.admin.signOut(accessToken);
 
     if (error) {
@@ -128,23 +130,23 @@ export class AuthService {
   // Méthodes JWT RS256
   async signInWithJwt(dto: LoginDto) {
     const supabaseResult = await this.signIn(dto);
-    const metadata = supabaseResult.user
-      .user_metadata as unknown as FaDelUserMetadata;
-    const userRole = this.getUserRoleFromMetadata(metadata);
 
-    // Ajout de la logique isPartner ici aussi pour la cohérence
+    // Cast sécurisé des métadonnées pour satisfaire ESLint
+    const metadata = (supabaseResult.user.user_metadata ||
+      {}) as FaDelUserMetadata;
+    const userRole = this.getUserRoleFromMetadata(metadata);
     const isPartner = userRole === UserRole.PARTNER;
 
     const tokenPair = await this.jwtAuthService.generateTokenPair(
       supabaseResult.user.id,
-      supabaseResult.user.email!,
+      supabaseResult.user.email || '',
       userRole,
       {
-        nom: metadata.nom,
-        prenom: metadata.prenom,
-        phone: metadata.phone,
-        quartier: metadata.quartier,
-        isPartner: isPartner, // On l'ajoute au payload JWT
+        nom: metadata.nom || '',
+        prenom: metadata.prenom || '',
+        phone: metadata.phone || '',
+        quartier: metadata.quartier || '',
+        isPartner: isPartner,
       },
     );
 
@@ -171,21 +173,18 @@ export class AuthService {
       return null;
     }
 
-    const metadata = data.user.user_metadata as unknown as FaDelUserMetadata & {
-      role?: string;
-    };
+    const metadata = (data.user.user_metadata || {}) as FaDelUserMetadata;
     const userRole = this.getUserRoleFromMetadata(metadata);
 
-    // CORRECTION : On utilise "userRole" qui est défini juste au-dessus
     return {
       sub: data.user.id,
-      email: data.user.email!,
+      email: data.user.email || '',
       role: userRole,
       isPartner: userRole === UserRole.PARTNER,
-      nom: metadata.nom,
-      prenom: metadata.prenom,
-      phone: metadata.phone,
-      quartier: metadata.quartier,
+      nom: metadata.nom || '',
+      prenom: metadata.prenom || '',
+      phone: metadata.phone || '',
+      quartier: metadata.quartier || '',
     };
   }
 
@@ -197,12 +196,13 @@ export class AuthService {
     return this.jwtAuthService.refreshAccessToken(refreshToken);
   }
 
-  private getUserRoleFromMetadata(
-    metadata: FaDelUserMetadata & { role?: string },
-  ): UserRole {
-    if (metadata.role) {
+  private getUserRoleFromMetadata(metadata: FaDelUserMetadata): UserRole {
+    if (
+      metadata.role &&
+      Object.values(UserRole).includes(metadata.role as UserRole)
+    ) {
       return metadata.role as UserRole;
     }
-    return UserRole.CUSTOMER; // Par défaut, on considère que c'est un client
+    return UserRole.CUSTOMER;
   }
 }

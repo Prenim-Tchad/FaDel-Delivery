@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Server } from 'http';
+import request from 'supertest';
 import { AppModule } from '../../app.module';
-import { RedisService } from '../redis/redis.service';
 import { PrismaService } from '../../prisma.service';
 import { MenuCategoryRepository } from '../food/repositories/menu-category.repository';
 import { MenuItemRepository } from '../food/repositories/menu-item.repository';
-import { SUPABASE_CLIENT } from './auth.constants';
 import { MediaService } from '../food/services/media.service'; // ✅ ajout
+import { RedisService } from '../redis/redis.service';
+import { SUPABASE_CLIENT } from './auth.constants';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 const mockRedisService = {

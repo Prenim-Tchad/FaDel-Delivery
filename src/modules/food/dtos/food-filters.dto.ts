@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsOptional,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
-  Min,
   Max,
+  Min,
 } from 'class-validator';
 import { FoodCategory, FoodType } from '../enums/food.enums';
-import { Type } from 'class-transformer';
 
 export class FoodFiltersDto {
   @ApiProperty({

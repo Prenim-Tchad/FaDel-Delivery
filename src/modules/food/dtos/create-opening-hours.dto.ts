@@ -1,13 +1,13 @@
+import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsBoolean,
   IsInt,
   IsString,
-  IsBoolean,
-  IsArray,
-  ValidateNested,
-  Min,
   Max,
+  Min,
+  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class OpeningHourItemDto {
   @IsInt()

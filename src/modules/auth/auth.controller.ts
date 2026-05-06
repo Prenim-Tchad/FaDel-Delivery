@@ -7,21 +7,21 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import type { Request as ExpressRequest } from 'express';
-import { UserPayload } from '../../shared/types/auth.types';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
+import type { Request as ExpressRequest } from 'express';
+import { UserPayload } from '../../shared/types/auth.types';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 interface AuthenticatedRequest extends ExpressRequest {
   user: UserPayload;
 }
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 //import { UpdateProfileDto } from './dto/update-profile.dto';
 import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 

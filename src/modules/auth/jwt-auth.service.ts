@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { UserPayload, TokenPair, UserRole } from '../../shared/types';
+import { TokenPair, UserPayload, UserRole } from '../../shared/types';
 
 @Injectable()
 export class JwtAuthService {

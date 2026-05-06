@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
+import { OrderStatus } from '@prisma/client';
 import { Job } from 'bullmq';
 import { PrismaService } from '../../../prisma.service';
-import { QueueService, OrderJobData } from '../queue.service';
-import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
-import { OrderStatus } from '@prisma/client';
+import { JOB_NAMES, QUEUE_NAMES } from '../queue.constants';
+import { OrderJobData, QueueService } from '../queue.service';
 
 @Processor(QUEUE_NAMES.ORDER_PROCESSING)
 export class OrderProcessingProcessor extends WorkerHost {

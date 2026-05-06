@@ -1,4 +1,4 @@
-import { IsNumber, IsEnum, IsNotEmpty, IsObject } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsObject } from 'class-validator';
 import { VehicleType } from '../services/delivery-pricing.constants';
 
 export class CoordinateDto {

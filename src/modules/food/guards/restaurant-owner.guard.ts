@@ -1,12 +1,12 @@
 import {
-  Injectable,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { Request } from 'express';
 import { UserPayload, UserRole } from '../../../shared/types/auth.types';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RestaurantRepository } from '../repositories/restaurant.repository';
 
 interface RestaurantOwnerRequest extends Request {
   user: UserPayload;

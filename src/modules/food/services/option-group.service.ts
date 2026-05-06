@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { OptionGroupRepository } from '../repositories/option-group.repository';
-import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
 import { PrismaService } from '../../../prisma.service';
+import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
+import { OptionGroupRepository } from '../repositories/option-group.repository';
 
 @Injectable()
 export class OptionGroupService {

@@ -1,15 +1,15 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { RestaurantRepository } from '../repositories/restaurant.repository';
-import type { BatchPayloadResult } from '../repositories/restaurant.repository';
+import { RestaurantStatus } from '../../../shared/types';
+import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
+import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
-import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
-import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
-import { RestaurantStatus } from '../../../shared/types';
+import type { BatchPayloadResult } from '../repositories/restaurant.repository';
+import { RestaurantRepository } from '../repositories/restaurant.repository';
 
 type RestaurantEntity = {
   id: string;
@@ -59,7 +59,9 @@ export class RestaurantService {
       deliveryZones: restaurant.deliveryZones ?? [],
       status:
         (restaurant.status as RestaurantStatus) ??
-        (restaurant.isActive ? RestaurantStatus.ACTIVE : RestaurantStatus.INACTIVE),
+        (restaurant.isActive
+          ? RestaurantStatus.ACTIVE
+          : RestaurantStatus.INACTIVE),
     } as const;
   }
 
@@ -98,12 +100,16 @@ export class RestaurantService {
     )) as RestaurantEntity | null;
 
     if (!restaurant) {
-      throw new NotFoundException(`Le restaurant avec l'ID ${id} n'existe pas.`);
+      throw new NotFoundException(
+        `Le restaurant avec l'ID ${id} n'existe pas.`,
+      );
     }
 
     const currentStatus =
       (restaurant.status as RestaurantStatus) ??
-      (restaurant.isActive ? RestaurantStatus.ACTIVE : RestaurantStatus.INACTIVE);
+      (restaurant.isActive
+        ? RestaurantStatus.ACTIVE
+        : RestaurantStatus.INACTIVE);
 
     if (!this.isStatusTransitionAllowed(currentStatus, status)) {
       throw new BadRequestException(
@@ -119,13 +125,32 @@ export class RestaurantService {
     nextStatus: RestaurantStatus,
   ): boolean {
     const transitions: Record<RestaurantStatus, RestaurantStatus[]> = {
-      [RestaurantStatus.PENDING]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
-      [RestaurantStatus.ACTIVE]: [RestaurantStatus.SUSPENDED, RestaurantStatus.CLOSED],
-      [RestaurantStatus.SUSPENDED]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+      [RestaurantStatus.PENDING]: [
+        RestaurantStatus.ACTIVE,
+        RestaurantStatus.CLOSED,
+      ],
+      [RestaurantStatus.ACTIVE]: [
+        RestaurantStatus.SUSPENDED,
+        RestaurantStatus.CLOSED,
+      ],
+      [RestaurantStatus.SUSPENDED]: [
+        RestaurantStatus.ACTIVE,
+        RestaurantStatus.CLOSED,
+      ],
       [RestaurantStatus.CLOSED]: [],
-      [RestaurantStatus.INACTIVE]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
-      [RestaurantStatus.MAINTENANCE]: [RestaurantStatus.ACTIVE, RestaurantStatus.SUSPENDED, RestaurantStatus.CLOSED],
-      [RestaurantStatus.TEMPORARILY_CLOSED]: [RestaurantStatus.ACTIVE, RestaurantStatus.CLOSED],
+      [RestaurantStatus.INACTIVE]: [
+        RestaurantStatus.ACTIVE,
+        RestaurantStatus.CLOSED,
+      ],
+      [RestaurantStatus.MAINTENANCE]: [
+        RestaurantStatus.ACTIVE,
+        RestaurantStatus.SUSPENDED,
+        RestaurantStatus.CLOSED,
+      ],
+      [RestaurantStatus.TEMPORARILY_CLOSED]: [
+        RestaurantStatus.ACTIVE,
+        RestaurantStatus.CLOSED,
+      ],
     };
 
     return transitions[currentStatus]?.includes(nextStatus) ?? false;
