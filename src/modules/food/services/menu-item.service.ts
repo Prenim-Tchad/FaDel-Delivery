@@ -7,7 +7,6 @@ import { MenuItemRepository } from '../repositories/menu-item.repository';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
-//import { AvailabilityStatus } from '../dtos/update-availability.dto';
 
 /**
  * Service MenuItem — contient toute la logique métier pour FaDel-Delivery
@@ -68,12 +67,22 @@ export class MenuItemService {
     return updated;
   }
 
+  /**
+   * Met à jour la disponibilité d'un article
+   * Correction TS2322 : Gestion explicite du cas null pour garantir le retour d'un MenuItem
+   */
   async updateAvailability(
     id: string,
     isAvailable: boolean,
   ): Promise<MenuItem> {
-    await this.findOne(id);
-    return this.menuItemRepository.update(id, { isAvailable });
+    await this.findOne(id); // Vérifie l'existence (jette une NotFoundException si absent)
+    const updated = await this.menuItemRepository.update(id, { isAvailable });
+    if (!updated) {
+      throw new BadRequestException(
+        "Impossible de mettre à jour la disponibilité de l'article",
+      );
+    }
+    return updated;
   }
 
   async remove(id: string): Promise<MenuItem> {

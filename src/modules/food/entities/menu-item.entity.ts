@@ -52,12 +52,12 @@ export class MenuItem {
   isAvailable!: boolean;
 
   @ApiProperty({
-  description: "État de disponibilité de l'article",
-  enum: ['AVAILABLE', 'HIDDEN', 'OUT_OF_STOCK'],
-  example: 'AVAILABLE',
-  default: 'AVAILABLE',
-})
-availabilityStatus!: string; // 🆕 tâche #38
+    description: "État de disponibilité de l'article",
+    enum: ['AVAILABLE', 'HIDDEN', 'OUT_OF_STOCK'],
+    example: 'AVAILABLE',
+    default: 'AVAILABLE',
+  })
+  availabilityStatus!: string; // 🆕 tâche #38
 
   @ApiProperty({
     description: 'Article populaire (mis en avant)',

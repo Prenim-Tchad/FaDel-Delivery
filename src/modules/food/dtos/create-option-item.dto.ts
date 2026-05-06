@@ -14,13 +14,21 @@ export class CreateOptionItemDto {
   @IsNotEmpty()
   name!: string;
 
-  @ApiPropertyOptional({ example: 500, description: 'Prix additionnel en FCFA', default: 0 })
+  @ApiPropertyOptional({
+    example: 500,
+    description: 'Prix additionnel en FCFA',
+    default: 0,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
   additionalPrice?: number = 0;
 
-  @ApiPropertyOptional({ example: true, description: 'Disponibilité', default: true })
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Disponibilitï¿½',
+    default: true,
+  })
   @IsOptional()
   @IsBoolean()
   isAvailable?: boolean = true;
