@@ -9,6 +9,7 @@ import { RedisModule } from './modules/redis/redis.module';
 import { PrismaService } from './prisma.service';
 import { QueueModule } from './modules/queue/queue.module';
 import { FoodOrdersModule } from './modules/food-orders/food-orders.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FoodOrdersModule } from './modules/food-orders/food-orders.module';
     RedisModule,
     QueueModule,
     FoodOrdersModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
