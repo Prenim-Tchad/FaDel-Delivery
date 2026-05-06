@@ -185,7 +185,7 @@ model MenuModifierGroup {
   id            String               @id @default(cuid())
   menuItemId    String               @map("menu_item_id")
   name          String
-  type          SelectionType
+  type          String
   description   String?
   isRequired    Boolean              @default(false) @map("is_required")
   minSelections Int                  @default(0) @map("min_selections")
@@ -379,6 +379,7 @@ model TableReservation {
   @@map("table_reservations")
 }
 
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -408,9 +409,4 @@ enum PaymentMethod {
   CARD
   MOBILE_MONEY
   BANK_TRANSFER
-}
-
-enum SelectionType {
-  SINGLE
-  MULTIPLE
 }

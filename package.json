@@ -92,25 +92,29 @@
     ],
     "rootDir": ".",
     "testRegex": "src/.*\\.spec\\.ts$",
-    "transform": {"^.+\\.(t|j)s$": ["ts-jest", {
-       "tsconfig": "tsconfig.json",
-       "diagnostics": {
-         "ignoreCodes": [1343]
-       }
-    }]}
-},
-   
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-         "tsconfig": "tsconfig.json"
-      }
+    "transform": {
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.json",
+          "diagnostics": {
+            "ignoreCodes": [
+              1343
+            ]
+          }
+        }
+      ]
     }
-   
+  },
+  "collectCoverageFrom": [
+    "**/*.(t|j)s"
+  ],
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
+  "globals": {
+    "ts-jest": {
+      "diagnostics": false,
+      "tsconfig": "tsconfig.json"
+    }
   }
-
+}
