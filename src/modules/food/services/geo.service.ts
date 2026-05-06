@@ -1,33 +1,23 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-
 import {
   Client,
+  DistanceMatrixRowElement,
   TravelMode,
-  DistanceMatrixResponse,
 } from '@googlemaps/google-maps-services-js';
-
-interface GoogleDistanceElement {
-  status: string;
-  distance: { value: number; text: string };
-  duration: { value: number; text: string };
-}
-
-interface GoogleDistanceResponse {
-  rows: Array<{
-    elements: Array<GoogleDistanceElement>;
-  }>;
-}
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class GeoService {
-  // On repasse en 'any' car le linter refuse la construction sur 'unknown'
-  private readonly googleMapsClient: any;
+  private googleMapsClient: Client;
   private readonly EARTH_RADIUS = 6371;
 
   constructor() {
     this.googleMapsClient = new Client({});
   }
 
+  /**
+   * Calcul Haversine (A vol d'oiseau)
+   * Synchrone : aucune Promise ici.
+   */
   calculateHaversineDistance(
     lat1: number,
     lon1: number,
@@ -46,40 +36,50 @@ export class GeoService {
     return this.EARTH_RADIUS * c;
   }
 
+  /**
+   * Estimation réelle via Google Maps Distance Matrix
+   */
   async getRoadDistanceAndDuration(
     origin: { lat: number; lng: number },
     destination: { lat: number; lng: number },
   ) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      const response = (await this.googleMapsClient.distancematrix({
+      const response = await this.googleMapsClient.distancematrix({
         params: {
           origins: [origin],
           destinations: [destination],
           mode: TravelMode.driving,
-          key: 'TON_API_KEY_GOOGLE_MAPS',
+          key: process.env.GOOGLE_MAPS_KEY || '',
         },
-      })) as DistanceMatrixResponse;
+      });
 
-      // Double cast pour le linter
-      const data = response.data as unknown as GoogleDistanceResponse;
-      const element = data.rows[0].elements[0];
+      // Typage explicite de l'élément pour rassurer ESLint
+      const row = response.data.rows[0];
+      const data: DistanceMatrixRowElement | undefined = row?.elements[0];
 
-      if (element.status !== 'OK') {
-        throw new Error('Impossible de calculer l’itinéraire');
+      if (!data || (data.status as string) !== 'OK') {
+        throw new Error(
+          `Google API Status: ${data?.status || 'No data found'}`,
+        );
+      }
+
+      // On vérifie que distance et duration existent avant d'accéder à .value
+      if (!data.distance || !data.duration) {
+        throw new Error(
+          'Données de distance ou durée manquantes dans la réponse Google',
+        );
       }
 
       return {
-        distanceKm: element.distance.value / 1000,
-        durationMinutes: Math.ceil(element.duration.value / 60),
-        textDistance: element.distance.text,
-        textDuration: element.duration.text,
+        distanceKm: data.distance.value / 1000,
+        durationMinutes: Math.ceil(data.duration.value / 60),
+        textDistance: data.distance.text,
+        textDuration: data.duration.text,
       };
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const message = error instanceof Error ? error.message : String(error);
       throw new InternalServerErrorException(
-        'Erreur Google Maps API: ' + errorMessage,
+        'Erreur Google Maps API: ' + message,
       );
     }
   }

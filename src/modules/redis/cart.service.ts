@@ -1,10 +1,10 @@
 import {
-  Injectable,
   BadRequestException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RedisService } from './redis.service';
 import { CacheService } from './cache.service';
+import { RedisService } from './redis.service';
 
 export interface CartItem {
   menuItemId: string;

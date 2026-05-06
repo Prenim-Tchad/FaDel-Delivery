@@ -1,37 +1,37 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Query,
-  ParseUUIDPipe,
-  HttpStatus,
+  Get,
   HttpCode,
-  UseInterceptors,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  ApiTags,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
-  ApiResponse,
   ApiParam,
   ApiQuery,
-  ApiBearerAuth,
-  ApiConsumes,
-  ApiBody,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { FoodService } from '../services/food.service';
 import { MulterFile } from '../../../shared/types/multer.types';
-import { MediaService, UploadResult } from '../services/media.service';
 import { CreateFoodDto } from '../dtos/create-food.dto';
-import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
+import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { Food } from '../entities/food.entity';
 import { FoodStatus } from '../enums/food.enums';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FoodService } from '../services/food.service';
+import { MediaService, UploadResult } from '../services/media.service';
 
 @ApiTags('food')
 @ApiBearerAuth('JWT-auth')

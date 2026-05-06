@@ -1,15 +1,15 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { RestaurantRepository } from '../repositories/restaurant.repository';
-import type { BatchPayloadResult } from '../repositories/restaurant.repository';
+import { RestaurantStatus } from '../../../shared/types';
+import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
+import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
-import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
-import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
-import { RestaurantStatus } from '../../../shared/types';
+import type { BatchPayloadResult } from '../repositories/restaurant.repository';
+import { RestaurantRepository } from '../repositories/restaurant.repository';
 
 type RestaurantEntity = {
   id: string;

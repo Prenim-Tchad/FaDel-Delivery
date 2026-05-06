@@ -1,27 +1,27 @@
 import {
+  Body,
   Controller,
-  Post,
-  Put,
   Delete,
   Get,
-  Body,
-  Param,
-  HttpStatus,
   HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
   ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { MenuItemService } from '../services/menu-item.service';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
+import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
+import { MenuItemService } from '../services/menu-item.service';
 import { OptionGroupService } from '../services/option-group.service';
-import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
 
 /**
  * Controller MenuItem — gère les requêtes HTTP des articles de menu

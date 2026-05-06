@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
 //import { PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { CreateMenuCategoryDto } from '../dtos/create-menu-category.dto';
 import { UpdateMenuCategoryDto } from '../dtos/update-menu-category.dto';
 import { MenuCategory } from '../entities/menu-category.entity';
@@ -78,10 +79,15 @@ export class MenuCategoryRepository {
       where: { id },
       data: {
         ...(dto.name !== undefined && {
-          name: dto.name,
+          name: dto.name as unknown as Prisma.InputJsonValue,
         }),
         ...(dto.description !== undefined && {
-          description: dto.description ?? null,
+          description:
+            dto.description === undefined
+              ? undefined
+              : dto.description
+                ? (dto.description as unknown as Prisma.InputJsonValue)
+                : Prisma.JsonNull,
         }),
         ...(dto.sort_order !== undefined && { sortOrder: dto.sort_order }),
       },

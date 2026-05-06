@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { Job } from 'bullmq';
 import { OrderStatus } from '@prisma/client';
+import { Job } from 'bullmq';
 import { PrismaService } from '../../../prisma.service';
+import { JOB_NAMES, QUEUE_NAMES } from '../queue.constants';
 import { QueueService } from '../queue.service';
-import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
 
 interface OrderTimeoutJobData {
   orderId: string;

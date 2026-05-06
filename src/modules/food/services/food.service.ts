@@ -1,14 +1,14 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { FoodRepository } from '../repositories/food.repository';
 import { CreateFoodDto } from '../dtos/create-food.dto';
-import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
+import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { Food } from '../entities/food.entity';
 import { FoodStatus } from '../enums/food.enums';
+import { FoodRepository } from '../repositories/food.repository';
 @Injectable()
 export class FoodService {
   constructor(private readonly foodRepository: FoodRepository) {}

@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
-  IsOptional,
+  IsArray,
+  IsLatitude,
+  IsLongitude,
+  IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
   IsUrl,
   IsUUID,
   Min,
-  IsLatitude,
-  IsLongitude,
-  IsArray,
-  IsNotEmpty,
 } from 'class-validator';
 
 export class CreateRestaurantDto {

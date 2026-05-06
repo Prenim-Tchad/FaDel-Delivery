@@ -1,12 +1,12 @@
+import { Type } from 'class-transformer';
 import {
-  IsString,
+  IsArray,
   IsNumber,
   IsOptional,
-  IsArray,
-  ValidateNested,
+  IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class DeliveryZoneItemDto {
   @IsOptional()

@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { QUEUE_NAMES, QUEUE_CONFIG } from './queue.constants';
-import { OrderProcessingProcessor } from './Processors/order-processing.processor';
-import { OrderTimeoutProcessor } from './Processors/order-timeout.processor';
+import { PrismaService } from '../../prisma.service';
 import { DriverAssignmentProcessor } from './Processors/driver-assignment.processor';
 import { NotificationDispatchProcessor } from './Processors/notification-dispatch.processor';
+import { OrderProcessingProcessor } from './Processors/order-processing.processor';
+import { OrderTimeoutProcessor } from './Processors/order-timeout.processor';
+import { QUEUE_CONFIG, QUEUE_NAMES } from './queue.constants';
 import { QueueService } from './queue.service';
-import { PrismaService } from '../../prisma.service';
 
 @Module({
   imports: [

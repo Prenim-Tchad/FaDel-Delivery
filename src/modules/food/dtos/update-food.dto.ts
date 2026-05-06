@@ -1,8 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateFoodDto } from './create-food.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { FoodStatus } from '../enums/food.enums';
+import { CreateFoodDto } from './create-food.dto';
 
 export class UpdateFoodDto extends PartialType(CreateFoodDto) {
   @ApiProperty({

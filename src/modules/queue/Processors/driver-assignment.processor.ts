@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { Job, UnrecoverableError } from 'bullmq';
 import { OrderStatus } from '@prisma/client';
+import { Job, UnrecoverableError } from 'bullmq';
 import { PrismaService } from '../../../prisma.service';
-import { QueueService, DriverAssignmentJobData } from '../queue.service';
-import { QUEUE_NAMES, JOB_NAMES, QUEUE_CONFIG } from '../queue.constants';
+import { JOB_NAMES, QUEUE_CONFIG, QUEUE_NAMES } from '../queue.constants';
+import { DriverAssignmentJobData, QueueService } from '../queue.service';
 
 @Processor(QUEUE_NAMES.DRIVER_ASSIGNMENT_RETRY)
 export class DriverAssignmentProcessor extends WorkerHost {

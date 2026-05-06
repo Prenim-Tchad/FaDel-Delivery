@@ -1,8 +1,8 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RestaurantOwnerGuard } from './restaurant-owner.guard';
-import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { UserRole } from '../../../shared/types/auth.types';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RestaurantRepository } from '../repositories/restaurant.repository';
+import { RestaurantOwnerGuard } from './restaurant-owner.guard';
 
 describe('RestaurantOwnerGuard', () => {
   let guard: RestaurantOwnerGuard;

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Food } from '../entities/food.entity';
 import { CreateFoodDto } from '../dtos/create-food.dto';
-import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
+import { UpdateFoodDto } from '../dtos/update-food.dto';
+import { Food } from '../entities/food.entity';
 import { FoodStatus } from '../enums/food.enums';
 
 @Injectable()

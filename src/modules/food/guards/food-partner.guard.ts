@@ -1,14 +1,14 @@
 import {
-  Injectable,
   ExecutionContext,
   ForbiddenException,
   Inject,
+  Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express'; // Import impératif
-import { SupabaseAuthGuard } from '../../auth/guards/supabase-auth.guard';
-import { AuthService } from '../../auth/auth.service';
 import { UserPayload } from '../../../shared/types/auth.types';
+import { AuthService } from '../../auth/auth.service';
+import { SupabaseAuthGuard } from '../../auth/guards/supabase-auth.guard';
 
 // On définit une interface locale pour typer la requête
 interface AuthenticatedRequest extends Request {

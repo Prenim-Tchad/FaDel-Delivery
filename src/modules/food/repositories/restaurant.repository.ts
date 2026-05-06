@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './../../../prisma.service';
+import type { DeliveryZoneItemDto } from '../dtos/create-delivery-zone.dto';
+import { OpeningHourItemDto } from '../dtos/create-opening-hours.dto';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
-import { OpeningHourItemDto } from '../dtos/create-opening-hours.dto';
-import type { DeliveryZoneItemDto } from '../dtos/create-delivery-zone.dto';
+import { PrismaService } from './../../../prisma.service';
 
 export type BatchPayloadResult = {
   count: number;
