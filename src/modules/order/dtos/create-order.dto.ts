@@ -7,7 +7,7 @@ import {
   IsNumber,
   IsPhoneNumber,
   ValidateNested,
-  ArrayNotEmpty,
+  ArrayNotEmpty, // 👈 replaces ArrayMinSize
   Min,
   IsLatitude,
   IsLongitude,

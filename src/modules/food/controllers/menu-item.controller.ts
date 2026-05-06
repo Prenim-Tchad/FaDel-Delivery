@@ -171,8 +171,8 @@ export class MenuItemController {
   }
 
   /**
- * PATCH /food/menu-items/:id/availability
- */
+  PATCH /food/menu-items/:id/availability
+*/
 @Patch('menu-items/:id/availability')
 @HttpCode(HttpStatus.OK)
 @ApiOperation({
@@ -185,8 +185,7 @@ export class MenuItemController {
 @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
 async updateAvailability(
   @Param('id') id: string,
-  @Body() dto: UpdateAvailabilityDto,
-): Promise<MenuItem> {
+  @Body() dto: UpdateAvailabilityDto,): Promise<MenuItem> {
   return this.menuItemService.updateAvailability(id, dto.availability);
 }
 }
