@@ -7,7 +7,7 @@ import { MenuItemRepository } from '../repositories/menu-item.repository';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
-//import { AvailabilityStatus } from '../dtos/update-availability.dto';
+import { AvailabilityStatus } from '../dtos/update-availability.dto';
 
 /**
  * Service MenuItem — contient toute la logique métier
@@ -83,5 +83,22 @@ export class MenuItemService {
       throw new BadRequestException("Échec de la suppression de l'article");
     }
     return deleted;
+  }
+  // ✅ Fix errors 10, 11, 12 — missing method caused unsafe-return & unsafe-call in controller
+  async updateAvailability(
+    id: string,
+    availability: AvailabilityStatus,
+  ): Promise<MenuItem> {
+    const existing = await this.menuItemRepository.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(
+        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
+      );
+    }
+    const updated = await this.menuItemRepository.updateAvailability(id, availability);
+    if (!updated) {
+      throw new BadRequestException("Échec de la mise à jour de la disponibilité");
+    }
+    return updated;
   }
 }
