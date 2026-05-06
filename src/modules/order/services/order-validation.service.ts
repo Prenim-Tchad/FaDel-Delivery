@@ -53,9 +53,7 @@ export class OrderValidationService {
   }
 
   // ── Étape 2 : Valider la disponibilité des articles ───────────────────────
-  async validateItems(
-    dto: CreateOrderDto,
-  ): Promise<ValidatedItem[]> {
+  async validateItems(dto: CreateOrderDto): Promise<ValidatedItem[]> {
     const menuItemIds = dto.items.map((i) => i.menuItemId);
 
     const menuItems = await this.prisma.menuItem.findMany({
@@ -128,7 +126,9 @@ export class OrderValidationService {
     orderType: OrderType,
     deliveryLatitude?: number,
     deliveryLongitude?: number,
-  ): Promise<Omit<PricingResult, 'discountAmount' | 'promoCodeId' | 'promoCodeApplied'>> {
+  ): Promise<
+    Omit<PricingResult, 'discountAmount' | 'promoCodeId' | 'promoCodeApplied'>
+  > {
     const subtotal = validatedItems.reduce(
       (sum, item) => sum + item.totalPrice,
       0,
@@ -192,8 +192,10 @@ export class OrderValidationService {
       const coords = zone.coordinates as { lat?: number; lng?: number };
       if (coords.lat !== undefined && coords.lng !== undefined) {
         const distance = this.haversineDistance(
-          lat, lng,
-          coords.lat, coords.lng,
+          lat,
+          lng,
+          coords.lat,
+          coords.lng,
         );
         return distance <= zone.radius;
       }
@@ -202,8 +204,10 @@ export class OrderValidationService {
   }
 
   private haversineDistance(
-    lat1: number, lon1: number,
-    lat2: number, lon2: number,
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
   ): number {
     const R = 6371; // km
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -211,8 +215,8 @@ export class OrderValidationService {
     const a =
       Math.sin(dLat / 2) ** 2 +
       Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
@@ -259,9 +263,7 @@ export class OrderValidationService {
       promo.applicableRestaurants.length > 0 &&
       !promo.applicableRestaurants.includes(restaurantId)
     ) {
-      throw new BadRequestException(
-        `Code promo non valide pour ce restaurant`,
-      );
+      throw new BadRequestException(`Code promo non valide pour ce restaurant`);
     }
 
     // Calculer le discount

@@ -25,7 +25,10 @@ export { MenuCategoryController } from './controllers/menu-category.controller';
 export { MenuCategoryService } from './services/menu-category.service';
 export { MenuCategoryRepository } from './repositories/menu-category.repository';
 export { MenuCategory, MultiLangField } from './entities/menu-category.entity';
-export { CreateMenuCategoryDto, MultiLangFieldDto } from './dtos/create-menu-category.dto';
+export {
+  CreateMenuCategoryDto,
+  MultiLangFieldDto,
+} from './dtos/create-menu-category.dto';
 export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
 
 // ============================================

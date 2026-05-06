@@ -50,7 +50,7 @@ export class MenuItemUploadController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID de l\'article de menu',
+    description: "ID de l'article de menu",
     example: 'clxxx123',
   })
   @ApiBody({
@@ -70,8 +70,14 @@ export class MenuItemUploadController {
     description: 'Photo uploadée avec succès',
     type: UploadPhotoResponseDto,
   })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Fichier manquant ou format invalide' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Fichier manquant ou format invalide',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article introuvable',
+  })
   async uploadPhoto(
     @Param('id') menuItemId: string,
     @UploadedFile() file: { buffer: Buffer; mimetype: string; size: number },

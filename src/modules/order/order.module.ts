@@ -8,11 +8,7 @@ import { QueueModule } from '../queue/queue.module';
 @Module({
   imports: [QueueModule],
   controllers: [OrderController],
-  providers: [
-    PrismaService,
-    OrderService,
-    OrderValidationService,
-  ],
+  providers: [PrismaService, OrderService, OrderValidationService],
   exports: [OrderService],
 })
 export class OrderModule {}

@@ -33,7 +33,8 @@ export class OrderController {
   @HttpCode(HttpStatus.CREATED) // ✅ pas besoin de @HttpCode ici, 201 est le défaut de @Post
   @ApiOperation({
     summary: 'Créer une commande',
-    description: 'Validation complète : disponibilité articles, recalcul frais, vérification promo',
+    description:
+      'Validation complète : disponibilité articles, recalcul frais, vérification promo',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

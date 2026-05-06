@@ -58,7 +58,7 @@ export class CreateOrderDto {
   @IsEnum(OrderType)
   orderType!: OrderType;
 
-  @ApiProperty({ example: 'Rue 40, Moursal, N\'Djamena', required: false })
+  @ApiProperty({ example: "Rue 40, Moursal, N'Djamena", required: false })
   @IsOptional()
   @IsString()
   deliveryAddress?: string;

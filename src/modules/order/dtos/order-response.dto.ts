@@ -1,4 +1,9 @@
-import { OrderStatus, OrderType, PaymentMethod, PaymentStatus } from '@prisma/client';
+import {
+  OrderStatus,
+  OrderType,
+  PaymentMethod,
+  PaymentStatus,
+} from '@prisma/client';
 
 export interface OrderItemResponse {
   id: string;
