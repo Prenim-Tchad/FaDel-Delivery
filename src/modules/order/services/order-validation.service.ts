@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
-import { CreateOrderDto, OrderItemDto } from '../dtos/create-order.dto';
+import { CreateOrderDto } from '../dtos/create-order.dto';
 import { OrderType } from '@prisma/client';
 
 export interface ValidatedItem {
