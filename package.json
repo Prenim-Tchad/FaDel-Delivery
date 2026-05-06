@@ -92,9 +92,14 @@
     ],
     "rootDir": ".",
     "testRegex": "src/.*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
+    "transform": {"^.+\\.(t|j)s$": ["ts-jest", {
+       "tsconfig": "tsconfig.json",
+       "diagnostics": {
+         "ignoreCodes": [1343]
+       }
+    }]}
+},
+   
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
@@ -102,8 +107,10 @@
     "testEnvironment": "node",
     "globals": {
       "ts-jest": {
-        "diagnostics": false
+        "diagnostics": false,
+         "tsconfig": "tsconfig.json"
       }
     }
+   
   }
-}
+
