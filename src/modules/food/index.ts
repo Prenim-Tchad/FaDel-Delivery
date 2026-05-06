@@ -40,10 +40,6 @@ export { UpdateMenuCategoryDto } from './dtos/update-menu-category.dto';
 // Menu Items — Saleh (tâche #33)
 // ============================================
 // Controller
-// ============================================
-// Menu Items — Saleh (tâches #33 #34)
-// ============================================
-// Controller
 export { MenuItemController } from './controllers/menu-item.controller';
 // Service
 export { MenuItemService } from './services/menu-item.service';
@@ -53,5 +49,3 @@ export { MenuItemRepository } from './repositories/menu-item.repository';
 export { MenuItem } from './entities/menu-item.entity';
 // DTO
 export { CreateMenuItemDto } from './dtos/create-menu-item.dto';
-// DTOs
-export { UpdateMenuItemDto } from './dtos/update-menu-item.dto';

@@ -36,9 +36,8 @@ export class RestaurantRepository {
         coverImageUrl: data.coverImageUrl,
         latitude: data.latitude,
         longitude: data.longitude,
-        rccm: data.rccm,
-        slug: data.slug,
         city: "N'Djamena",
+        status: 'pending',
         owner: {
           connect: { id: data.ownerId },
         },
@@ -136,6 +135,15 @@ export class RestaurantRepository {
     });
   }
 
+  async updateStatus(id: string, status: string): Promise<unknown> {
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: {
+        status,
+      },
+    });
+  }
+
   async updateDeliveryZones(
     restaurantId: string,
     zones: DeliveryZoneItemDto[],
@@ -187,3 +195,5 @@ export class RestaurantRepository {
     });
   }
 }
+
+

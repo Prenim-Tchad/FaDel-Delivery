@@ -17,6 +17,10 @@ import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
 import { RestaurantOwnerGuard } from '../guards/restaurant-owner.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { UserRole, RestaurantStatus } from '../../../shared/types';
 
 @Controller('food/restaurants')
 export class RestaurantController {
@@ -74,6 +78,16 @@ export class RestaurantController {
     @Body() updateRestaurantDto: UpdateRestaurantDto,
   ): Promise<unknown> {
     return this.restaurantService.update(id, updateRestaurantDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: RestaurantStatus,
+  ): Promise<unknown> {
+    return this.restaurantService.updateStatus(id, status);
   }
 
   // --- #13 : L'endpoint pour les horaires ---

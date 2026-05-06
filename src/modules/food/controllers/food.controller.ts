@@ -10,6 +10,8 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   HttpCode,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,19 +20,27 @@ import {
   ApiParam,
   ApiQuery,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { FoodService } from '../services/food.service';
+import { MulterFile } from '../../../shared/types/multer.types';
+import { MediaService, UploadResult } from '../services/media.service';
 import { CreateFoodDto } from '../dtos/create-food.dto';
 import { UpdateFoodDto } from '../dtos/update-food.dto';
 import { FoodFiltersDto } from '../dtos/food-filters.dto';
 import { Food } from '../entities/food.entity';
 import { FoodStatus } from '../enums/food.enums';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('food')
 @ApiBearerAuth('JWT-auth')
 @Controller('food')
 export class FoodController {
-  constructor(private readonly foodService: FoodService) {}
+  constructor(
+    private readonly foodService: FoodService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new food item' })
@@ -212,5 +222,28 @@ export class FoodController {
   })
   async remove(@Param('id') id: string): Promise<void> {
     return this.foodService.remove(id);
+  }
+
+  // ── Upload image ──────────────────────────────────────────────────────────
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload a food image to Cloudflare R2' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Image uploaded successfully',
+  })
+  uploadImage(
+    @UploadedFile() file: unknown, // ✅ type explicite
+  ): Promise<UploadResult> {
+    return this.mediaService.upload(file as MulterFile, 'foods');
   }
 }
