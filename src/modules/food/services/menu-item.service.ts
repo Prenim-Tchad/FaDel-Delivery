@@ -9,7 +9,7 @@ import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
 
 /**
- * Service MenuItem — contient toute la logique métier
+ * Service MenuItem — contient toute la logique métier pour FaDel-Delivery
  * Flux : Controller → Service → Repository → Prisma → PostgreSQL
  */
 @Injectable()
@@ -49,12 +49,9 @@ export class MenuItemService {
   }
 
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
-    const existing = await this.menuItemRepository.findOne(id);
-    if (!existing) {
-      throw new NotFoundException(
-        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
-      );
-    }
+    // Appel sans assignation de variable pour éviter l'erreur de lint no-unused-vars
+    await this.findOne(id);
+
     if (dto.price !== undefined && dto.price < 0) {
       throw new BadRequestException('Le prix ne peut pas être négatif');
     }
@@ -63,6 +60,7 @@ export class MenuItemService {
         'Le temps de préparation ne peut pas être négatif',
       );
     }
+
     const updated = await this.menuItemRepository.update(id, dto);
     if (!updated) {
       throw new BadRequestException("Échec de la modification de l'article");
@@ -70,13 +68,19 @@ export class MenuItemService {
     return updated;
   }
 
+  /**
+   * Met à jour la disponibilité d'un article (SINGLE/MULTIPLE géré via le schéma)
+   */
+  async updateAvailability(
+    id: string,
+    isAvailable: boolean,
+  ): Promise<MenuItem> {
+    await this.findOne(id); // Vérifie l'existence de l'article
+    return this.menuItemRepository.update(id, { isAvailable });
+  }
+
   async remove(id: string): Promise<MenuItem> {
-    const existing = await this.menuItemRepository.findOne(id);
-    if (!existing) {
-      throw new NotFoundException(
-        `Article avec l'ID ${id} introuvable ou déjà supprimé`,
-      );
-    }
+    await this.findOne(id);
     const deleted = await this.menuItemRepository.softDelete(id);
     if (!deleted) {
       throw new BadRequestException("Échec de la suppression de l'article");
