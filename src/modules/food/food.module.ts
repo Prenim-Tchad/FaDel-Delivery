@@ -3,6 +3,8 @@ import { PrismaService } from '../../prisma.service';
 import { FoodController } from './controllers/food.controller';
 import { MenuCategoryController } from './controllers/menu-category.controller';
 import { MenuItemController } from './controllers/menu-item.controller';
+import { MenuItemUploadController } from './controllers/menu-item-upload.controller';
+import { R2UploadService } from './services/r2-upload.service';
 import { RestaurantController } from './controllers/restaurant.controller';
 import { FoodRepository } from './repositories/food.repository';
 import { MenuCategoryRepository } from './repositories/menu-category.repository';
@@ -17,40 +19,46 @@ import { RestaurantService } from './services/restaurant.service';
 import { RestaurantOwnerGuard } from './guards/restaurant-owner.guard';
 import { MediaService } from './services/media.service';
 
+/**
+ * FoodModule — regroupe tout ce qui concerne la nourriture
+ */
 @Module({
   controllers: [
-    FoodController,
-    MenuCategoryController,
-    MenuItemController,
-    RestaurantController,
+    FoodController, // ✅ lead
+    RestaurantController, // ✅ lead
+    MenuCategoryController, // ✅ saleh - tâches #31 #32
+    MenuItemController, // ✅ saleh - tâches #33 #34
+    MenuItemUploadController, // ✅ saleh - tâche #35
   ],
   providers: [
     PrismaService,
     FoodService,
+    RestaurantService,
     MenuCategoryService,
     MenuItemService,
-    RestaurantService,
+    R2UploadService,
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
-    OptionGroupService, // 🆕
-    OptionGroupRepository, // 🆕
     RestaurantRepository,
+    OptionGroupService,
+    OptionGroupRepository,
     RestaurantOwnerGuard,
     MediaService,
   ],
   exports: [
     PrismaService,
     FoodService,
+    RestaurantService,
     MenuCategoryService,
     MenuItemService,
-    RestaurantService,
+    R2UploadService,
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
-    OptionGroupService, // 🆕
-    OptionGroupRepository, // 🆕
     RestaurantRepository,
+    OptionGroupService,
+    OptionGroupRepository,
     MediaService,
   ],
 })
