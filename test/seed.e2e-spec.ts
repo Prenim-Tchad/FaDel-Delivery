@@ -7,7 +7,7 @@ describe('Seed - 10 Restaurants N\'Djaména (e2e)', () => {
   let prisma: PrismaClient;
   let pool: Pool;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     dotenv.config();
 
     pool = new Pool({
