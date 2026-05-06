@@ -6,8 +6,8 @@ import { ApiProperty } from '@nestjs/swagger';
  * 3 états possibles pour un article de menu
  */
 export enum AvailabilityStatus {
-  AVAILABLE    = 'AVAILABLE',    // disponible et commandable
-  HIDDEN       = 'HIDDEN',       // masqué (invisible pour le client)
+  AVAILABLE = 'AVAILABLE', // disponible et commandable
+  HIDDEN = 'HIDDEN', // masqué (invisible pour le client)
   OUT_OF_STOCK = 'OUT_OF_STOCK', // épuisé (affiché grisé, non commandable)
 }
 
@@ -19,7 +19,7 @@ export class UpdateAvailabilityDto {
   @ApiProperty({
     enum: AvailabilityStatus,
     example: AvailabilityStatus.OUT_OF_STOCK,
-    description: 'Nouvel état de disponibilité de l\'article',
+    description: "Nouvel état de disponibilité de l'article",
   })
   @IsEnum(AvailabilityStatus)
   @IsNotEmpty()

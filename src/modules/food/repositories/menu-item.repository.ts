@@ -105,13 +105,16 @@ export class MenuItemRepository {
     return this.mapToEntity(item);
   }
 
-  async updateAvailability(id: string, availability: AvailabilityStatus): Promise<MenuItem | null> {
-  const item = await this.prisma.menuItem.update({
-    where: { id },
-    data: { availabilityStatus: availability },
-  });
-  return this.mapToEntity(item);
-}
+  async updateAvailability(
+    id: string,
+    availability: AvailabilityStatus,
+  ): Promise<MenuItem | null> {
+    const item = await this.prisma.menuItem.update({
+      where: { id },
+      data: { availabilityStatus: availability },
+    });
+    return this.mapToEntity(item);
+  }
 
   private mapToEntity(data: PrismaMenuItem): MenuItem {
     return {

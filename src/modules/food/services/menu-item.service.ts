@@ -95,9 +95,14 @@ export class MenuItemService {
         `Article avec l'ID ${id} introuvable ou déjà supprimé`,
       );
     }
-    const updated = await this.menuItemRepository.updateAvailability(id, availability);
+    const updated = await this.menuItemRepository.updateAvailability(
+      id,
+      availability,
+    );
     if (!updated) {
-      throw new BadRequestException("Échec de la mise à jour de la disponibilité");
+      throw new BadRequestException(
+        'Échec de la mise à jour de la disponibilité',
+      );
     }
     return updated;
   }

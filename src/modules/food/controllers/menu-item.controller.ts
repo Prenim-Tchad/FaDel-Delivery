@@ -177,12 +177,23 @@ export class MenuItemController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Mettre à jour la disponibilité d'un article",
-    description: "Change l'état : AVAILABLE, HIDDEN (masqué) ou OUT_OF_STOCK (grisé).",
+    description:
+      "Change l'état : AVAILABLE, HIDDEN (masqué) ou OUT_OF_STOCK (grisé).",
   })
   @ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Disponibilité mise à jour', type: MenuItem })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Disponibilité mise à jour',
+    type: MenuItem,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article introuvable',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Données invalides',
+  })
   // ✅ Fix error 197 — removed unnecessary `async` since we directly return the promise
   updateAvailability(
     @Param('id') id: string,
