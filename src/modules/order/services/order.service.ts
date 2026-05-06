@@ -3,7 +3,10 @@ import { PrismaService } from '../../../prisma.service';
 import { QueueService } from '../../queue/queue.service';
 import { OrderValidationService } from './order-validation.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
-import { CreateOrderResponse, OrderItemResponse } from '../dtos/order-response.dto';
+import {
+  CreateOrderResponse,
+  OrderItemResponse,
+} from '../dtos/order-response.dto';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
@@ -87,7 +90,7 @@ export class OrderService {
     const totalAmount = subtotal + deliveryFee + serviceFee - discountAmount;
 
     // 6. Créer la commande en DB (transaction)
-    const order = await this.prisma.$transaction(async (tx) => {
+    const order = (await this.prisma.$transaction(async (tx) => {
       const newOrder = await tx.foodOrder.create({
         data: {
           orderNumber: this.generateOrderNumber(),
@@ -133,7 +136,7 @@ export class OrderService {
       }
 
       return newOrder;
-    }) as unknown as PrismaOrder; // ✅ cast vers notre interface typée
+    })) as unknown as PrismaOrder; // ✅ cast vers notre interface typée
 
     this.logger.log(
       `Commande créée: #${order.orderNumber} | total=${totalAmount} FCFA | customer=${customerId}`,
