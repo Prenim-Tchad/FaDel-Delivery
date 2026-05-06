@@ -144,9 +144,9 @@ export class OrderValidationService {
       );
     }
 
-    const serviceFee = Math.round(subtotal * this.SERVICE_FEE_RATE);
-
-    return { subtotal, deliveryFee, serviceFee };
+    const serviceFee = Math.round(subtotal * this.SERVICE_FEE_RATE); // ✅ Fix error 1 — totalAmount was missing from the return object
+    const totalAmount = subtotal + deliveryFee + serviceFee;
+    return { subtotal, deliveryFee, serviceFee, totalAmount };
   }
 
   private async getDeliveryFee(
@@ -169,35 +169,39 @@ export class OrderValidationService {
       return restaurant?.deliveryFee ?? 0;
     }
 
-    // Si coordonnées fournies, trouver la zone la plus proche
     if (lat !== undefined && lng !== undefined) {
       for (const zone of zones) {
-        if (this.isInZone(lat, lng, zone)) {
+        // ✅ Fix error 2 — pass only the coordinates JSON; radius is extracted
+        //    inside isInZone from the JSON itself (not a schema field)
+        if (this.isInZone(lat, lng, zone.coordinates)) {
           return zone.deliveryFee;
         }
       }
     }
-
-    // Zone par défaut : la moins chère
     return zones[0].deliveryFee;
   }
 
-  private isInZone(
-    lat: number,
-    lng: number,
-    zone: { coordinates: unknown; radius: number },
-  ): boolean {
-    // Vérification par rayon simple
-    if (zone.coordinates && typeof zone.coordinates === 'object') {
-      const coords = zone.coordinates as { lat?: number; lng?: number };
-      if (coords.lat !== undefined && coords.lng !== undefined) {
+  // ✅ Fix error 2 — accept raw JSON coordinates instead of a typed zone object
+  //    since DeliveryZone has no `radius` column; radius lives inside the JSON
+  private isInZone(lat: number, lng: number, coordinates: unknown): boolean {
+    if (coordinates && typeof coordinates === 'object') {
+      const coords = coordinates as {
+        lat?: number;
+        lng?: number;
+        radius?: number;
+      };
+      if (
+        coords.lat !== undefined &&
+        coords.lng !== undefined &&
+        coords.radius !== undefined
+      ) {
         const distance = this.haversineDistance(
           lat,
           lng,
           coords.lat,
           coords.lng,
         );
-        return distance <= zone.radius;
+        return distance <= coords.radius;
       }
     }
     return false;
