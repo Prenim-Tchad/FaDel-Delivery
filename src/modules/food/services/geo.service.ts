@@ -1,19 +1,33 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Client, TravelMode } from '@googlemaps/google-maps-services-js';
+
+import {
+  Client,
+  TravelMode,
+  DistanceMatrixResponse,
+} from '@googlemaps/google-maps-services-js';
+
+interface GoogleDistanceElement {
+  status: string;
+  distance: { value: number; text: string };
+  duration: { value: number; text: string };
+}
+
+interface GoogleDistanceResponse {
+  rows: Array<{
+    elements: Array<GoogleDistanceElement>;
+  }>;
+}
 
 @Injectable()
 export class GeoService {
-  private googleMapsClient: Client;
+  // On repasse en 'any' car le linter refuse la construction sur 'unknown'
+  private readonly googleMapsClient: any;
   private readonly EARTH_RADIUS = 6371;
 
   constructor() {
     this.googleMapsClient = new Client({});
   }
 
-  /**
-   * Calcul Haversine (A vol d'oiseau)
-   * Utile pour un premier filtrage rapide des livreurs proches
-   */
   calculateHaversineDistance(
     lat1: number,
     lon1: number,
@@ -32,44 +46,38 @@ export class GeoService {
     return this.EARTH_RADIUS * c;
   }
 
-  /**
-   * Estimation réelle via Google Maps Distance Matrix
-   * Donne la distance par la route et le temps de trajet
-   */
   async getRoadDistanceAndDuration(
     origin: { lat: number; lng: number },
     destination: { lat: number; lng: number },
   ) {
     try {
-      const response = await this.googleMapsClient.distancematrix({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      const response = (await this.googleMapsClient.distancematrix({
         params: {
           origins: [origin],
           destinations: [destination],
           mode: TravelMode.driving,
           key: 'TON_API_KEY_GOOGLE_MAPS',
         },
-      });
+      })) as DistanceMatrixResponse;
 
-      const data = response.data.rows[0].elements[0];
+      // Double cast pour le linter
+      const data = response.data as unknown as GoogleDistanceResponse;
+      const element = data.rows[0].elements[0];
 
-      // CORRECTION 1 : Cast en string pour éviter l'erreur no-unsafe-enum-comparison
-      if ((data.status as string) !== 'OK') {
+      if (element.status !== 'OK') {
         throw new Error('Impossible de calculer l’itinéraire');
       }
 
       return {
-        distanceKm: data.distance.value / 1000,
-        durationMinutes: Math.ceil(data.duration.value / 60),
-        textDistance: data.distance.text,
-        textDuration: data.duration.text,
+        distanceKm: element.distance.value / 1000,
+        durationMinutes: Math.ceil(element.duration.value / 60),
+        textDistance: element.distance.text,
+        textDuration: element.duration.text,
       };
     } catch (error: unknown) {
-      // CORRECTION 2 : Vérification d'instance pour éviter no-unsafe-member-access sur .message
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Une erreur inconnue est survenue';
-
+        error instanceof Error ? error.message : 'Erreur inconnue';
       throw new InternalServerErrorException(
         'Erreur Google Maps API: ' + errorMessage,
       );

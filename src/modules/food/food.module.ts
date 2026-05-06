@@ -33,8 +33,8 @@ import { MediaService } from './services/media.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
-    OptionGroupService,       // 🆕
-    OptionGroupRepository,    // 🆕
+    OptionGroupService, // 🆕
+    OptionGroupRepository, // 🆕
     RestaurantRepository,
     RestaurantOwnerGuard,
     MediaService,
@@ -48,8 +48,8 @@ import { MediaService } from './services/media.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
-    OptionGroupService,       // 🆕
-    OptionGroupRepository,    // 🆕
+    OptionGroupService, // 🆕
+    OptionGroupRepository, // 🆕
     RestaurantRepository,
     MediaService,
   ],

@@ -23,6 +23,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "types": ["multer","jest", "node"]
+  
+    "types": ["multer", "jest", "node", "@googlemaps/google-maps-services-js"]
   }
 }
