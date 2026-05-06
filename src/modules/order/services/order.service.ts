@@ -103,7 +103,7 @@ export class OrderService {
           deliveryLongitude: dto.deliveryLongitude,
           deliveryNotes: dto.deliveryNotes,
           customerPhone: dto.customerPhone,
-          customer_Name: dto.customerName,
+          customerName: dto.customerName,
           subtotal,
           deliveryFee,
           serviceFee,
