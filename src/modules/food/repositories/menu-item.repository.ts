@@ -109,7 +109,7 @@ export class MenuItemRepository {
     id: string,
     availability: AvailabilityStatus,
   ): Promise<MenuItem | null> {
-    const item = await this.prisma.menuItem.update({
+    const item: PrismaMenuItem = await this.prisma.menuItem.update({ // ✅ Fix line 143
       where: { id },
       data: { availabilityStatus: availability },
     });
