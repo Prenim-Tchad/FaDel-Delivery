@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "module": "commonjs",          // ✅ commonjs pour NestJS    // ✅ node au lieu de nodenext
+    "module": "commonjs",
     "esModuleInterop": true,
     "isolatedModules": true,
     "declaration": true,
@@ -23,6 +23,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "types": ["multer","jest", "node"]
-  }
+    "allowJs": true,
+    "types": ["multer", "jest", "node", "@googlemaps/google-maps-services-js"]
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "eslint.config.mjs"
+  ]
 }

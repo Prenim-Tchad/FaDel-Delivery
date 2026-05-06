@@ -7,10 +7,9 @@ import { MenuItemRepository } from '../repositories/menu-item.repository';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
-import { AvailabilityStatus } from '../dtos/update-availability.dto';
 
 /**
- * Service MenuItem — contient toute la logique métier
+ * Service MenuItem — contient toute la logique métier pour FaDel-Delivery
  * Flux : Controller → Service → Repository → Prisma → PostgreSQL
  */
 @Injectable()
@@ -64,6 +63,7 @@ export class MenuItemService {
         'Le temps de préparation ne peut pas être négatif',
       );
     }
+
     const updated = await this.menuItemRepository.update(id, dto);
     if (!updated) {
       throw new BadRequestException("Échec de la modification de l'article");
@@ -78,6 +78,11 @@ export class MenuItemService {
         `Article avec l'ID ${id} introuvable ou déjà supprimé`,
       );
     }
+    return updated;
+  }
+
+  async remove(id: string): Promise<MenuItem> {
+    await this.findOne(id);
     const deleted = await this.menuItemRepository.softDelete(id);
     if (!deleted) {
       throw new BadRequestException("Échec de la suppression de l'article");

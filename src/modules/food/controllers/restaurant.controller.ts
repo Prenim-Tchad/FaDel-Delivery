@@ -9,7 +9,10 @@ import {
   Query,
   UseGuards,
   BadRequestException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express'; // Pour gérer l'upload de fichiers multipart/form-data
 import { RestaurantService } from '../services/restaurant.service';
 import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
@@ -17,6 +20,7 @@ import { UpdateRestaurantDto } from '../dtos/update-restaurant.dto';
 import { CreateOpeningHoursDto } from '../dtos/create-opening-hours.dto';
 import type { CreateDeliveryZonesDto } from '../dtos/create-delivery-zone.dto';
 import { RestaurantOwnerGuard } from '../guards/restaurant-owner.guard';
+import { MediaService, ResizeOptions } from '../services/media.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -24,7 +28,10 @@ import { UserRole, RestaurantStatus } from '../../../shared/types';
 
 @Controller('food/restaurants')
 export class RestaurantController {
-  constructor(private readonly restaurantService: RestaurantService) {}
+  constructor(
+    private readonly restaurantService: RestaurantService,
+    private readonly mediaService: MediaService, // Service pour gérer l'upload vers Cloudflare R2
+  ) {}
 
   @UseGuards(RestaurantOwnerGuard)
   @Post()
@@ -114,5 +121,85 @@ export class RestaurantController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<unknown> {
     return this.restaurantService.remove(id);
+  }
+
+  /**
+   * Upload le logo du restaurant vers Cloudflare R2
+   * @method uploadLogo
+   * @route POST /food/restaurants/:id/upload-logo
+   * @param {string} id - ID du restaurant
+   * @param {Express.Multer.File} file - Fichier logo (form-data : key='logo')
+   * @returns {Promise<{logoUrl: string}>} URL publique du logo uploadé
+   * @throws {BadRequestException} Si aucun fichier n'est fourni
+   * @description Redimensionne automatiquement à 200x200px et optimise la qualité à 85%
+   */
+  // --- Upload logo du restaurant ---
+  @UseGuards(RestaurantOwnerGuard)
+  @Post(':id/upload-logo')
+  @UseInterceptors(FileInterceptor('logo'))
+  async uploadLogo(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ logoUrl: string }> {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier logo fourni');
+    }
+
+    // Options de redimensionnement pour le logo (carré, plus petit)
+    const resizeOptions: ResizeOptions = {
+      width: 200,
+      height: 200,
+      fit: 'cover',
+      quality: 85,
+    };
+
+    const result = await this.mediaService.upload(
+      file,
+      'restaurant-logos',
+      resizeOptions,
+    );
+    await this.restaurantService.updateLogo(id, result.url);
+
+    return { logoUrl: result.url };
+  }
+
+  /**
+   * Upload la bannière (image de couverture) du restaurant vers Cloudflare R2
+   * @method uploadBanner
+   * @route POST /food/restaurants/:id/upload-banner
+   * @param {string} id - ID du restaurant
+   * @param {Express.Multer.File} file - Fichier bannière (form-data : key='banner')
+   * @returns {Promise<{coverImageUrl: string}>} URL publique de la bannière uploadée
+   * @throws {BadRequestException} Si aucun fichier n'est fourni
+   * @description Redimensionne automatiquement à 1200x400px et optimise la qualité à 85%
+   */
+  // --- Upload bannière du restaurant ---
+  @UseGuards(RestaurantOwnerGuard)
+  @Post(':id/upload-banner')
+  @UseInterceptors(FileInterceptor('banner'))
+  async uploadBanner(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ coverImageUrl: string }> {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier bannière fourni');
+    }
+
+    // Options de redimensionnement pour la bannière (plus large, pour affichage en en-tête)
+    const resizeOptions: ResizeOptions = {
+      width: 1200,
+      height: 400,
+      fit: 'cover',
+      quality: 85,
+    };
+
+    const result = await this.mediaService.upload(
+      file,
+      'restaurant-banners',
+      resizeOptions,
+    );
+    await this.restaurantService.updateCoverImage(id, result.url);
+
+    return { coverImageUrl: result.url };
   }
 }

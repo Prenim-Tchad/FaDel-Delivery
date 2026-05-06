@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Put,
-  Patch,
   Delete,
   Get,
   Body,
@@ -23,7 +22,6 @@ import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
 import { OptionGroupService } from '../services/option-group.service';
 import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
-import { UpdateAvailabilityDto } from '../dtos/update-availability.dto';
 
 /**
  * Controller MenuItem — gère les requêtes HTTP des articles de menu

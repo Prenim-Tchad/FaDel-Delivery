@@ -44,6 +44,8 @@ import { MediaService } from './services/media.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService, // 🆕
+    OptionGroupRepository, // 🆕
     RestaurantRepository,
     OptionGroupService, // ✅ tâche #36
     OptionGroupRepository, // ✅ tâche #36
@@ -62,6 +64,8 @@ import { MediaService } from './services/media.service';
     FoodRepository,
     MenuCategoryRepository,
     MenuItemRepository,
+    OptionGroupService, // 🆕
+    OptionGroupRepository, // 🆕
     RestaurantRepository,
     OptionGroupService, // ✅ tâche #36
     OptionGroupRepository, // ✅ tâche #36
