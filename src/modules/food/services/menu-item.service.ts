@@ -7,6 +7,7 @@ import { MenuItemRepository } from '../repositories/menu-item.repository';
 import { CreateMenuItemDto } from '../dtos/create-menu-item.dto';
 import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
+import { AvailabilityStatus } from '../dtos/update-availability.dto';
 
 /**
  * Service MenuItem — contient toute la logique métier pour FaDel-Delivery

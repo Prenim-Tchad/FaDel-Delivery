@@ -155,6 +155,7 @@ model MenuItem {
   price           Float
   imageUrl        String?             @map("image_url")
   isAvailable     Boolean             @default(true) @map("is_available")
+  availabilityStatus AvailabilityStatus @default(AVAILABLE) @map("availability_status")
   isPopular       Boolean             @default(false) @map("is_popular")
   isVegetarian    Boolean             @default(false) @map("is_vegetarian")
   isVegan         Boolean             @default(false) @map("is_vegan")
@@ -181,12 +182,19 @@ model MenuItem {
   @@map("menu_items")
 }
 
+enum AvailabilityStatus {
+  AVAILABLE     // disponible et commandable
+  HIDDEN        // masqué (invisible pour le client)
+  OUT_OF_STOCK  // épuisé (affiché grisé, non commandable)
+}
+
 model MenuModifierGroup {
   id            String               @id @default(cuid())
   menuItemId    String               @map("menu_item_id")
   name          String
   type          String
   description   String?
+  selectionType SelectionType        @default(SINGLE) @map("selection_type")
   isRequired    Boolean              @default(false) @map("is_required")
   minSelections Int                  @default(0) @map("min_selections")
   maxSelections Int?                 @map("max_selections")
@@ -198,6 +206,11 @@ model MenuModifierGroup {
 
   @@index([menuItemId, sortOrder])
   @@map("menu_modifier_groups")
+}
+
+enum SelectionType {
+  SINGLE
+  MULTIPLE
 }
 
 model MenuModifierOption {
