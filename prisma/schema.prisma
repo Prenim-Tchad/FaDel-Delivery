@@ -180,16 +180,12 @@ model MenuItem {
   @@index([isPopular])
   @@map("menu_items")
 }
-enum SelectionType {
-  SINGLE
-  MULTIPLE
-}
 
 model MenuModifierGroup {
   id            String               @id @default(cuid())
   menuItemId    String               @map("menu_item_id")
   name          String
-  type  SelectionType
+  type          SelectionType
   description   String?
   isRequired    Boolean              @default(false) @map("is_required")
   minSelections Int                  @default(0) @map("min_selections")
@@ -381,6 +377,11 @@ model TableReservation {
   @@index([reservationNumber])
   @@index([status, reservationDate])
   @@map("table_reservations")
+}
+
+enum SelectionType {
+  SINGLE
+  MULTIPLE
 }
 
 enum OrderStatus {
