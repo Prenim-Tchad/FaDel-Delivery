@@ -146,5 +146,29 @@ export class RestaurantService {
     }
 
     return menu;
+  /**
+   * Met à jour l'URL du logo du restaurant après upload vers Cloudflare R2
+   * @method updateLogo
+   * @param {string} id - ID du restaurant
+   * @param {string} logoUrl - URL publique du logo uploadé vers R2
+   * @returns {Promise<unknown>} Restaurant mis à jour
+   * @throws {NotFoundException} Si le restaurant n'existe pas
+   */
+  async updateLogo(id: string, logoUrl: string): Promise<unknown> {
+    await this.findOne(id);
+    return this.restaurantRepository.update(id, { logoUrl });
+  }
+
+  /**
+   * Met à jour l'URL de l'image de couverture (bannière) du restaurant après upload vers Cloudflare R2
+   * @method updateCoverImage
+   * @param {string} id - ID du restaurant
+   * @param {string} coverImageUrl - URL publique de la bannière uploadée vers R2
+   * @returns {Promise<unknown>} Restaurant mis à jour
+   * @throws {NotFoundException} Si le restaurant n'existe pas
+   */
+  async updateCoverImage(id: string, coverImageUrl: string): Promise<unknown> {
+    await this.findOne(id);
+    return this.restaurantRepository.update(id, { coverImageUrl });
   }
 }
