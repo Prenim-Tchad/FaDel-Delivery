@@ -12,7 +12,7 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express'; // Pour gérer l'upload de fichiers multipart/form-data
+import { ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { RestaurantService } from '../services/restaurant.service';
 import type { BatchPayloadResult } from '../repositories/restaurant.repository';
 import { CreateRestaurantDto } from '../dtos/create-restaurant.dto';
@@ -76,6 +76,15 @@ export class RestaurantController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<unknown> {
     return this.restaurantService.findOne(id);
+  }
+
+  // --- #39 : Endpoint pour le menu complet (Mobile) ---
+  @Get(':id/menu')
+  @ApiOperation({ summary: 'Récupérer le menu complet structuré par catégories' })
+  @ApiParam({ name: 'id', description: 'ID du restaurant' })
+  @ApiResponse({ status: 200, description: 'Menu récupéré avec succès' })
+  async getMenu(@Param('id') id: string): Promise<unknown> {
+    return this.restaurantService.getMenu(id);
   }
 
   @UseGuards(RestaurantOwnerGuard)

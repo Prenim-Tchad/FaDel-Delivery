@@ -137,6 +137,15 @@ export class RestaurantService {
     return this.restaurantRepository.delete(id);
   }
 
+  async getMenu(id: string) {
+    const menu = await this.restaurantRepository.getRestaurantMenu(id);
+
+    // Si le restaurant n'existe pas, on renvoie une erreur 404
+    if (!menu) {
+      throw new NotFoundException(`Restaurant avec l'ID ${id} non trouvé`);
+    }
+
+    return menu;
   /**
    * Met à jour l'URL du logo du restaurant après upload vers Cloudflare R2
    * @method updateLogo

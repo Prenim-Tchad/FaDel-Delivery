@@ -194,4 +194,47 @@ export class RestaurantRepository {
       where: { id },
     });
   }
+
+ async getRestaurantMenu(restaurantId: string) {
+  return this.prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+    select: {
+      id: true,
+      menuCategories: {
+        where: { isDeleted: false },
+        orderBy: { sortOrder: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          sortOrder: true,
+          menuItems: {
+            where: { isDeleted: false },
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              isAvailable: true,
+              isPopular: true,
+              imageUrl: true,
+              modifierGroups: {
+                select: {
+                  id: true,
+                  name: true,
+                  selectionType: true,
+                  options: {
+                    select: {
+                      id: true,
+                      name: true,
+                      price: true, 
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
 }
