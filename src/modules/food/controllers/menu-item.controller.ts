@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Put,
+  Patch,
   Delete,
   Get,
   Body,
@@ -22,6 +23,7 @@ import { UpdateMenuItemDto } from '../dtos/update-menu-item.dto';
 import { MenuItem } from '../entities/menu-item.entity';
 import { OptionGroupService } from '../services/option-group.service';
 import { CreateOptionGroupDto } from '../dtos/create-option-group.dto';
+import { UpdateAvailabilityDto } from '../dtos/update-availability.dto';
 
 /**
  * Controller MenuItem — gère les requêtes HTTP des articles de menu
@@ -167,4 +169,24 @@ export class MenuItemController {
   async findOptionGroups(@Param('id') menuItemId: string) {
     return this.optionGroupService.findAllByMenuItem(menuItemId);
   }
+
+  /**
+ * PATCH /food/menu-items/:id/availability
+ */
+@Patch('menu-items/:id/availability')
+@HttpCode(HttpStatus.OK)
+@ApiOperation({
+  summary: "Mettre à jour la disponibilité d'un article",
+  description: "Change l'état : AVAILABLE, HIDDEN (masqué) ou OUT_OF_STOCK (grisé).",
+})
+@ApiParam({ name: 'id', description: "ID de l'article", example: 'clxxx123' })
+@ApiResponse({ status: HttpStatus.OK, description: 'Disponibilité mise à jour', type: MenuItem })
+@ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Article introuvable' })
+@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Données invalides' })
+async updateAvailability(
+  @Param('id') id: string,
+  @Body() dto: UpdateAvailabilityDto,
+): Promise<MenuItem> {
+  return this.menuItemService.updateAvailability(id, dto.availability);
+}
 }
