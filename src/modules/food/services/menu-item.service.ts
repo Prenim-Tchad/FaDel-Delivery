@@ -10,7 +10,6 @@ import { MenuItem } from '../entities/menu-item.entity';
 
 /**
  * Service MenuItem — contient toute la logique métier pour FaDel-Delivery
- * Flux : Controller → Service → Repository → Prisma → PostgreSQL
  */
 @Injectable()
 export class MenuItemService {
@@ -49,7 +48,6 @@ export class MenuItemService {
   }
 
   async update(id: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
-    // Appel sans assignation de variable pour éviter l'erreur de lint no-unused-vars
     await this.findOne(id);
 
     if (dto.price !== undefined && dto.price < 0) {
@@ -68,14 +66,11 @@ export class MenuItemService {
     return updated;
   }
 
-  /**
-   * Met à jour la disponibilité d'un article (SINGLE/MULTIPLE géré via le schéma)
-   */
   async updateAvailability(
     id: string,
     isAvailable: boolean,
   ): Promise<MenuItem> {
-    await this.findOne(id); // Vérifie l'existence de l'article
+    await this.findOne(id);
     return this.menuItemRepository.update(id, { isAvailable });
   }
 
